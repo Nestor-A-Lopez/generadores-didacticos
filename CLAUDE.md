@@ -125,11 +125,9 @@ Objetivo: un solo sitio con una portada que enlace a todos los generadores. GitH
 
 En este orden, y preguntando antes de mover o borrar:
 
-1. **Limpieza**
-   - Comentarios que todavía dicen «Entorno» en `estrategias.html` y `recta-numerica.html`: cambiarlos a «Vesta».
-2. **Separar cada generador en tres archivos** (uno por uno, con la comprobación byte a byte), moviendo a `compartido/` lo que ya esté repetido en otro generador separado.
-3. **Montar la plataforma**: portada, estructura final de carpetas y publicación en GitHub Pages.
-4. **Vesta**: mantener sincronizada la copia local con la de claude.ai. En la de claude.ai el componente `Icon` carga Lucide desde jsDelivr; la copia local sigue usando unpkg (misma versión).
+1. **Separar cada generador en tres archivos** (uno por uno, con la comprobación byte a byte), moviendo a `compartido/` lo que ya esté repetido en otro generador separado.
+2. **Montar la plataforma**: portada, estructura final de carpetas y publicación en GitHub Pages.
+3. **Vesta**: mantener sincronizada la copia local con la de claude.ai. En la de claude.ai el componente `Icon` carga Lucide desde jsDelivr; la copia local sigue usando unpkg (misma versión).
 
 ## Cómo trabajar aquí
 
