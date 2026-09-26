@@ -68,13 +68,13 @@ Quién carga qué:
 | --- | --- | --- | --- | --- |
 | fracciones, estrategias, recta-numerica | sí | sí | — | sí |
 | tabla de valor posicional, operaciones | sí | — | sí | sí |
-| numeros-dienes | sí (solo usa `--base10-*`) | — | — | sí |
+| numeros-dienes | sí | — | — | sí |
 
 - Cada `index.html` los carga **antes** que los suyos, con rutas relativas: `<link rel="stylesheet" href="../compartido/vesta.css" />` antes de `style.css`, y los `<script src="../compartido/…" defer></script>` antes de `script.js`. Todos los generadores están al mismo nivel dentro de `sitio/`, así que la ruta es siempre `../compartido/` (la portada, que está en `sitio/`, usa `compartido/`).
 - En `script.js` se toman con una línea (`const GLYPH_DATA = Banco.GLYPH_DATA;`), así el resto del código no cambió. `download()` arma el SVG y el nombre, y termina con `await Banco.guardarSVG(svg, filename)`. El atajo de **Enter** se queda en cada generador porque cada uno lo pone en campos distintos.
 - `glifos.js` es el juego completo de fracciones (237 glifos). Estrategias y recta-numerica tenían recortes de 13 glifos, copiados tal cual de ese juego; se unificaron por decisión del usuario, porque solo buscan por carácter y la salida no cambia. Las tablas usan otro formato (con `bold`), así que van aparte en `glifos-tabla.js`.
 - `glifos.js` no se edita a mano: se regenera con `python herramientas/extraer_glifos.py` desde la raíz del repo (necesita `fontTools` y `matplotlib`: `pip install fonttools matplotlib`), que escribe `sitio/compartido/glifos.js` directamente.
-- En cada `style.css` quedan solo los tokens que no son de Vesta: la paleta de fracciones (`--morado`…), la paleta propia de numeros-dienes (`--bg`, `--ink`, `--panel`, `--line`) y los alias `--colU/--colD/--colC`, que ahora valen `var(--base10-*)`.
+- En cada `style.css` quedan solo los tokens que no son de Vesta: la paleta de fracciones (`--morado`…) y los alias `--colU/--colD/--colC`, que ahora valen `var(--base10-*)`.
 - Mismas reglas que `script.js`: scripts clásicos, sin `type="module"` ni `fetch()`, para que todo siga funcionando con doble clic.
 - Los scripts clásicos comparten el ámbito global: lo compartido se expone en **un solo objeto**, `window.Banco` (por ejemplo, `Banco.GLYPH_DATA`, `Banco.guardarSVG(...)`), para no chocar con nombres de los generadores.
 - Solo entra en `compartido/` lo que es **idéntico** en dos o más generadores. Si un generador necesita una variante (por ejemplo, otro subconjunto de glifos), se queda en su `script.js` hasta que se decida unificar.
@@ -91,7 +91,7 @@ Todo lo publicable está en `sitio/`. Cada carpeta de generador tiene `index.htm
 | `sitio/fracciones/` | Fracciones: círculo, rectángulo, triángulo | su `CLAUDE.md` |
 | `sitio/tabla-valor-posicional/` | Tabla de valor posicional | su `CLAUDE.md` |
 | `sitio/operaciones/` | Operaciones en la tabla: suma, resta, multiplicación, división | su `CLAUDE.md` |
-| `sitio/numeros-dienes/` | Números con bloques Dienes (material base 10): unidades, decenas, centenas. Se llamó «Números con material» y estaba en `numeros-material/` hasta el 2026-09-26 | — |
+| `sitio/numeros-dienes/` | Números con bloques Dienes (material base 10): unidades, decenas, centenas. Se llamó «Números con material» y estaba en `numeros-material/` hasta el 2026-09-26. Interfaz responsiva (diseño «Pantalla base 10» de Vesta, 2026-09-26): panel lateral (propuesta 1b) desde 1024 px y filas (1a) por debajo; los segmentados son fachada de `<select>` ocultos | — |
 | `sitio/estrategias/` | Completar la decena en suma y resta; en la resta, pestaña «Distancia entre dos números» (recta numérica + material + ecuación) | — |
 | `sitio/recta-numerica/` | Recta numérica: extremos, paso y separación entre marcas | — |
 | `sitio/compartido/` | Tokens, glifos y guardado que usan varios generadores; ver «Carpeta compartida» | — |
@@ -121,7 +121,7 @@ Se movieron ahí el 2026-09-26 (439 archivos); ese mismo día `numeros-material/
 | Fracciones | `[numerador]-[denominador]-[color].svg`, en la subcarpeta de la forma (`circulo/`, `rectangulo/`, `triangulo/`) | `3-4-verde.svg`, `0-6-azul.svg` |
 | Tabla de valor posicional | `[Orden]-[Número].svg`; millares separados con `-`, punto decimal tal cual; varios números unidos con `+`; tabla en blanco → `vacia.svg` (en `figuras/tabla-valor-posicional/` hay un `U-vacia.svg`) | `U-950-000.svg`, `mil-9-673.svg`, `U-0.37+U-0.370.svg`, `U-427..svg` (punto sin dígitos después) |
 | Operaciones | `[A\|S\|M\|D]-[operando]-[operando]….SVG` (extensión en **mayúsculas**, así la genera `buildFilename()`); cada operando en unidades reales | `A-0.15-0.028.SVG`, `S-8750-2300.SVG` |
-| Números con bloques Dienes | El HTML sugiere `numero-N.svg`, pero los archivos guardados llevan un prefijo con los órdenes: `U-` (todo en unidades), `DU-`, `CDU-` | `U-36.svg`, `DU-36.svg`, `CDU-427.svg` |
+| Números con bloques Dienes | `[número].svg`, como lo genera `buildFilename()` desde el 2026-09-26 (antes, `numero-N.svg`). Los archivos guardados antes llevan un prefijo con los órdenes, puesto a mano: `U-` (todo en unidades), `DU-`, `CDU-` | `236.svg`; antiguos: `U-36.svg`, `DU-36.svg`, `CDU-427.svg` |
 | Completar decena (`estrategias`) | `[A]+[b].svg` (suma) / `[A]-[b].svg` (resta) | `28+5.svg`, `51-7.svg` |
 | Distancia entre números (`estrategias`) | `[A]-[b].svg`; sufijo `-sin-material` cuando el interruptor «Material sobre la recta» está apagado | `100-19.svg`, `10-3-sin-material.svg` |
 | Recta numérica | `[Inicio]-[Final]-[Paso].svg`, con los valores tal como se escriben | `-5-5-1.svg`, `0-1-0.1.svg` |
@@ -159,7 +159,7 @@ Aplican a todos los generadores (el detalle y el porqué están en el `CLAUDE.md
 2. **Agrupamiento en dos niveles** pensado para «desagrupar una vez / dos veces» en PowerPoint. No añadir un `<g>` envolvente (ni para márgenes: se desplaza el `viewBox`).
 3. **Fondo transparente**, sin `<rect>` de fondo blanco.
 4. En las tablas: bordes como rectángulos rellenos (nada de `<line>` ni `stroke`), medidas redondeadas a enteros y `stroke` par.
-5. Guardado con `Banco.guardarSVG` (`sitio/compartido/guardar-svg.js`): `showSaveFilePicker`, que recuerda la carpeta en la sesión, y respaldo `<a download>`. **Enter** en los campos numéricos guarda en fracciones, tabla, estrategias y recta-numerica; operaciones y numeros-dienes todavía no lo tienen.
+5. Guardado con `Banco.guardarSVG` (`sitio/compartido/guardar-svg.js`): `showSaveFilePicker`, que recuerda la carpeta en la sesión, y respaldo `<a download>`. **Enter** en los campos numéricos guarda en fracciones, tabla, estrategias, recta-numerica y numeros-dienes; operaciones todavía no lo tiene.
 6. No quitar controles del DOM para ocultarlos: el script lee todos los ids al cargar.
 7. Los trazos punteados (`stroke-dasharray`) y las formas huecas (`fill="none"`) **sobreviven** a «Convertir en forma»: el usuario lo confirmó en PowerPoint el 2026-09-26 con el generador de estrategias.
 8. **Borde del material concreto, igual en todos los generadores**: blanco (`#FFFFFF`), 0.75 pt en la unidad y 1.05 pt en la decena y la centena. `numeros-dienes` lo escribe como 1 px / 1.4 px (su SVG está en px y PowerPoint toma 1 px = 0.75 pt); los generadores que dibujan en pt (`estrategias`) usan 0.75 / 1.05. Es un grosor absoluto: no se escala con el tamaño del cuadrito.

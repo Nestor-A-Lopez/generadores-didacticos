@@ -1,189 +1,513 @@
-/* Esta interfaz todavía no está rediseñada con Vesta: --bg, --ink, --panel y
-   --line son su paleta propia. De ../compartido/vesta.css (que index.html carga
-   antes que este archivo) solo usa los colores del material base 10. */
+/* Los tokens de Vesta (colores, radios, sombras, tipografía, movimiento)
+   vienen de ../compartido/vesta.css, que index.html carga antes que este archivo.
+
+   Distribución responsiva: las dos propuestas del diseño se complementan.
+   - Menos de 1024px: 1a, filas. Controles arriba y la figura a todo lo ancho.
+   - 1024px o más:    1b, panel lateral. Controles en columna y la figura
+                      siempre a la vista junto a ellos.
+   El DOM es uno solo; solo cambia este CSS. */
 :root {
+  /* Paleta del material base 10 (tokens de Vesta): debe coincidir con
+     COL_U / COL_D / COL_C del script, que son los que llegan al SVG. */
   --colC: var(--base10-centena);
   --colD: var(--base10-decena);
   --colU: var(--base10-unidad);
-  --bg: #f5f7fa;
-  --ink: #20242b;
-  --panel: #ffffff;
-  --line: #dce1e8;
 }
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 body {
   margin: 0;
-  font-family:
-    -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background: var(--bg);
-  color: var(--ink);
+  background: var(--surface-subtle);
+  color: var(--text-body);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
 }
-.topbar {
-  padding: 16px 24px 12px;
-  border-bottom: 1px solid var(--line);
-  background: var(--panel);
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
-.topbar h1 {
-  margin: 0 0 4px;
-  font-size: 19px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+  }
 }
-.topbar h1 .c {
-  color: var(--colC);
-}
-.topbar h1 .d {
-  color: var(--colD);
-}
-.topbar h1 .u {
-  color: var(--colU);
-}
-.topbar p {
-  margin: 0;
-  font-size: 13px;
-  color: #6b7280;
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
 }
 
-.optionsBar {
+.page {
+  max-width: 1280px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 32px 40px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  background: var(--surface-page);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ---- Cabecera + acción principal ---- */
+.header {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
-  column-gap: 20px;
-  row-gap: 14px;
-  padding: 16px 24px;
-  background: var(--panel);
-  border-bottom: 1px solid var(--line);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--border-subtle);
 }
-.optionsGroup {
+.headerText {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  column-gap: 20px;
-  row-gap: 14px;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  flex: 1 1 280px;
 }
+.header h1 {
+  margin: 0;
+  font-family: var(--font-serif-display);
+  font-variation-settings: "opsz" 120;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-size: clamp(28px, 4vw, 36px);
+  line-height: 1.1;
+  color: var(--text-heading);
+  text-wrap: balance;
+}
+.header p {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+/* ---- Botón (Button de Vesta, primario, tamaño md) ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 11px 20px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    transform var(--duration-instant) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+.btn svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+.btn-primary {
+  background: var(--action-primary);
+  border-color: var(--action-primary);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-sm);
+}
+.btn-primary:hover {
+  background: var(--action-primary-hover);
+  border-color: var(--action-primary-hover);
+}
+.btn-primary:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+.btn:disabled {
+  background: var(--action-disabled-bg);
+  color: var(--action-disabled-fg);
+  border-color: transparent;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ---- Campos ---- */
 .field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  min-width: 190px;
+  gap: var(--space-2);
+  min-width: 0;
 }
-.field label {
-  font-size: 12px;
-  font-weight: 600;
-  color: #374151;
-  white-space: nowrap;
-}
-.field input[type="text"],
-.field select {
-  padding: 8px 10px;
-  border: 1px solid #cbd2db;
-  border-radius: 6px;
-  font-size: 14px;
-  background: #fff;
-  color: var(--ink);
-  width: 100%;
-}
-.field select:disabled {
-  background: #eef0f3;
-  color: #9aa2ad;
-  cursor: not-allowed;
-}
-.field input[type="text"]:focus,
-.field select:focus {
-  outline: none;
-  border-color: var(--colD);
-  box-shadow: 0 0 0 3px rgba(28, 117, 188, 0.15);
-}
-.numero-field {
-  min-width: 150px;
-}
-.checkboxRow {
+.labelRow {
   display: flex;
   flex-wrap: wrap;
-  column-gap: 18px;
-  row-gap: 10px;
-  align-items: center;
+  align-items: baseline;
+  gap: 4px 12px;
 }
-.checkrow {
-  display: flex;
-  align-items: center;
-  gap: 7px;
+.fieldLabel {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text-body);
 }
-.checkrow input {
-  width: 16px;
-  height: 16px;
-  flex: 0 0 auto;
+.fieldHint {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
 }
-.checkrow label {
-  font-size: 13px;
-  color: #374151;
-  white-space: nowrap;
+/* Input de Vesta */
+.input {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--text-body);
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
 }
-.hint {
-  font-size: 11.5px;
-  color: #8a93a1;
-  line-height: 1.4;
+.input:focus {
+  outline: none;
+  border-color: var(--border-brand);
+  box-shadow: var(--ring-focus);
 }
-.downloadArea {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-left: auto;
-  min-width: 220px;
+.input[aria-invalid="true"] {
+  border-color: var(--red-500);
 }
-.error {
-  font-size: 12.5px;
-  color: var(--colC);
-  background: #fdeded;
-  border: 1px solid #f5c2c2;
-  padding: 8px 10px;
-  border-radius: 6px;
-  display: none;
-}
-.downloadBtn {
-  padding: 10px 22px;
-  border: none;
-  border-radius: 7px;
-  background: var(--colD);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-}
-.downloadBtn:hover {
-  background: #155a92;
+.input[aria-invalid="true"]:focus {
+  box-shadow: var(--ring-error);
 }
 
+/* ---- Control segmentado ----
+   Botones que manejan un <select> oculto (ver script.js). Con data-animate,
+   una píldora (.segInd, la crea el script) se desliza a la opción elegida;
+   sin él, la opción elegida lleva su propio fondo. */
+.seg {
+  position: relative;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  min-width: 0;
+  background: var(--neutral-50);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+.seg button {
+  position: relative;
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  white-space: nowrap;
+  background: transparent;
+  color: var(--text-body);
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    color 220ms var(--ease-out);
+}
+/* Los saltos de línea de las etiquetas solo se usan en el panel lateral. */
+.seg br {
+  display: none;
+}
+.seg button[aria-pressed="true"] {
+  background: var(--action-primary);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-xs);
+}
+.seg[data-animate] button[aria-pressed="true"] {
+  background: transparent;
+  box-shadow: none;
+}
+.segInd {
+  position: absolute;
+  border-radius: 8px;
+  background: var(--action-primary);
+  box-shadow: var(--shadow-xs);
+  pointer-events: none;
+  opacity: 0;
+}
+.segInd.is-ready {
+  opacity: 1;
+  transition:
+    left 220ms var(--ease-out),
+    width 220ms var(--ease-out),
+    top 220ms var(--ease-out),
+    height 220ms var(--ease-out),
+    background 140ms var(--ease-out);
+}
+.seg.segFill button {
+  flex: 1 1 0;
+}
+/* Desactivado (formatoDiez cuando la decena es una barra). */
+.seg button:disabled {
+  color: var(--neutral-400);
+  cursor: not-allowed;
+}
+.seg button:disabled[aria-pressed="true"] {
+  color: var(--neutral-500);
+}
+.seg.is-disabled .segInd {
+  background: var(--neutral-200);
+  box-shadow: none;
+}
+.field.is-disabled > .fieldLabel {
+  color: var(--neutral-500);
+}
+
+/* ---- Tooltip de Vesta (solo mientras el campo está desactivado) ---- */
+.tip {
+  position: relative;
+}
+.tipText {
+  position: absolute;
+  z-index: 40;
+  bottom: calc(100% + 8px);
+  /* Alineado a la derecha del campo: en 1a es el último de la fila y,
+     centrado, se saldría de la página. */
+  right: 0;
+  max-width: calc(100vw - 32px);
+  padding: 7px 11px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-inverse);
+  color: var(--text-inverse);
+  font-size: var(--text-xs);
+  line-height: 1.45;
+  white-space: nowrap;
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+.tip.is-disabled:hover .tipText {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ---- Interruptor (Switch de Vesta) ----
+   Es un <input type="checkbox"> real (el script lee .checked). */
+.switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 44px;
+  cursor: pointer;
+  font-size: var(--text-base);
+  color: var(--text-body);
+}
+.switch input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+}
+.switchTrack {
+  position: relative;
+  flex: 0 0 auto;
+  width: 46px;
+  height: 26px;
+  border-radius: var(--radius-pill);
+  background: var(--neutral-200);
+  transition: background var(--duration-base) var(--ease-standard);
+}
+.switchTrack::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-pill);
+  background: var(--neutral-0);
+  box-shadow: var(--shadow-sm);
+  transition: left var(--duration-base) var(--ease-out);
+}
+.switch input:checked + .switchTrack {
+  background: var(--action-primary);
+}
+.switch input:checked + .switchTrack::after {
+  left: 23px;
+}
+.switch input:focus-visible + .switchTrack {
+  box-shadow: var(--focus-ring);
+}
+
+/* ---- "Cómo se ve cada pieza" (plegable) ---- */
+.piezas {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-5) 0;
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.piezasToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  width: 100%;
+  min-height: 44px;
+  margin: -8px 0;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  text-align: left;
+  color: var(--text-body);
+}
+.piezasTitulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  min-width: 0;
+  font-size: var(--text-sm);
+}
+.eyebrow {
+  font-size: 12px;
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.chevron {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  color: var(--text-muted);
+  transition: transform var(--duration-base) var(--ease-out);
+}
+.piezas.is-open .chevron {
+  transform: rotate(180deg);
+}
+/* Se abre animando la fila de 0fr a 1fr. Mientras está cerrada (o se está
+   moviendo), .piezasClip recorta; ya abierta, deja salir el tooltip. */
+.piezasBody {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    grid-template-rows 380ms var(--ease-out),
+    opacity 160ms var(--ease-out),
+    visibility 0s linear 380ms;
+}
+.piezas.is-open .piezasBody {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    grid-template-rows 380ms var(--ease-out),
+    opacity 220ms var(--ease-out) 80ms,
+    visibility 0s;
+}
+.piezasClip {
+  min-height: 0;
+  overflow: hidden;
+}
+.piezas.is-settled .piezasClip {
+  overflow: visible;
+}
+.piezasInner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding-top: var(--space-4);
+}
+.nota {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+/* ---- Previsualización ---- */
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.callout {
+  display: none; /* el script lo muestra con style.display = "flex" */
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-left: var(--border-accent) solid;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+}
+.callout svg {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+.callout strong {
+  display: block;
+  font-weight: var(--weight-semibold);
+  margin-bottom: 2px;
+}
+.callout.error {
+  background: var(--feedback-error-bg);
+  color: var(--feedback-error-fg);
+  border-color: var(--feedback-error-line);
+}
 .stage {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 40px 24px;
+  gap: var(--space-5);
+  min-height: 360px;
+  padding: var(--space-8) var(--space-6);
+  background: var(--neutral-0);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+#svgHolder {
+  max-width: 100%;
   overflow: auto;
-  min-height: calc(100vh - 170px);
-  gap: 18px;
+  display: flex;
+  justify-content: center;
 }
 #svgHolder svg {
+  display: block;
   max-width: 100%;
   height: auto;
-  display: block;
-}
-.stage-inner {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 36px;
-  max-width: 100%;
-  overflow: auto;
 }
 .desglose {
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: 12px;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
 }
 .desglose .c {
   color: var(--colC);
@@ -193,4 +517,198 @@ body {
 }
 .desglose .u {
   color: var(--colU);
+}
+.desglose .sep {
+  color: var(--neutral-400);
+}
+
+/* ---- Pie (mismo estilo que el de la portada) ----
+   margin-top: auto lo manda al fondo cuando la página es más corta que
+   la ventana. */
+.pie {
+  margin-top: auto;
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border-subtle);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  text-align: left;
+}
+.pie a {
+  color: inherit;
+  text-underline-offset: 3px;
+  transition: color var(--duration-base) var(--ease-out);
+}
+.pie a:hover {
+  color: var(--text-brand);
+}
+.pie a:focus-visible {
+  outline: none;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--ring-focus);
+}
+
+/* ================================================================
+   1a — Filas (menos de 1024px)
+   ================================================================ */
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+.panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-5) var(--space-12);
+}
+.fNumero {
+  flex: 0 1 220px;
+  min-width: 160px;
+}
+.fTamano {
+  flex: 0 1 auto;
+}
+.fDesglose {
+  flex: 0 0 auto;
+  padding-top: 22px; /* alinea con los campos que llevan etiqueta */
+}
+.piezas {
+  flex: 1 1 100%;
+}
+/* Las tres opciones de las piezas, lado a lado. Cada columna mide lo que
+   su contenido: con columnas iguales la de centenas no cabe. */
+.piezasGrid {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: auto;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  gap: var(--space-5) var(--space-6);
+}
+
+/* Sin espacio para las tres lado a lado: una debajo de otra. */
+@media (max-width: 959px) {
+  .piezasGrid {
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+    width: 100%;
+    max-width: 560px;
+  }
+}
+
+/* La primera fila se aprieta para que el interruptor quepa junto a los
+   campos. */
+@media (max-width: 899px) {
+  .panel {
+    column-gap: var(--space-6);
+  }
+  .fNumero {
+    flex-basis: 160px;
+  }
+}
+
+/* Ya no cabe en la primera fila: el interruptor pasa a la suya, sin el
+   relleno que lo alineaba con los campos. */
+@media (max-width: 859px) {
+  .fDesglose {
+    flex-basis: 100%;
+    padding-top: 0;
+  }
+}
+
+/* Teléfono: márgenes compactos y controles a todo lo ancho. */
+@media (max-width: 639px) {
+  .page {
+    padding: 20px 16px 32px;
+  }
+  .fNumero,
+  .fTamano {
+    flex: 1 1 100%;
+  }
+  .fTamano .seg button {
+    flex: 1 1 0;
+  }
+  .fDesglose {
+    padding-top: 0;
+  }
+  .stage {
+    min-height: 240px;
+    padding: var(--space-5) var(--space-4);
+  }
+  .tipText {
+    white-space: normal;
+    width: max-content;
+    max-width: 100%;
+  }
+}
+
+/* Teléfono angosto: "100 unidades" y compañía ya no caben en una línea. */
+@media (max-width: 399px) {
+  .seg br {
+    display: inline;
+  }
+}
+
+/* ================================================================
+   1b — Panel lateral (1024px o más)
+   ================================================================ */
+@media (min-width: 1024px) {
+  .layout {
+    flex-direction: row;
+    align-items: stretch;
+    gap: var(--space-6);
+  }
+  .panel {
+    flex: 0 1 420px;
+    min-width: 360px;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: var(--space-5);
+    padding: var(--space-6);
+    background: var(--neutral-0);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+  }
+  .fNumero,
+  .fTamano,
+  .fDesglose,
+  .piezas {
+    flex: 0 0 auto;
+    min-width: 0;
+  }
+  .fDesglose {
+    order: 1; /* el interruptor va al final, después de las piezas */
+    padding-top: 0;
+  }
+  /* Aquí las etiquetas largas se parten en dos líneas y las opciones
+     ocupan todo el ancho del panel. */
+  .seg br {
+    display: inline;
+  }
+  .segFill1b button {
+    flex: 1 1 0;
+  }
+  .piezasGrid {
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+    width: 100%;
+    max-width: none;
+    gap: var(--space-4);
+  }
+  /* Aquí el campo ocupa todo el panel: el tooltip va centrado. */
+  .tipText {
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .preview {
+    flex: 1 1 0;
+  }
+  .stage {
+    flex: 1 1 auto;
+    min-height: 420px;
+  }
 }

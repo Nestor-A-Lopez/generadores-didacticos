@@ -23,20 +23,42 @@ function getOptions() {
   };
 }
 
+// Con error: aviso visible, campo marcado y botón de guardar desactivado.
+// La vista previa se queda con la última figura válida.
 function showError(msg) {
   const err = document.getElementById("err");
-  if (msg) {
-    err.textContent = msg;
-    err.style.display = "block";
-  } else {
-    err.style.display = "none";
-  }
+  document.getElementById("errMsg").textContent = msg || "";
+  err.style.display = msg ? "flex" : "none";
+  document
+    .getElementById("numero")
+    .setAttribute("aria-invalid", msg ? "true" : "false");
+  document.getElementById("downloadBtn").disabled = !!msg;
 }
 
 function updateDisabledStates() {
   const modoDecena = document.getElementById("modoDecena").value;
-  document.getElementById("formatoDiez").disabled =
-    modoDecena !== "unidades";
+  const off = modoDecena !== "unidades";
+  document.getElementById("formatoDiez").disabled = off;
+  // Fachada del segmentado + tooltip que explica por qué está desactivado
+  document.getElementById("formatoDiezField").classList.toggle("is-disabled", off);
+  syncSegmented("formatoDiez");
+}
+
+// Resumen que se lee con "Cómo se ve cada pieza" plegado.
+function updatePiezasResumen(opts) {
+  const centena = {
+    bloque: "Centenas en bloque",
+    decenas: "Centenas en 10 decenas",
+    unidades: "Centenas en 100 unidades",
+  }[opts.modoCentena];
+  const decena =
+    opts.modoDecena === "bloque"
+      ? "Decenas en barra"
+      : opts.formatoDiez === "columnas"
+        ? "Decenas en columnas de 5"
+        : "Decenas en columna de 10";
+  document.getElementById("piezasResumen").textContent =
+    `${centena} · ${decena}`;
 }
 
 // ---- Ladrillo básico: un cuadrito "unidad" ----
@@ -199,35 +221,37 @@ function buildDesglose(centenas, decenas, unidades) {
   if (decenas > 0) partes.push(`<span class="d">${decenas} D</span>`);
   if (unidades > 0 || (centenas === 0 && decenas === 0))
     partes.push(`<span class="u">${unidades} U</span>`);
-  return partes.join(" &nbsp;+&nbsp; ");
+  return partes.join('<span class="sep">·</span>');
 }
 
 function render() {
   updateDisabledStates();
   const opts = getOptions();
+  updatePiezasResumen(opts);
 
   if (!/^\d+$/.test(opts.numeroRaw)) {
     showError(
-      "Escribe un número entero mayor o igual a 0 (sin signos, comas ni decimales).",
+      "Escribe solo cifras, sin signos, comas ni decimales. Por ejemplo, 236.",
     );
     return;
   }
   const n = parseInt(opts.numeroRaw, 10);
   if (n > 99999) {
-    showError(
-      "Con números tan grandes la imagen queda enorme. Prueba con un número entre 0 y 99999.",
-    );
+    // Con números más grandes la imagen queda enorme.
+    showError("Escribe un número entre 0 y 99999.");
     return;
   }
   showError(null);
 
   const { svg, centenas, decenas, unidades } = buildSVG(n, opts);
-  document.getElementById("svgHolder").innerHTML = svg;
+  const holder = document.getElementById("svgHolder");
+  holder.innerHTML = svg;
+  holder.setAttribute("aria-label", `Figura del número ${n}`);
 
   const desgloseHolder = document.getElementById("desgloseHolder");
   if (opts.mostrarDesglose) {
     desgloseHolder.innerHTML = buildDesglose(centenas, decenas, unidades);
-    desgloseHolder.style.display = "block";
+    desgloseHolder.style.display = "flex";
   } else {
     desgloseHolder.style.display = "none";
   }
@@ -235,7 +259,7 @@ function render() {
 
 function buildFilename() {
   const numero = document.getElementById("numero").value.trim();
-  return `numero-${numero || "0"}.svg`;
+  return `${numero || "0"}.svg`;
 }
 
 
@@ -263,5 +287,91 @@ async function download() {
 document
   .getElementById("downloadBtn")
   .addEventListener("click", download);
+
+// Enter en el número guarda, como en los otros generadores.
+document.getElementById("numero").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !document.getElementById("downloadBtn").disabled)
+    download();
+});
+
+// ============================================================
+//  Controles segmentados: fachada de los <select> ocultos
+// ============================================================
+// Cada .seg[data-for=id] maneja el <select id=id>: al hacer clic cambia
+// su valor y dispara "change", así render() y download() siguen leyendo
+// .value como siempre. Si el select cambia por otro lado, syncSegmented
+// pone los botones al día.
+function syncSegmented(id) {
+  const select = document.getElementById(id);
+  const seg = document.querySelector(`.seg[data-for="${id}"]`);
+  if (!seg) return;
+  seg.classList.toggle("is-disabled", select.disabled);
+  seg.querySelectorAll("button").forEach((b) => {
+    b.setAttribute("aria-pressed", String(b.dataset.value === select.value));
+    b.disabled = select.disabled;
+  });
+  placeIndicator(seg);
+}
+
+// Con data-animate, la píldora se mueve a la opción elegida. Se mide con
+// offsetLeft/Top porque .seg es su offsetParent (position: relative).
+function placeIndicator(seg) {
+  const ind = seg.querySelector(".segInd");
+  if (!ind) return;
+  const b = seg.querySelector('button[aria-pressed="true"]');
+  if (!b) return;
+  ind.style.left = b.offsetLeft + "px";
+  ind.style.top = b.offsetTop + "px";
+  ind.style.width = b.offsetWidth + "px";
+  ind.style.height = b.offsetHeight + "px";
+}
+
+document.querySelectorAll(".seg[data-for]").forEach((seg) => {
+  const id = seg.dataset.for;
+  const select = document.getElementById(id);
+  if (seg.hasAttribute("data-animate")) {
+    const ind = document.createElement("span");
+    ind.className = "segInd";
+    ind.setAttribute("aria-hidden", "true");
+    seg.prepend(ind);
+    // Al cambiar de distribución (1a ↔ 1b) los botones cambian de tamaño.
+    if (window.ResizeObserver) new ResizeObserver(() => placeIndicator(seg)).observe(seg);
+    // Sin transición en la primera colocación, para que no entre deslizándose.
+    requestAnimationFrame(() => {
+      placeIndicator(seg);
+      requestAnimationFrame(() => ind.classList.add("is-ready"));
+    });
+  }
+  seg.querySelectorAll("button").forEach((b) => {
+    b.addEventListener("click", () => {
+      if (select.disabled || select.value === b.dataset.value) return;
+      select.value = b.dataset.value;
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+  });
+  select.addEventListener("change", () => syncSegmented(id));
+  syncSegmented(id);
+});
+
+// ============================================================
+//  "Cómo se ve cada pieza": plegar / desplegar
+// ============================================================
+// .is-settled llega cuando termina de abrirse: hasta entonces el contenido
+// se recorta (para la animación); después se deja ver el tooltip completo.
+(function () {
+  const piezas = document.getElementById("piezas");
+  const toggle = document.getElementById("piezasToggle");
+  const body = document.getElementById("piezasBody");
+  let timer = null;
+  toggle.addEventListener("click", () => {
+    const open = !piezas.classList.contains("is-open");
+    clearTimeout(timer);
+    piezas.classList.toggle("is-open", open);
+    piezas.classList.remove("is-settled");
+    toggle.setAttribute("aria-expanded", String(open));
+    body.setAttribute("aria-hidden", String(!open));
+    if (open) timer = setTimeout(() => piezas.classList.add("is-settled"), 400);
+  });
+})();
 
 render();

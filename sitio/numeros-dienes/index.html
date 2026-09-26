@@ -2,95 +2,162 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <title>Generador de números con bloques Dienes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Números con bloques Dienes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Fuentes del sistema de diseño "Vesta" (Fraunces = títulos,
+         Poppins = interfaz). Solo afectan a la interfaz, no al SVG. -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="../compartido/vesta.css" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="topbar">
-      <h1>
-        <span class="c">C</span> <span class="d">D</span>
-        <span class="u">U</span> — Generador de números con bloques Dienes
-      </h1>
-      <p>
-        Visualiza un número usando bloques, barras y cuadritos (al estilo del
-        material base diez). Ajusta las opciones y descarga el resultado como
-        SVG.
-      </p>
-    </div>
-
-    <div class="optionsBar">
-      <div class="optionsGroup">
-        <div class="field numero-field">
-          <label for="numero">Número</label>
-          <input type="text" id="numero" value="236" placeholder="Ej. 236" />
+    <!-- Una sola página con dos distribuciones del diseño de Vesta, según el
+         ancho (ver style.css): panel lateral (1b) en pantallas anchas y filas
+         (1a) en las angostas. El DOM es el mismo; solo cambia el CSS. -->
+    <div class="page">
+      <!-- Iconos (descargar, flecha, alerta) de Lucide/Feather, licencia
+           ISC/MIT: ver AVISOS-DE-TERCEROS.md en la raíz del repositorio. -->
+      <header class="header">
+        <div class="headerText">
+          <h1>Números con bloques Dienes</h1>
+          <p>
+            Escribe un número, elige cómo se ve cada pieza y guárdalo como SVG
+            para pegarlo en tu presentación.
+          </p>
         </div>
+        <button type="button" class="btn btn-primary" id="downloadBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Guardar SVG…
+        </button>
+      </header>
 
-        <div class="field">
-          <label for="tamano">Tamaño del cuadrito</label>
-          <select id="tamano">
-            <option value="14">Pequeño</option>
-            <option value="20" selected>Mediano</option>
-            <option value="28">Grande</option>
-          </select>
-        </div>
+      <div class="layout">
+        <!-- Controles. Los segmentados son fachada de los <select> ocultos:
+             el script sigue leyendo #tamano, #modoCentena, #modoDecena y
+             #formatoDiez, así que esos ids no se pueden quitar. -->
+        <aside class="panel">
+          <div class="field fNumero">
+            <div class="labelRow">
+              <label class="fieldLabel" for="numero">Número</label>
+              <span class="fieldHint">De 0 a 99999</span>
+            </div>
+            <input class="input" type="text" id="numero" value="236" inputmode="numeric" autocomplete="off" />
+          </div>
 
-        <div class="field">
-          <label for="modoCentena">Las centenas se muestran como…</label>
-          <select id="modoCentena">
-            <option value="bloque" selected>Una sola centena (bloque)</option>
-            <option value="decenas">10 decenas</option>
-            <option value="unidades">100 unidades</option>
-          </select>
-        </div>
+          <div class="field fTamano">
+            <span class="fieldLabel" id="tamanoLabel">Tamaño del cuadrito</span>
+            <div class="seg segFill1b" role="group" aria-labelledby="tamanoLabel" data-for="tamano">
+              <button type="button" data-value="14">Pequeño</button>
+              <button type="button" data-value="20">Mediano</button>
+              <button type="button" data-value="28">Grande</button>
+            </div>
+            <select id="tamano" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+              <option value="14">Pequeño</option>
+              <option value="20" selected>Mediano</option>
+              <option value="28">Grande</option>
+            </select>
+          </div>
 
-        <div class="field">
-          <label for="modoDecena">Las decenas se muestran como…</label>
-          <select id="modoDecena">
-            <option value="bloque" selected>Una sola decena (barra)</option>
-            <option value="unidades">10 unidades</option>
-          </select>
-        </div>
+          <div class="fDesglose">
+            <label class="switch">
+              <input type="checkbox" role="switch" id="mostrarDesglose" checked />
+              <span class="switchTrack" aria-hidden="true"></span>
+              Mostrar desglose C D U
+            </label>
+          </div>
 
-        <div class="field">
-          <label for="formatoDiez">Si es 10 unidades, acomodarlas en…</label>
-          <select id="formatoDiez">
-            <option value="columna" selected>1 columna de 10</option>
-            <option value="columnas">2 columnas de 5</option>
-          </select>
-        </div>
+          <!-- "Cómo se ve cada pieza": sección plegable (cerrada al abrir). -->
+          <section class="piezas" id="piezas">
+            <button type="button" class="piezasToggle" id="piezasToggle" aria-expanded="false" aria-controls="piezasBody">
+              <span class="piezasTitulo">
+                <span class="eyebrow">Cómo se ve cada pieza</span>
+                <span id="piezasResumen">Centenas en bloque · Decenas en barra</span>
+              </span>
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="piezasBody" id="piezasBody" aria-hidden="true">
+              <div class="piezasClip">
+                <div class="piezasInner">
+                  <p class="nota">
+                    «Las decenas se muestran como» también cambia las decenas
+                    dentro de una centena desglosada en 10 decenas.
+                  </p>
+                  <div class="piezasGrid">
+                    <div class="field">
+                      <span class="fieldLabel" id="modoCentenaLabel">Las centenas se muestran como</span>
+                      <div class="seg segFill" role="group" aria-labelledby="modoCentenaLabel" data-for="modoCentena" data-animate>
+                        <button type="button" data-value="bloque">Bloque</button>
+                        <button type="button" data-value="decenas">10 <br />decenas</button>
+                        <button type="button" data-value="unidades">100 <br />unidades</button>
+                      </div>
+                      <select id="modoCentena" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+                        <option value="bloque" selected>Bloque</option>
+                        <option value="decenas">10 decenas</option>
+                        <option value="unidades">100 unidades</option>
+                      </select>
+                    </div>
+
+                    <div class="field">
+                      <span class="fieldLabel" id="modoDecenaLabel">Las decenas se muestran como</span>
+                      <div class="seg segFill" role="group" aria-labelledby="modoDecenaLabel" data-for="modoDecena" data-animate>
+                        <button type="button" data-value="bloque">Barra</button>
+                        <button type="button" data-value="unidades">10 <br />unidades</button>
+                      </div>
+                      <select id="modoDecena" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+                        <option value="bloque" selected>Barra</option>
+                        <option value="unidades">10 unidades</option>
+                      </select>
+                    </div>
+
+                    <!-- Solo aplica cuando la decena se dibuja como 10 unidades;
+                         si no, se desactiva y el aviso lo explica. -->
+                    <div class="field tip" id="formatoDiezField">
+                      <span class="fieldLabel" id="formatoDiezLabel">10 unidades se acomodan en</span>
+                      <div class="seg segFill" role="group" aria-labelledby="formatoDiezLabel" data-for="formatoDiez" data-animate>
+                        <button type="button" data-value="columna">Columna de <br />10</button>
+                        <button type="button" data-value="columnas">Columnas de <br />5</button>
+                      </div>
+                      <select id="formatoDiez" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+                        <option value="columna" selected>Columna de 10</option>
+                        <option value="columnas">Columnas de 5</option>
+                      </select>
+                      <span class="tipText" role="tooltip">Disponible cuando las decenas se muestran como 10 unidades.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </aside>
+
+        <!-- Previsualización -->
+        <main class="preview">
+          <!-- #err es el contenedor que el script muestra u oculta; el
+               mensaje va en #errMsg para no borrar el título. -->
+          <div id="err" class="callout error" role="alert">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+            <div>
+              <strong>No se puede generar la figura</strong>
+              <span id="errMsg"></span>
+            </div>
+          </div>
+          <div class="stage">
+            <div id="svgHolder" role="img" aria-label="Figura del número"></div>
+            <div id="desgloseHolder" class="desglose" aria-label="Desglose"></div>
+          </div>
+        </main>
       </div>
 
-      <div class="optionsGroup checkboxRow">
-        <div class="checkrow">
-          <input type="checkbox" id="mostrarDesglose" checked />
-          <label for="mostrarDesglose">Mostrar desglose C D U</label>
-        </div>
-      </div>
-
-      <div class="downloadArea">
-        <button class="downloadBtn" id="downloadBtn">Guardar SVG…</button>
-        <div id="err" class="error"></div>
-      </div>
-    </div>
-
-    <div
-      class="topbar"
-      style="border-bottom: none; padding-top: 0; padding-bottom: 12px"
-    >
-      <p class="hint">
-        "Las decenas se muestran como…" también controla cómo se ven las decenas
-        cuando una centena se desglosa en "10 decenas". La opción "columna /
-        columnas" solo tiene efecto cuando una decena se muestra como 10
-        unidades.
-      </p>
-    </div>
-
-    <div class="stage">
-      <div class="stage-inner">
-        <div id="svgHolder"></div>
-      </div>
-      <div id="desgloseHolder" class="desglose"></div>
+      <!-- Pie: derechos de autor y licencia, alineados a la izquierda. -->
+      <footer class="pie">
+        © 2026 Néstor A. López ·
+        <a href="../licencia/index.html">Licencia CC BY-NC 4.0</a>
+      </footer>
     </div>
 
     <script src="../compartido/guardar-svg.js" defer></script>
