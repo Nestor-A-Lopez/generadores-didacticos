@@ -10,6 +10,8 @@ Generadores de figuras matemáticas para clase (fracciones, material base 10, ta
 
 ```
 README.md  CLAUDE.md  .gitignore
+LICENSE                         ← CC BY-NC 4.0 (texto oficial), con la excepción de terceros
+AVISOS-DE-TERCEROS.md           ← material de terceros: qué es, de dónde viene, licencia y dónde está
 .github/workflows/pages.yml     ← publica sitio/ en GitHub Pages
 .claude/skills/vesta/           ← sistema de diseño Vesta (copia local, como skill)
 herramientas/                   ← no se publican
@@ -30,6 +32,7 @@ Los SVG generados **no** viven en el repositorio: se guardan en `_recursos/figur
 1. **Todo se desarrolla en HTML/CSS/JS.** LaTeX/TikZ quedó retirado: ya no hay `.tex`, no se compila nada y no se convierte de PDF a SVG. Si aparece un `.tex` o una carpeta `temp/`, es un resto que se puede eliminar (preguntando antes).
 2. **Cada generador son tres archivos propios**: un HTML, un CSS y un JS, y además carga lo que está en `sitio/compartido/` (ver «Arquitectura de un generador» y «Carpeta compartida»). Los seis generadores ya están separados (2026-09-26). En los `CLAUDE.md` de las subcarpetas, «el script» es su `script.js` y «la interfaz» su `index.html` + `style.css`.
 3. **Se permiten dependencias externas** en la aplicación (librerías por CDN, fuentes, iconos). Lo que **no** cambia: el SVG exportado sigue siendo autosuficiente (ver «Reglas transversales»).
+4. **Licencia: CC BY-NC 4.0** (`LICENSE`, © 2026 Néstor A. López), salvo el material de terceros, que conserva la suya: los contornos BaKoMa de `glifos.js` y `glifos-tabla.js`, y los iconos de Lucide/Feather incrustados en los `index.html`. **Todo material de terceros nuevo** (iconos, fuentes, imágenes, código copiado) se registra en `AVISOS-DE-TERCEROS.md` en el mismo commit en que entra: qué es, de dónde viene, su licencia (con el texto si pide conservar el aviso) y dónde está. Lo que solo se enlaza por CDN va en su tabla «Enlazado, no incluido». No se agrega nada cuya licencia no permita redistribuirlo; si hace falta como referencia local, va en `.gitignore`. El aviso de BaKoMa va en la cabecera de los dos archivos de glifos; el de `glifos.js` lo escribe `extraer_glifos.py`, así que se cambia ahí.
 
 ## Arquitectura de un generador
 
@@ -164,7 +167,10 @@ Aplican a todos los generadores (el detalle y el porqué están en el `CLAUDE.md
 
 Objetivo: un solo sitio con una portada que enlace a todos los generadores. GitHub Pages sirve archivos estáticos tal cual, sin compilación.
 
-- Portada: `sitio/index.html` + `sitio/style.css`, con una tarjeta por generador. Sale del diseño «Menú de generadores» de Vesta, pasado a HTML/CSS estáticos (sin React ni `_ds_bundle.js`), con los iconos de Lucide 0.544.0 incrustados como `<svg>` para que también funcione con doble clic y sin red. Enlaza a `<carpeta>/index.html` (no a `<carpeta>/`) por lo mismo: con `file://` una carpeta no abre su `index.html`.
+**Está en línea** desde el 2026-09-26: https://nestor-a-lopez.github.io/generadores-didacticos/ (repositorio público `Nestor-A-Lopez/generadores-didacticos`, Pages con «Source: GitHub Actions»). Cada push a `main` lo vuelve a publicar.
+
+
+- Portada: `sitio/index.html` + `sitio/style.css`, con una tarjeta por generador. Sale del diseño «Menú de generadores» de Vesta, pasado a HTML/CSS estáticos (sin React ni `_ds_bundle.js`), con los iconos de Lucide 0.544.0 incrustados como `<svg>` para que también funcione con doble clic y sin red. El pie lleva la licencia (enlace a la CC BY-NC 4.0) y el enlace al repositorio. Enlaza a `<carpeta>/index.html` (no a `<carpeta>/`) por lo mismo: con `file://` una carpeta no abre su `index.html`.
 - Cada generador queda en `sitio/<carpeta>/`, así su URL es `…/generadores-didacticos/<carpeta>/`; `compartido/` se publica junto a ellos.
 - Publicación: `.github/workflows/pages.yml` (en cada push a `main`, o a mano). Copia `sitio/` a `_site/`, borra de la copia los `CLAUDE.md` (y cualquier SVG suelto) y la publica con las acciones oficiales (`configure-pages`, `upload-pages-artifact`, `deploy-pages`), fijadas por commit con la versión en un comentario. Nada fuera de `sitio/` se publica. En GitHub hay que elegir «Settings → Pages → Source: GitHub Actions».
 - **Los SVG generados no están en el repositorio** (se guardan en `_recursos/figuras/`) ni en el sitio. `*.svg`/`*.SVG` siguen en `.gitignore` por si alguno se guarda aquí por error.
@@ -173,8 +179,7 @@ Objetivo: un solo sitio con una portada que enlace a todos los generadores. GitH
 
 En este orden, y preguntando antes de mover o borrar:
 
-1. **Publicar**: crear el repositorio en GitHub, hacer `git push` y activar Pages (lo hace el usuario).
-2. **Vesta**: mantener sincronizada la copia local con la de claude.ai. En la de claude.ai el componente `Icon` carga Lucide desde jsDelivr; la copia local sigue usando unpkg (misma versión).
+1. **Vesta**: mantener sincronizada la copia local con la de claude.ai. En la de claude.ai el componente `Icon` carga Lucide desde jsDelivr; la copia local sigue usando unpkg (misma versión). Además, en la copia local `assets/reference-palette.png` es desde el 2026-09-26 una muestra propia de los cuatro colores, no la captura de Color Hunt; falta llevar ese cambio a claude.ai.
 
 ## Cómo trabajar aquí
 

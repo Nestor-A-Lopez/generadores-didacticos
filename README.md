@@ -22,3 +22,12 @@ Herramientas para crear figuras de matemáticas para la clase. Eliges los valore
 Funciona mejor en Chrome o Edge, que te dejan elegir la carpeta donde se guarda cada SVG. Sin internet, la interfaz usa otras letras, pero las figuras salen iguales.
 
 No separes la carpeta de un generador del resto: todos usan la carpeta `sitio/compartido/`.
+
+## Licencia
+
+El contenido de este repositorio está bajo la licencia [Creative Commons Atribución-NoComercial 4.0 Internacional (CC BY-NC 4.0)](LICENSE). © 2026 Néstor A. López.
+
+- **Puedes** usar, copiar, compartir y adaptar los generadores, por ejemplo en tus clases, siempre que des crédito al autor y enlaces a la licencia.
+- **No puedes** usarlos con fines comerciales, por ejemplo venderlos o incluirlos en un producto de pago.
+
+Los contornos de las letras (fuentes BaKoMa) y los iconos de la interfaz (Lucide) son de terceros y tienen su propia licencia: ver [AVISOS-DE-TERCEROS.md](AVISOS-DE-TERCEROS.md).

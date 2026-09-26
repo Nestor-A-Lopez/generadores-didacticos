@@ -16,7 +16,7 @@ El rasgo que define el sistema: **una ecuación insertada en un titular nunca de
 
 | Fuente | Ruta en el proyecto | Qué aportó |
 | --- | --- | --- |
-| Paleta de Color Hunt `e3f2fd / 90caf9 / 2196f3 / 0d47a1` | `assets/reference-palette.png` | La rampa azul completa del sistema. |
+| Paleta de Color Hunt `e3f2fd / 90caf9 / 2196f3 / 0d47a1` | `assets/reference-palette.png` (muestra propia de esos cuatro colores, no la captura de Color Hunt) | La rampa azul completa del sistema. |
 | Ilustración de referencia (portada genérica con formas recortadas azules) | `assets/reference-landing-mood.jpg` | El **motivo de capas** y el contraste blanco/azul. Es una imagen de banco, **no** un activo de marca: no la uses en producción. No está en el repositorio público (licencia del banco de imágenes): solo existe en la copia local. |
 | Notas de marca (tipografía, audiencia, tono) | Briefing en el chat | Fraunces / Poppins / STIX Two Math; audiencia 12+; mínimos de legibilidad. |
 
@@ -181,4 +181,4 @@ Ocho tipos a 1280×720 (`TitleSlide`, `SectionSlide`, `ConceptSlide`, `FormulaSl
 17 tarjetas de especimen que pueblan la pestaña Design System, agrupadas en **Colors**, **Type**, **Spacing** y **Brand**.
 
 ### Activos — `assets/`
-`reference-palette.png` y `reference-landing-mood.jpg`: las dos referencias entregadas, guardadas como procedencia (el `.jpg` solo en la copia local; no se sube a GitHub por su licencia). **No hay logotipo ni imágenes de producto.**
+`reference-palette.png` y `reference-landing-mood.jpg`: las dos referencias entregadas, guardadas como procedencia (el `.jpg` solo en la copia local; no se sube a GitHub por su licencia). `reference-palette.png` se rehízo el 2026-09-26 como muestra propia de los cuatro colores, en franjas iguales, para no redistribuir la captura de Color Hunt. **No hay logotipo ni imágenes de producto.**

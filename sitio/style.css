@@ -259,6 +259,24 @@ body {
   color: var(--text-muted);
 }
 
+/* Enlaces del pie (licencia y repositorio): discretos, del mismo gris que
+   el texto; toman el azul de marca al pasar el cursor. */
+.pie a {
+  color: inherit;
+  text-underline-offset: 3px;
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+.pie a:hover {
+  color: var(--text-brand);
+}
+
+.pie a:focus-visible {
+  outline: none;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--ring-focus);
+}
+
 /* ---------- Pantallas angostas ---------- */
 @media (max-width: 640px) {
   .barra,

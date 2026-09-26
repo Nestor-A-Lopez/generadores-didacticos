@@ -223,6 +223,29 @@ CABECERA = """\
 // Formato: { upm, r: {car: [avance, yMin, yMax, "d"]}, i: {...} } en
 // unidades de fuente con y hacia ARRIBA; r = recto, i = cursiva
 // matemática; "d" solo usa M/L/Q/Z con pares x y alternados.
+//
+// Licencia: los contornos salen de las fuentes BaKoMa (Computer Modern en
+// TrueType) que trae matplotlib y NO quedan bajo la CC BY-NC 4.0 del
+// repositorio; ver AVISOS-DE-TERCEROS.md. Aviso original de BaKoMa:
+//
+//   Copyright (C) 1994, 1995, Basil K. Malyshev. All Rights Reserved.
+//
+//   Permission to copy and distribute these fonts for any purpose is
+//   hereby granted without fee, provided that the above copyright notice,
+//   author statement and this permission notice appear in all copies of
+//   these fonts and related documentation.
+//
+//   Permission to modify and distribute modified fonts for any purpose is
+//   hereby granted without fee, provided that the copyright notice,
+//   author statement, this permission notice and location of original
+//   fonts (http://www.ctan.org/tex-archive/fonts/cm/ps-type1/bakoma)
+//   appear in all copies of modified fonts and related documentation.
+//
+//   Permission to use these fonts (embedding into PostScript, PDF, SVG
+//   and printing by using any software) is hereby granted without fee.
+//   It is not required to provide any notices about using these fonts.
+//
+//   Basil K. Malyshev, Institute for High Energy Physics (IHEP), Protvino
 // ---------------------------------------------------------------
 window.Banco = window.Banco || {};
 """
