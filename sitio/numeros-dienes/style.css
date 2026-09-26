@@ -216,17 +216,15 @@ body {
   font-size: var(--text-sm);
   font-weight: var(--weight-medium);
   line-height: 1.2;
-  white-space: nowrap;
+  /* En una línea si cabe; si la barra se estrecha, el texto se parte
+     (balanceado: «100 / unidades»). */
+  text-wrap: balance;
   background: transparent;
   color: var(--text-body);
   cursor: pointer;
   transition:
     background var(--duration-fast) var(--ease-out),
     color 220ms var(--ease-out);
-}
-/* Los saltos de línea de las etiquetas solo se usan en el panel lateral. */
-.seg br {
-  display: none;
 }
 .seg button[aria-pressed="true"] {
   background: var(--action-primary);
@@ -254,8 +252,11 @@ body {
     height 220ms var(--ease-out),
     background 140ms var(--ease-out);
 }
+/* Ocupan todo el ancho: cada botón parte del ancho de su texto y se
+   reparten lo que sobra. (Con anchos iguales, «100 unidades» no cabría en
+   una línea en el panel lateral.) */
 .seg.segFill button {
-  flex: 1 1 0;
+  flex: 1 1 auto;
 }
 /* Desactivado (formatoDiez cuando la decena es una barra). */
 .seg button:disabled {
@@ -595,7 +596,11 @@ body {
   .fNumero {
     flex: 1 1 100%;
   }
+  /* Puede encogerse: si no cabe, la barra de la descomposición parte su
+     texto en vez de desbordar la página. */
   .fMostrar {
+    flex: 1 1 100%;
+    min-width: 0;
     padding-top: 0;
   }
   .stage {
@@ -606,13 +611,6 @@ body {
     white-space: normal;
     width: max-content;
     max-width: 100%;
-  }
-}
-
-/* Teléfono angosto: "100 unidades" y compañía ya no caben en una línea. */
-@media (max-width: 399px) {
-  .seg br {
-    display: inline;
   }
 }
 
@@ -647,11 +645,6 @@ body {
   .fMostrar {
     order: 1; /* los interruptores van al final, después de las piezas */
     padding-top: 0;
-  }
-  /* Aquí las etiquetas largas se parten en dos líneas y las opciones
-     ocupan todo el ancho del panel (.segFill). */
-  .seg br {
-    display: inline;
   }
   .piezasGrid {
     grid-auto-flow: row;
