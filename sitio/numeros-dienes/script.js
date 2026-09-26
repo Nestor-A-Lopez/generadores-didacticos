@@ -40,6 +40,7 @@ function getOptions() {
   const modoDescomposicion =
     document.getElementById("modoDescomposicion").value; // unidades | jerarquia
   const colorValor = document.getElementById("colorValor").value; // negro | color
+  const colorDesc = document.getElementById("colorDesc").value; // negro | color
   const colores = {
     u: colorElegido("u"),
     d: colorElegido("d"),
@@ -55,6 +56,7 @@ function getOptions() {
     mostrarValor,
     colorValor,
     mostrarDesglose,
+    colorDesc,
     modoDescomposicion,
     colores,
   };
@@ -98,6 +100,7 @@ function updateDisabledStates() {
   document
     .getElementById("descOpcion")
     .classList.toggle("is-hidden", !document.getElementById("mostrarDesglose").checked);
+  syncSegmented("colorDesc");
   syncSegmented("modoDescomposicion");
 }
 
@@ -287,10 +290,12 @@ const glyphRunSvg = Banco.glyphRunSvg;
 
 // Línea bajo la figura (solo en la vista previa, no va en el SVG
 // exportado), como en LaTeX, con glifos de Computer Modern:
-//   valor:            $236$, en negro o cada cifra con el color de su pieza
+//   valor:            $236$
 //   descomposición:   $200 + 30 + 6$ (valor en unidades) o
 //                     $2\,\mathrm{C} + 3\,\mathrm{D} + 6\,\mathrm{U}$ (jerarquía)
-//   las dos:          $236 = 200 + 30 + 6$
+//   las dos:          $200 + 30 + 6 = 236$ (el valor, a la derecha)
+// El valor y la descomposición van cada uno en negro («Negro», por
+// defecto) o con el color de cada pieza («Color»).
 // Las partes en cero no se escriben (205 = 200 + 5). Los signos + e =, en
 // negro. Espacios de TeX: \, (3mu) entre cifra y letra, 4mu alrededor del
 // + y 5mu alrededor del =.
@@ -308,26 +313,17 @@ function buildLectura(n, centenas, decenas, unidades, opts) {
     espacio = 0;
   };
 
-  if (opts.mostrarValor) {
-    // «Negro» (por defecto) o «Color»: cada cifra con el color de su
-    // bloque, de derecha a izquierda: unidades, decenas, centenas.
-    const colores =
-      opts.colorValor === "color"
-        ? [opts.colores.u, opts.colores.d, opts.colores.c]
-        : [NEGRO, NEGRO, NEGRO];
-    const cifras = String(n);
-    [...cifras].forEach((ch, i) => poner(ch, colores[cifras.length - 1 - i]));
-  }
-  if (opts.mostrarValor && opts.mostrarDesglose) {
-    poner("=", NEGRO, 5);
-    espacio = 5;
-  }
+  // Color de cada pieza, o negro para todas
+  const tinta = (modo) =>
+    modo === "color" ? opts.colores : { u: NEGRO, d: NEGRO, c: NEGRO };
+
   if (opts.mostrarDesglose) {
+    const col = tinta(opts.colorDesc);
     const partes = [];
-    if (centenas > 0) partes.push([centenas, 100, "C", opts.colores.c]);
-    if (decenas > 0) partes.push([decenas, 10, "D", opts.colores.d]);
+    if (centenas > 0) partes.push([centenas, 100, "C", col.c]);
+    if (decenas > 0) partes.push([decenas, 10, "D", col.d]);
     if (unidades > 0 || partes.length === 0)
-      partes.push([unidades, 1, "U", opts.colores.u]);
+      partes.push([unidades, 1, "U", col.u]);
     partes.forEach(([cifra, valor, letra, color], i) => {
       if (i > 0) {
         poner("+", NEGRO, 4);
@@ -340,6 +336,17 @@ function buildLectura(n, centenas, decenas, unidades, opts) {
         poner(String(cifra * valor), color);
       }
     });
+  }
+  if (opts.mostrarValor && opts.mostrarDesglose) {
+    poner("=", NEGRO, 5);
+    espacio = 5;
+  }
+  if (opts.mostrarValor) {
+    // De derecha a izquierda: unidades, decenas, centenas
+    const col = tinta(opts.colorValor);
+    const colores = [col.u, col.d, col.c];
+    const cifras = String(n);
+    [...cifras].forEach((ch, i) => poner(ch, colores[cifras.length - 1 - i]));
   }
 
   // Alto de la línea: el de todos los glifos que aparecen, más + y =
@@ -421,6 +428,7 @@ async function download() {
   "filasCentenas",
   "mostrarValor",
   "colorValor",
+  "colorDesc",
   "mostrarDesglose",
   "modoDescomposicion",
 ].forEach((id) => {
@@ -544,7 +552,7 @@ document.querySelectorAll(".seg[data-for]").forEach((seg) => {
     );
     celda.querySelector(".swatchTip").textContent = tieneColor
       ? "Haz clic para cambiar este color. Para volver al original, elige el primer bloque."
-      : `Elige otro color para ${NOMBRE[p]}. Se usa en la figura, el valor y la descomposición.`;
+      : `Elige otro color para el relleno de ${NOMBRE[p]}`;
   }
 
   document.querySelectorAll(".colorPieza").forEach((celda) => {

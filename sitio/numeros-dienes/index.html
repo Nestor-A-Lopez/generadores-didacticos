@@ -39,7 +39,8 @@
       <div class="layout">
         <!-- Controles. Los segmentados son fachada de los <select> ocultos:
              el script sigue leyendo #filasCentenas, #modoCentena, #modoDecena,
-             #formatoDiez, #colorValor y #modoDescomposicion, así que esos ids no se pueden quitar. -->
+             #formatoDiez, #colorValor, #colorDesc y
+             #modoDescomposicion, así que esos ids no se pueden quitar. -->
         <aside class="panel">
           <div class="field fNumero">
             <div class="labelRow">
@@ -59,8 +60,7 @@
             </label>
             <!-- Solo se ve con «Mostrar valor» activado. -->
             <div class="field subOpcion" id="valorOpcion">
-              <span class="fieldLabel" id="colorValorLabel">Las cifras del valor van en</span>
-              <div class="seg segFill" role="group" aria-labelledby="colorValorLabel" data-for="colorValor" data-animate>
+              <div class="seg segFill" role="group" aria-label="Color de las cifras del valor" data-for="colorValor" data-animate>
                 <button type="button" data-value="negro">Negro</button>
                 <button type="button" data-value="color">Color</button>
               </div>
@@ -78,8 +78,15 @@
             </label>
             <!-- Solo se ve con «Mostrar descomposición» activado. -->
             <div class="field subOpcion" id="descOpcion">
-              <span class="fieldLabel" id="modoDescomposicionLabel">Cada cifra se escribe con su</span>
-              <div class="seg segFill" role="group" aria-labelledby="modoDescomposicionLabel" data-for="modoDescomposicion" data-animate>
+              <div class="seg segFill" role="group" aria-label="Color de la descomposición" data-for="colorDesc" data-animate>
+                <button type="button" data-value="negro">Negro</button>
+                <button type="button" data-value="color">Color</button>
+              </div>
+              <select id="colorDesc" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+                <option value="negro" selected>Negro</option>
+                <option value="color">Color</option>
+              </select>
+              <div class="seg segFill" role="group" aria-label="Cada cifra se escribe con su valor en unidades o con su jerarquía" data-for="modoDescomposicion" data-animate>
                 <button type="button" data-value="unidades">Valor en unidades</button>
                 <button type="button" data-value="jerarquia">Jerarquía</button>
               </div>
@@ -220,7 +227,7 @@
         </main>
       </div>
 
-      <!-- Pie: derechos de autor y licencia, alineados a la izquierda. -->
+      <!-- Pie: derechos de autor y licencia, alineados a la derecha. -->
       <footer class="pie">
         © 2026 Néstor A. López ·
         <a href="../licencia/index.html">Licencia CC BY-NC 4.0</a>

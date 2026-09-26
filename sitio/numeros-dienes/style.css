@@ -626,7 +626,7 @@ body {
   height: auto;
 }
 
-/* ---- Pie (mismo estilo que el de la portada) ----
+/* ---- Pie (mismo estilo que el de la portada, alineado a la derecha) ----
    margin-top: auto lo manda al fondo cuando la página es más corta que
    la ventana. */
 .pie {
@@ -635,7 +635,7 @@ body {
   border-top: 1px solid var(--border-subtle);
   font-size: var(--text-sm);
   color: var(--text-muted);
-  text-align: left;
+  text-align: right;
 }
 .pie a {
   color: inherit;
