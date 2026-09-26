@@ -2,6 +2,8 @@
 
 El repositorio está bajo la licencia [CC BY-NC 4.0](LICENSE), **excepto** el material de terceros de esta lista, que conserva su propia licencia. Todo material de terceros que se agregue tiene que registrarse aquí.
 
+El sitio publicado reproduce estos avisos en su página «Licencia y avisos» (`sitio/licencia/index.html`), porque incluye copias de los glifos y los iconos. Si cambia un aviso aquí, se cambia también ahí.
+
 ## Incluido en el repositorio
 
 ### Contornos de Computer Modern (fuentes BaKoMa)

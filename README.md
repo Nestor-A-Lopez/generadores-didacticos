@@ -30,4 +30,4 @@ El contenido de este repositorio está bajo la licencia [Creative Commons Atribu
 - **Puedes** usar, copiar, compartir y adaptar los generadores, por ejemplo en tus clases, siempre que des crédito al autor y enlaces a la licencia.
 - **No puedes** usarlos con fines comerciales, por ejemplo venderlos o incluirlos en un producto de pago.
 
-Los contornos de las letras (fuentes BaKoMa) y los iconos de la interfaz (Lucide) son de terceros y tienen su propia licencia: ver [AVISOS-DE-TERCEROS.md](AVISOS-DE-TERCEROS.md).
+Los contornos de las letras (fuentes BaKoMa) y los iconos de la interfaz (Lucide) son de terceros y tienen su propia licencia: ver [AVISOS-DE-TERCEROS.md](AVISOS-DE-TERCEROS.md). En el sitio, lo mismo está en la página [Licencia y avisos](https://nestor-a-lopez.github.io/generadores-didacticos/licencia/).
