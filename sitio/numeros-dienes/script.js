@@ -505,25 +505,24 @@ document.querySelectorAll(".seg[data-for]").forEach((seg) => {
 });
 
 // ============================================================
-//  "Cómo se ve cada pieza": plegar / desplegar
+//  Secciones plegables ("Valor y descomposición", "Cómo se ve cada pieza")
 // ============================================================
 // .is-settled llega cuando termina de abrirse: hasta entonces el contenido
-// se recorta (para la animación); después se deja ver el tooltip completo.
-(function () {
-  const piezas = document.getElementById("piezas");
-  const toggle = document.getElementById("piezasToggle");
-  const body = document.getElementById("piezasBody");
+// se recorta (para la animación); después se dejan ver los avisos completos.
+document.querySelectorAll(".plegable").forEach((seccion) => {
+  const toggle = seccion.querySelector(".plegableToggle");
+  const body = seccion.querySelector(".plegableBody");
   let timer = null;
   toggle.addEventListener("click", () => {
-    const open = !piezas.classList.contains("is-open");
+    const open = !seccion.classList.contains("is-open");
     clearTimeout(timer);
-    piezas.classList.toggle("is-open", open);
-    piezas.classList.remove("is-settled");
+    seccion.classList.toggle("is-open", open);
+    seccion.classList.remove("is-settled");
     toggle.setAttribute("aria-expanded", String(open));
     body.setAttribute("aria-hidden", String(!open));
-    if (open) timer = setTimeout(() => piezas.classList.add("is-settled"), 400);
+    if (open) timer = setTimeout(() => seccion.classList.add("is-settled"), 400);
   });
-})();
+});
 
 // ============================================================
 //  "Color de los bloques": un color por pieza

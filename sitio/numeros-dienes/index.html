@@ -61,64 +61,17 @@
             <input class="input" type="text" id="numero" value="236" inputmode="numeric" autocomplete="off" />
           </div>
 
-          <!-- Lo que se escribe debajo de la figura (solo en la vista previa,
-               no va en el SVG). Con los dos activados: valor = descomposición. -->
-          <div class="fMostrar">
-            <label class="switch">
-              <input type="checkbox" role="switch" id="mostrarValor" />
-              <span class="switchTrack" aria-hidden="true"></span>
-              Mostrar valor
-            </label>
-            <!-- Solo se ve con «Mostrar valor» activado. -->
-            <div class="field subOpcion" id="valorOpcion">
-              <div class="seg segFill" role="group" aria-label="Color de las cifras del valor" data-for="colorValor" data-animate>
-                <button type="button" data-value="negro">Negro</button>
-                <button type="button" data-value="color">Color</button>
-              </div>
-              <select id="colorValor" class="visuallyHidden" tabindex="-1" aria-hidden="true">
-                <option value="negro" selected>Negro</option>
-                <option value="color">Color</option>
-              </select>
-            </div>
-            <!-- El id sigue siendo mostrarDesglose: lo usan el script y
-                 herramientas/verificar-svg.js. -->
-            <label class="switch">
-              <input type="checkbox" role="switch" id="mostrarDesglose" />
-              <span class="switchTrack" aria-hidden="true"></span>
-              Mostrar descomposición
-            </label>
-            <!-- Solo se ve con «Mostrar descomposición» activado. -->
-            <div class="field subOpcion" id="descOpcion">
-              <div class="seg segFill" role="group" aria-label="Color de la descomposición" data-for="colorDesc" data-animate>
-                <button type="button" data-value="negro">Negro</button>
-                <button type="button" data-value="color">Color</button>
-              </div>
-              <select id="colorDesc" class="visuallyHidden" tabindex="-1" aria-hidden="true">
-                <option value="negro" selected>Negro</option>
-                <option value="color">Color</option>
-              </select>
-              <div class="seg segFill" role="group" aria-label="Cada cifra se escribe con su valor en unidades o con su jerarquía" data-for="modoDescomposicion" data-animate>
-                <button type="button" data-value="unidades">Valor en unidades</button>
-                <button type="button" data-value="jerarquia">Jerarquía</button>
-              </div>
-              <select id="modoDescomposicion" class="visuallyHidden" tabindex="-1" aria-hidden="true">
-                <option value="unidades" selected>Valor en unidades</option>
-                <option value="jerarquia">Jerarquía</option>
-              </select>
-            </div>
-          </div>
-
           <!-- "Cómo se ve cada pieza": sección plegable (cerrada al abrir). -->
-          <section class="piezas" id="piezas">
-            <button type="button" class="piezasToggle" id="piezasToggle" aria-expanded="false" aria-controls="piezasBody">
-              <span class="piezasTitulo">
+          <section class="plegable" id="piezas">
+            <button type="button" class="plegableToggle" id="piezasToggle" aria-expanded="false" aria-controls="piezasBody">
+              <span class="plegableTitulo">
                 <span class="eyebrow">Cómo se ve cada pieza</span>
               </span>
               <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
             </button>
-            <div class="piezasBody" id="piezasBody" aria-hidden="true">
-              <div class="piezasClip">
-                <div class="piezasInner">
+            <div class="plegableBody" id="piezasBody" aria-hidden="true">
+              <div class="plegableClip">
+                <div class="plegableInner">
                   <div class="piezasGrid">
                     <div class="field">
                       <span class="fieldLabel" id="modoDecenaLabel">Las decenas se acomodan como</span>
@@ -210,6 +163,68 @@
                           </div>
                         </div>
                       </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- "Valor y descomposición": sección plegable (cerrada al abrir).
+               Lo que se escribe debajo de la figura (solo en la vista previa,
+               no va en el SVG). Con los dos activados: descomposición = valor. -->
+          <section class="plegable" id="mostrar">
+            <button type="button" class="plegableToggle" id="mostrarToggle" aria-expanded="false" aria-controls="mostrarBody">
+              <span class="plegableTitulo">
+                <span class="eyebrow">Valor y descomposición</span>
+              </span>
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="plegableBody" id="mostrarBody" aria-hidden="true">
+              <div class="plegableClip">
+                <div class="plegableInner">
+                  <div class="fMostrar">
+                    <label class="switch">
+                      <input type="checkbox" role="switch" id="mostrarValor" />
+                      <span class="switchTrack" aria-hidden="true"></span>
+                      Mostrar valor
+                    </label>
+                    <!-- Solo se ve con «Mostrar valor» activado. -->
+                    <div class="field subOpcion" id="valorOpcion">
+                      <div class="seg segFill" role="group" aria-label="Color de las cifras del valor" data-for="colorValor" data-animate>
+                        <button type="button" data-value="negro">Negro</button>
+                        <button type="button" data-value="color">Color</button>
+                      </div>
+                      <select id="colorValor" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+                        <option value="negro" selected>Negro</option>
+                        <option value="color">Color</option>
+                      </select>
+                    </div>
+                    <!-- El id sigue siendo mostrarDesglose: lo usan el script y
+                         herramientas/verificar-svg.js. -->
+                    <label class="switch">
+                      <input type="checkbox" role="switch" id="mostrarDesglose" />
+                      <span class="switchTrack" aria-hidden="true"></span>
+                      Mostrar descomposición
+                    </label>
+                    <!-- Solo se ve con «Mostrar descomposición» activado. -->
+                    <div class="field subOpcion" id="descOpcion">
+                      <div class="seg segFill" role="group" aria-label="Color de la descomposición" data-for="colorDesc" data-animate>
+                        <button type="button" data-value="negro">Negro</button>
+                        <button type="button" data-value="color">Color</button>
+                      </div>
+                      <select id="colorDesc" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+                        <option value="negro" selected>Negro</option>
+                        <option value="color">Color</option>
+                      </select>
+                      <div class="seg segFill" role="group" aria-label="Cada cifra se escribe con su valor en unidades o con su jerarquía" data-for="modoDescomposicion" data-animate>
+                        <button type="button" data-value="unidades">Valor en unidades</button>
+                        <button type="button" data-value="jerarquia">Jerarquía</button>
+                      </div>
+                      <select id="modoDescomposicion" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+                        <option value="unidades" selected>Valor en unidades</option>
+                        <option value="jerarquia">Jerarquía</option>
+                      </select>
                     </div>
                   </div>
                 </div>
