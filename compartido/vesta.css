@@ -1,0 +1,242 @@
+/* ==========================================================================
+   Tokens del sistema de diseño Vesta para las interfaces de los generadores.
+
+   Copia de fracciones/_desing-system-vesta/tokens/*.css (a su vez copia de
+   Vesta en claude.ai), solo con los bloques :root. No se incluyen:
+   - base.css: da estilo a body, títulos y enlaces; cada generador tiene los
+     suyos en su style.css.
+   - el @import de fonts.css: cada index.html carga sus fuentes de Google Fonts.
+
+   No inventar tokens aquí: los cambios de diseño se hacen en Vesta, se bajan
+   a la copia local y de ahí se vuelven a copiar estos bloques, en el mismo
+   orden. Nada de esto llega al SVG exportado.
+   ========================================================================== */
+
+/* ---- colors.css ---- */
+/* Rampa base — derivada de la paleta origen e3f2fd / 90caf9 / 2196f3 / 0d47a1 */
+:root{
+  --blue-50:#e3f2fd;
+  --blue-100:#c6e3fb;
+  --blue-200:#90caf9;
+  --blue-300:#64b5f6;
+  --blue-400:#42a5f5;
+  --blue-500:#2196f3;
+  --blue-600:#1877cf;
+  --blue-700:#125aa8;
+  --blue-800:#0d47a1;
+  --blue-900:#092f6b;
+  --blue-950:#061c40;
+
+  /* Neutros fríos, con una gota de azul para que no choquen con la rampa */
+  --neutral-0:#ffffff;
+  --neutral-25:#f8fafc;
+  --neutral-50:#f1f5f9;
+  --neutral-100:#e6ecf3;
+  --neutral-200:#d2dbe6;
+  --neutral-300:#b3c0d0;
+  --neutral-400:#8695a9;
+  --neutral-500:#637185;
+  --neutral-600:#4a5769;
+  --neutral-700:#35404f;
+  --neutral-800:#222c39;
+  --neutral-900:#141b26;
+
+  /* Semánticos */
+  --green-100:#d8f0e4;
+  --green-500:#2e9e6b;
+  --green-700:#1d6b47;
+  --amber-100:#fbeecd;
+  --amber-500:#d99411;
+  --amber-700:#8f5f06;
+  --red-100:#fadfe3;
+  --red-500:#d1495b;
+  --red-700:#8e2b39;
+
+  /* Acentos de disciplina — ver readme "Adiciones intencionales" */
+  --subject-math:#0d47a1;
+  --subject-physics:#4b47a3;
+  --subject-electronics:#d99411;
+  --subject-code:#0f8a8a;
+
+  /* Material base 10 — FIJOS: convención que los alumnos ya aprendieron con el
+     material físico. Solo para figuras, nunca para la interfaz. */
+  --base10-unidad:#57a639;
+  --base10-decena:#1c75bc;
+  --base10-centena:#cc2027;
+}
+
+/* ---- semantic.css ---- */
+:root{
+  /* Superficies */
+  --surface-page:var(--neutral-0);
+  --surface-subtle:var(--neutral-25);
+  --surface-sunken:var(--blue-50);
+  --surface-card:var(--neutral-0);
+  --surface-raised:var(--neutral-0);
+  --surface-inverse:var(--blue-950);
+  --surface-brand:var(--blue-800);
+  --surface-brand-soft:var(--blue-50);
+  --surface-overlay:rgba(6,28,64,.52);
+
+  /* Texto */
+  --text-body:var(--neutral-800);
+  --text-heading:var(--blue-950);
+  --text-muted:var(--neutral-500);
+  --text-inverse:var(--neutral-0);
+  --text-inverse-muted:rgba(255,255,255,.72);
+  --text-link:var(--blue-700);
+  --text-link-hover:var(--blue-900);
+  --text-brand:var(--blue-800);
+
+  /* Bordes */
+  --border-subtle:var(--neutral-100);
+  --border-default:var(--neutral-200);
+  --border-strong:var(--neutral-300);
+  --border-brand:var(--blue-500);
+
+  /* Interacción */
+  --action-primary:var(--blue-700);
+  --action-primary-hover:var(--blue-800);
+  --action-primary-active:var(--blue-900);
+  --action-secondary:var(--blue-50);
+  --action-secondary-hover:var(--blue-100);
+  --action-disabled-bg:var(--neutral-100);
+  --action-disabled-fg:var(--neutral-400);
+  --focus-ring:var(--ring-focus);
+
+  /* Feedback */
+  --feedback-correct-bg:var(--green-100);
+  --feedback-correct-fg:var(--green-700);
+  --feedback-correct-line:var(--green-500);
+  --feedback-retry-bg:var(--amber-100);
+  --feedback-retry-fg:var(--amber-700);
+  --feedback-retry-line:var(--amber-500);
+  --feedback-error-bg:var(--red-100);
+  --feedback-error-fg:var(--red-700);
+  --feedback-error-line:var(--red-500);
+  --feedback-info-bg:var(--blue-50);
+  --feedback-info-fg:var(--blue-800);
+  --feedback-info-line:var(--blue-500);
+}
+
+/* ---- fonts.css ---- */
+/* Vesta webfonts — served from Google Fonts CDN (no local binaries shipped).
+   Fraunces  = titulares (serif de alto contraste, registro LaTeX)
+   Poppins   = contenido e interfaz
+   STIX Two Text = texto en registro matemático / fallback de KaTeX */
+/* KaTeX / MathJax: fijar el motor a STIX Two Math o New Computer Modern Math.
+   Si el motor no está presente, las fórmulas caen a --font-math. */
+:root{
+  --font-serif-display:"Fraunces","STIX Two Text",Georgia,"Times New Roman",serif;
+  --font-sans:"Poppins",-apple-system,"Segoe UI",system-ui,sans-serif;
+  --font-math:"STIX Two Math","STIX Two Text","Latin Modern Math",Cambria Math,serif;
+  --font-mono:"SFMono-Regular",Menlo,Consolas,"Liberation Mono",monospace;
+}
+
+/* ---- typography.css ---- */
+:root{
+  /* Escala tipográfica — razón ~1.25, anclada en 16px de cuerpo mínimo */
+  --text-2xs:12px;
+  --text-xs:13px;
+  --text-sm:14px;
+  --text-base:16px;
+  --text-md:18px;
+  --text-lg:20px;
+  --text-xl:24px;
+  --text-2xl:30px;
+  --text-3xl:38px;
+  --text-4xl:48px;
+  --text-5xl:60px;
+  --text-6xl:76px;
+
+  --leading-tight:1.08;
+  --leading-snug:1.25;
+  --leading-normal:1.55;
+  --leading-relaxed:1.7;
+
+  --tracking-tight:-0.02em;
+  --tracking-normal:0em;
+  --tracking-wide:0.04em;
+  --tracking-caps:0.12em;
+
+  --weight-light:300;
+  --weight-regular:400;
+  --weight-medium:500;
+  --weight-semibold:600;
+  --weight-bold:700;
+
+  /* Fraunces es variable: el eje óptico se fija por tamaño */
+  --opsz-display:120; /* @kind other */
+  --opsz-heading:48; /* @kind other */
+  --opsz-inline:14; /* @kind other */
+}
+
+/* ---- spacing.css ---- */
+:root{
+  --space-0:0px;
+  --space-1:4px;
+  --space-2:8px;
+  --space-3:12px;
+  --space-4:16px;
+  --space-5:20px;
+  --space-6:24px;
+  --space-8:32px;
+  --space-10:40px;
+  --space-12:48px;
+  --space-16:64px;
+  --space-20:80px;
+  --space-24:96px;
+  --space-32:128px;
+
+  --measure-prose:66ch;
+  --measure-narrow:48ch;
+  --container-max:1200px;
+  --container-wide:1440px;
+  --gutter:24px;
+  --gutter-lg:48px;
+}
+
+/* ---- radius.css ---- */
+:root{
+  --radius-xs:4px;
+  --radius-sm:6px;
+  --radius-md:10px;
+  --radius-lg:16px;
+  --radius-xl:24px;
+  --radius-2xl:32px;
+  --radius-pill:999px;
+  /* Radio orgánico: eco de las formas recortadas del material de marca */
+  --radius-blob:58% 42% 47% 53% / 44% 51% 49% 56%;
+
+  --border-hairline:1px;
+  --border-thick:2px;
+  --border-accent:3px;
+}
+
+/* ---- elevation.css ---- */
+:root{
+  /* Sombras frías y difusas: la luz cae sobre papel azul, nunca gris neutro */
+  --shadow-xs:0 1px 2px rgba(9,47,107,.06);
+  --shadow-sm:0 1px 3px rgba(9,47,107,.08), 0 1px 2px rgba(9,47,107,.04);
+  --shadow-md:0 4px 12px rgba(9,47,107,.08), 0 1px 3px rgba(9,47,107,.05);
+  --shadow-lg:0 12px 32px rgba(9,47,107,.10), 0 2px 8px rgba(9,47,107,.05);
+  --shadow-xl:0 24px 64px rgba(9,47,107,.14), 0 4px 12px rgba(9,47,107,.06);
+  --shadow-inset:inset 0 1px 0 rgba(255,255,255,.7);
+  --ring-focus:0 0 0 3px rgba(33,150,243,.35);
+  --ring-error:0 0 0 3px rgba(209,73,91,.28);
+}
+
+/* ---- motion.css ---- */
+:root{
+  --duration-instant:80ms; /* @kind other */
+  --duration-fast:140ms; /* @kind other */
+  --duration-base:220ms; /* @kind other */
+  --duration-slow:380ms; /* @kind other */
+  --duration-scene:700ms; /* @kind other */
+
+  /* Sin rebotes: el movimiento acompaña, no celebra. */
+  --ease-standard:cubic-bezier(.2,.0,.0,1); /* @kind other */
+  --ease-out:cubic-bezier(.16,1,.3,1); /* @kind other */
+  --ease-in:cubic-bezier(.5,0,.75,0); /* @kind other */
+  --ease-inout:cubic-bezier(.65,0,.35,1); /* @kind other */
+}

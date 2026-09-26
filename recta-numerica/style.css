@@ -1,0 +1,239 @@
+/* Los tokens de Vesta (colores, radios, sombras, tipografía, movimiento)
+   vienen de ../compartido/vesta.css, que index.html carga antes que este archivo. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--surface-subtle);
+  color: var(--text-body);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.page {
+  max-width: 1280px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--surface-page);
+  box-shadow: var(--shadow-sm);
+}
+.section {
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+/* ---- Cabecera + acción principal ---- */
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  padding-top: 24px;
+  flex-wrap: wrap;
+}
+.header h1 {
+  margin: 0;
+  font-family: var(--font-serif-display);
+  font-optical-sizing: auto;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--text-heading);
+}
+.header p {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* ---- Botones ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 18px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
+}
+.btn svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+.btn-primary {
+  background: var(--action-primary);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: var(--action-primary-hover);
+}
+.btn-primary:active {
+  background: var(--action-primary-active);
+}
+.downloadBtn {
+  min-height: 44px;
+  margin-bottom: 2px;
+  flex: 0 0 auto;
+}
+
+/* ---- Campos ---- */
+.fieldLabel {
+  display: block;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-body);
+  margin-bottom: 8px;
+}
+.fieldHint {
+  display: block;
+  margin-top: 4px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+.input {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 12px;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  color: var(--text-body);
+  background: var(--neutral-0);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+.input:hover {
+  border-color: var(--border-strong);
+}
+.input:focus {
+  outline: none;
+  border-color: var(--border-brand);
+  box-shadow: var(--focus-ring);
+}
+
+.mainRow {
+  padding-top: 22px;
+  padding-bottom: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+  align-items: flex-start;
+}
+.w140 {
+  width: 140px;
+}
+.w240 {
+  width: 240px;
+}
+
+.hint {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  max-width: 74ch;
+}
+.hint code {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  background: var(--neutral-100);
+  padding: 1px 5px;
+  border-radius: 4px;
+  color: var(--neutral-700);
+  white-space: nowrap;
+}
+
+/* ---- Banners de estado (Callout) ---- */
+.banners {
+  padding-top: 16px;
+}
+.callout {
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border-left: 3px solid;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  line-height: 1.5;
+  display: none; /* el script lo muestra con style.display = "block" */
+}
+.callout strong {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.callout.error {
+  background: var(--feedback-error-bg);
+  color: var(--feedback-error-fg);
+  border-color: var(--feedback-error-line);
+}
+.callout.warning {
+  background: var(--feedback-retry-bg);
+  color: var(--feedback-retry-fg);
+  border-color: var(--feedback-retry-line);
+}
+
+/* ---- Previsualización ---- */
+.stage {
+  padding-top: 8px;
+  padding-bottom: 40px;
+  display: flex;
+  justify-content: center;
+}
+.stage-inner {
+  background: var(--neutral-0);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 40px;
+  width: 100%;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* La recta es mucho más ancha que alta: se escala al ancho de la
+   tarjeta, para verla grande y sin desbordarla. */
+#svgHolder {
+  width: 100%;
+}
+#svgHolder svg {
+  width: 100%;
+  max-height: 70vh;
+  height: auto;
+  display: block;
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .stage-inner {
+    padding: 16px;
+  }
+}

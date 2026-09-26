@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Generador de fracciones (círculo / triángulo / rectángulo)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Fuentes del sistema de diseño "Vesta" (Fraunces = títulos,
+         Poppins = interfaz) + STIX Two Text, que ya se usaba como respaldo
+         de la vista previa matemática. Solo afectan a la interfaz y a la
+         vista previa en el navegador, no al SVG exportado. -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Poppins:wght@400;500;600&family=STIX+Two+Text:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../compartido/vesta.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="page">
+      <!-- Cabecera + acción principal -->
+      <div class="section header">
+        <div>
+          <h1>Generador de fracciones</h1>
+          <p>
+            Elige la forma, define la fracción y descarga el resultado como
+            SVG.
+          </p>
+        </div>
+        <button class="btn btn-primary downloadBtn" id="downloadBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Guardar SVG…
+        </button>
+      </div>
+
+      <!-- Selector de forma -->
+      <div class="section" style="margin-top: 20px">
+        <span class="fieldLabel" id="formaLabel">Forma</span>
+        <div class="formaGroup" role="group" aria-labelledby="formaLabel">
+          <button type="button" class="btn formaBtn" data-forma="circulo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg>
+            Círculo
+          </button>
+          <button type="button" class="btn formaBtn" data-forma="rectangulo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/></svg>
+            Rectángulo
+          </button>
+          <button type="button" class="btn formaBtn" data-forma="triangulo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 22 20H2Z"/></svg>
+            Triángulo
+          </button>
+        </div>
+        <!-- select nativo oculto: el script sigue leyendo #forma.value -->
+        <select id="forma" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+          <option value="circulo">Círculo</option>
+          <option value="rectangulo">Rectángulo (cuadrícula)</option>
+          <option value="triangulo">Triángulo</option>
+        </select>
+      </div>
+
+      <!-- Fracción, ancho y color: siempre visible -->
+      <div class="section mainRow">
+        <div class="w140">
+          <label class="fieldLabel" for="numerador">Numerador</label>
+          <input class="input" type="number" id="numerador" value="4" min="0" step="1" />
+        </div>
+
+        <div class="w140">
+          <label class="fieldLabel" for="denominador">Denominador</label>
+          <input class="input" type="number" id="denominador" value="20" min="1" step="1" />
+        </div>
+
+        <div class="w170" id="anchoField" data-hide-when="true">
+          <label class="fieldLabel" for="ancho">Ancho total</label>
+          <input class="input" type="number" id="ancho" value="10" min="1" step="0.5" />
+          <span class="fieldHint">Rectángulo, en unidades</span>
+        </div>
+
+        <div class="colorCol">
+          <span class="fieldLabel" id="colorLabel">Color de las partes</span>
+          <div class="swatches" role="group" aria-labelledby="colorLabel">
+            <button type="button" class="swatch" data-color="morado" title="Morado" aria-label="Morado" style="background: var(--morado)"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <button type="button" class="swatch" data-color="azul" title="Azul" aria-label="Azul" style="background: var(--azul)"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <button type="button" class="swatch" data-color="naranja" title="Naranja" aria-label="Naranja" style="background: var(--naranja)"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <button type="button" class="swatch" data-color="rojo" title="Rojo" aria-label="Rojo" style="background: var(--rojo)"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <button type="button" class="swatch" data-color="verde" title="Verde" aria-label="Verde" style="background: var(--verde)"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <button type="button" class="swatch" data-color="amarillo" title="Amarillo" aria-label="Amarillo" style="background: var(--amarillo)"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <button type="button" class="swatch" data-color="personalizado" title="Personalizado…" aria-label="Personalizado…"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+            <!-- select nativo oculto: el script sigue leyendo #color.value -->
+            <select id="color" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+              <option value="morado">Morado</option>
+              <option value="azul" selected>Azul</option>
+              <option value="naranja">Naranja</option>
+              <option value="rojo">Rojo</option>
+              <option value="verde">Verde</option>
+              <option value="amarillo">Amarillo</option>
+              <option value="personalizado">Personalizado…</option>
+            </select>
+          </div>
+          <div class="customRow" id="colorPersonalizadoField" data-hide-when="true">
+            <input type="color" id="colorPersonalizado" value="#2ed9d9" aria-label="Color personalizado" />
+            <span>Color personalizado</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" style="padding-top: 2px; padding-bottom: 18px">
+        <p class="hint">
+          El círculo y el triángulo siempre miden 10 unidades de diámetro o
+          altura; el ancho del rectángulo es ajustable. Para el triángulo, el
+          denominador debe ser un cuadrado perfecto (4, 9, 16, 25…). En
+          Chrome/Edge, «Guardar SVG» abre un diálogo para elegir carpeta y
+          nombre; en otros navegadores se descarga a tu carpeta de descargas.
+        </p>
+      </div>
+
+      <!-- Etiquetas: panel plegable bajo la barra principal (no una
+           pestaña), para que quede a la vista mientras se trabaja con
+           forma/fracción/color. -->
+      <div class="etiquetasHead">
+        <button type="button" class="etiquetasToggle" id="etiquetasToggle" aria-expanded="false" aria-controls="etiquetasBody">
+          <span>
+            Etiquetas numéricas
+            <span class="badge" id="etiquetasBadge" data-hide-when="true">Activas</span>
+          </span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </div>
+      <div class="etiquetasBody" id="etiquetasBody">
+        <div class="etiquetasInner" id="etiquetasInner" inert>
+          <div class="section labelsRow">
+            <div class="switches">
+              <label class="switch">
+                <input type="checkbox" role="switch" id="showPartLabels" />
+                Mostrar número en cada parte coloreada
+              </label>
+              <label class="switch">
+                <input type="checkbox" role="switch" id="showTotalLabel" />
+                Mostrar valor total del entero (llave)
+              </label>
+            </div>
+
+            <div class="w200" id="valorEnteroField" data-hide-when="true">
+              <label class="fieldLabel" for="valorEntero">Valor del entero</label>
+              <input class="input" type="text" id="valorEntero" value="4" />
+              <span class="fieldHint">Número, decimal, fracción o LaTeX</span>
+            </div>
+
+            <div class="w260" id="labelModeField" data-hide-when="true">
+              <label class="fieldLabel" for="labelMode">Números por parte</label>
+              <select class="input" id="labelMode">
+                <option value="auto">Automático (entero ÷ denominador)</option>
+                <option value="manual">Personalizado por parte</option>
+              </select>
+            </div>
+
+            <div class="w220" id="colorValorParteField" data-hide-when="true">
+              <label class="fieldLabel" for="colorValorParte">Color del valor por parte</label>
+              <input class="colorInput" type="color" id="colorValorParte" value="#ffffff" />
+            </div>
+
+            <div class="w220" id="colorValorTotalField" data-hide-when="true">
+              <label class="fieldLabel" for="colorValorTotal">Color de la llave y el total</label>
+              <input class="colorInput" type="color" id="colorValorTotal" value="#000000" />
+            </div>
+
+            <div class="manualPanel" id="manualPanel" data-hide-when="true"></div>
+          </div>
+          <div class="section" style="padding-top: 2px; padding-bottom: 20px">
+            <p class="hint">
+              Los valores (por parte y del entero) admiten números, decimales,
+              fracciones simples como <code>1/2</code>, o código LaTeX:
+              <code>\frac{a}{b}</code>, <code>x^2</code>, <code>x_2</code>,
+              <code>\sqrt{a}</code>,
+              <code>\times \div \cdot \pm \pi \alpha</code>,
+              <code>\text{cm}</code>, etc. Todo se dibuja como vectores con
+              Computer Modern (la fuente de LaTeX), así que se ve igual en
+              cualquier equipo y al convertir a formas en PowerPoint.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Banners de estado. #err/#warn son el contenedor que el script
+           muestra/oculta; el mensaje va en #errMsg/#warnMsg para no borrar
+           el título del aviso. -->
+      <div class="section banners">
+        <div id="err" class="callout error" role="alert">
+          <strong>No se puede generar la figura</strong>
+          <span id="errMsg"></span>
+        </div>
+        <div id="warn" class="callout warning" role="status">
+          <strong>Revisa este detalle</strong>
+          <span id="warnMsg"></span>
+        </div>
+      </div>
+
+      <!-- Previsualización -->
+      <div class="section stage">
+        <div class="stage-inner">
+          <div id="svgHolder"></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../compartido/glifos.js" defer></script>
+    <script src="../compartido/guardar-svg.js" defer></script>
+    <script src="script.js" defer></script>
+  </body>
+</html>

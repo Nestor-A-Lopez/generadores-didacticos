@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Generador de operaciones con valor posicional</title>
+    <link rel="stylesheet" href="../../compartido/vesta.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <div class="topbar">
+        <h1>
+          <span class="c">C</span> <span class="d">D</span>
+          <span class="u">U</span> — Generador de operaciones con valor
+          posicional
+        </h1>
+        <p>
+          Suma, resta, multiplicación y división mostrando a qué orden
+          pertenece cada dígito. Descarga el resultado como SVG.
+        </p>
+      </div>
+
+      <div class="toolbar">
+        <div class="group">
+          <span class="caption">Operación</span>
+          <select id="operacion">
+            <option value="suma">Suma</option>
+            <option value="resta">Resta</option>
+            <option value="multiplicacion">Multiplicación</option>
+            <option value="division">División</option>
+          </select>
+        </div>
+        <div class="divider"></div>
+
+        <div class="group">
+          <span class="caption">Trabajar hasta el orden de…</span>
+          <select id="hastaOrden">
+            <option value="0">Unidades</option>
+            <option value="1">Decenas de unidad</option>
+            <option value="2" selected>Centenas de unidad</option>
+            <option value="5">Centenas de millar</option>
+            <option value="8">Centenas de millón</option>
+            <option value="11">Centenas de millar de millón</option>
+          </select>
+        </div>
+        <div class="divider"></div>
+
+        <div class="group">
+          <span class="caption">Color</span>
+          <input
+            type="color"
+            id="colorDigitos"
+            value="#000000"
+            style="width:52px;height:40px;padding:2px;border:1px solid var(--border-default);border-radius:var(--radius-sm);cursor:pointer;background:#fff;"
+          />
+        </div>
+        <div class="divider"></div>
+
+        <div class="group grow" style="min-width:520px;">
+          <span class="caption">Presentación</span>
+          <div class="checkGroup">
+            <label class="checkbox">
+              <input type="checkbox" id="mostrarMilesimos" checked /><span
+                class="box"
+                >✓</span
+              >Mostrar hasta milésimos</label
+            >
+            <label class="checkbox" id="mostrarResultadoRow">
+              <input type="checkbox" id="mostrarResultado" checked /><span
+                class="box"
+                >✓</span
+              ><span id="mostrarResultadoLabel">Mostrar resultado</span></label
+            >
+            <label class="checkbox">
+              <input type="checkbox" id="mostrarComas" checked /><span
+                class="box"
+                >✓</span
+              >Mostrar comas/apóstrofes del resultado</label
+            >
+            <label class="checkbox">
+              <input type="checkbox" id="mostrarPuntoResultado" checked /><span
+                class="box"
+                >✓</span
+              >Mostrar punto decimal del resultado</label
+            >
+            <label class="checkbox">
+              <input type="checkbox" id="mostrarClase" checked /><span
+                class="box"
+                >✓</span
+              >Mostrar clases</label
+            >
+            <label class="checkbox">
+              <input type="checkbox" id="mostrarPeriodos" checked /><span
+                class="box"
+                >✓</span
+              >Mostrar periodos</label
+            >
+          </div>
+        </div>
+        <div class="divider"></div>
+
+        <div class="group">
+          <span class="caption">Punto decimal del resultado a la derecha de…</span>
+          <select id="resultJerarquia"></select>
+        </div>
+
+        <button
+          type="button"
+          class="btn btn-primary"
+          id="downloadBtn"
+          style="margin-left:auto;"
+        >
+          Guardar SVG…
+        </button>
+      </div>
+
+      <div class="callout" id="err" style="display:none;"></div>
+
+      <!-- ================= SUMA ================= -->
+      <div class="panel" data-op-panel="suma">
+        <div class="termsList" id="sumandosList"></div>
+        <div class="panelActions">
+          <button type="button" class="btn btn-outline" id="addSumando">
+            + Agregar sumando
+          </button>
+        </div>
+      </div>
+
+      <!-- ================= RESTA ================= -->
+      <div class="panel" data-op-panel="resta">
+        <div class="termsList" id="minuendoRow"></div>
+        <div class="termsList" id="sustraendosList"></div>
+        <div class="panelActions">
+          <button type="button" class="btn btn-outline" id="addSustraendo">
+            + Agregar sustraendo
+          </button>
+        </div>
+      </div>
+
+      <!-- ================= MULTIPLICACIÓN ================= -->
+      <div class="panel" data-op-panel="multiplicacion">
+        <div class="termsList" id="multiplicandoRow"></div>
+        <div class="termsList" id="multiplicadorRow"></div>
+        <div class="checkGroup" style="margin-top:8px;">
+          <label class="checkbox">
+            <input type="checkbox" id="mostrarPuntoProductos" checked /><span
+              class="box"
+              >✓</span
+            >Mostrar punto decimal de los productos parciales</label
+          >
+        </div>
+        <p class="hint">
+          El multiplicador debe ser un número entero (puede llevar jerarquía,
+          ej. "24" en Decenas = 240, pero no punto decimal). El multiplicando
+          sí admite decimales si "Mostrar hasta milésimos" está activo. El
+          punto de los productos parciales, si se muestra, usa la misma
+          jerarquía elegida para el resultado.
+        </p>
+      </div>
+
+      <!-- ================= DIVISIÓN ================= -->
+      <div class="panel" data-op-panel="division">
+        <div class="termsList" id="dividendoRow"></div>
+        <div class="row2" style="margin-top:4px;">
+          <div class="group" style="padding-right:0;min-width:150px;">
+            <span class="caption">Divisor (1 cifra)</span>
+            <input
+              type="text"
+              class="textInput"
+              id="divisor"
+              value="4"
+              maxlength="1"
+              style="max-width:150px;"
+            />
+          </div>
+          <div class="group" style="padding-right:0;min-width:220px;">
+            <span class="caption">Decimales en el cociente</span>
+            <select id="decimales"></select>
+          </div>
+        </div>
+        <p class="hint">
+          El dividendo debe ser un número entero (puede llevar jerarquía, ej.
+          "93" en Unidades de millar = 93 000, pero no punto decimal). El
+          divisor usa una sola cifra, igual que en la galera clásica.
+        </p>
+      </div>
+
+      <div class="topbar" style="border-bottom: none; padding-top: 14px; padding-bottom: 6px">
+        <p class="hint">
+          Colores fijos: C (rojo), D (azul), U (verde), dec = décimas (azul,
+          refleja a D), cen = centésimas (rojo, refleja a C), mil = milésimas
+          (verde, refleja a U). Las cifras se dibujan en negro con la misma
+          fuente vectorial (Computer Modern) que la plantilla de valor
+          posicional. En Chrome/Edge, "Guardar SVG" abre un diálogo para
+          elegir carpeta y nombre; en otros navegadores se descarga a tu
+          carpeta de descargas.
+        </p>
+      </div>
+
+      <div class="stage">
+        <div class="stage-inner">
+          <div id="svgHolder"></div>
+        </div>
+      </div>
+    </div>
+    <script src="../../compartido/glifos-tabla.js" defer></script>
+    <script src="../../compartido/guardar-svg.js" defer></script>
+    <script src="script.js" defer></script>
+  </body>
+</html>

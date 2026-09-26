@@ -1,6 +1,8 @@
-# Generador de operaciones con valor posicional — `_operaciones-tabla-valor-posicional.html`
+# Generador de operaciones con valor posicional — `tabla-valor-posicional/operaciones/`
 
 Generador de tablas SVG de valor posicional para suma, resta, multiplicación y división, pensado para exportarse y convertirse en formas editables de PowerPoint. Proyecto hermano: `../tabla-valor-posicional/` (misma tipografía, bordes y agrupamiento). Las convenciones generales del repo están en el `CLAUDE.md` de la raíz.
+
+Archivos: `index.html` (estructura y controles), `style.css` (estilos propios) y `script.js` (toda la lógica). Antes era un solo archivo, `_operaciones-tabla-valor-posicional.html`; se separó el 2026-09-26 sin cambiar la lógica (SVG idéntico byte a byte). De `../../compartido/` carga `vesta.css` (tokens de la interfaz), `glifos-tabla.js` (`Banco.GLYPH_DATA_TABLA`, los mismos glifos que la tabla de valor posicional) y `guardar-svg.js` (`Banco.guardarSVG`, que usa `download()`).
 
 ## Reglas de diseño obligatorias
 

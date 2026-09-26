@@ -1,9 +1,9 @@
-# Generador de fracciones — `generador_fracciones.html`
+# Generador de fracciones — `fracciones/`
 
-Herramienta de un solo archivo (HTML+CSS+JS) que genera figuras de fracciones (círculo, rectángulo en cuadrícula, triángulo subdividido) como SVG descargable. El SVG se pega en PowerPoint y se convierte a formas editables: tiene que funcionar en ese flujo, no solo verse bien en el navegador. Las convenciones generales del repo (nombres de archivo, sistema de diseño, compilación) están en el `CLAUDE.md` de la raíz.
+Herramienta web (`index.html` + `style.css` + `script.js`, más lo que carga de `../compartido/`) que genera figuras de fracciones (círculo, rectángulo en cuadrícula, triángulo subdividido) como SVG descargable. El SVG se pega en PowerPoint y se convierte a formas editables: tiene que funcionar en ese flujo, no solo verse bien en el navegador. Las convenciones generales del repo (nombres de archivo, sistema de diseño, compilación) están en el `CLAUDE.md` de la raíz.
 
 Otros archivos de esta carpeta:
-- `_extraer_glifos.py`: extrae offline con `fontTools` los glifos de Computer Modern que se pegan como `GLYPH_DATA` (sección 6).
+- `_extraer_glifos.py`: extrae offline con `fontTools` los glifos de Computer Modern y escribe `../compartido/glifos.js` (sección 6).
 - `circulo/`, `rectangulo/`, `triangulo/`: los SVG generados, separados por forma (por eso el nombre de archivo no lleva la forma). No están en el repositorio (los SVG se ignoran en `.gitignore`). `triangulo/` se eliminó porque había quedado vacía; se vuelve a crear al guardar el primer triángulo. Las fórmulas de `buildTriangulo` salen de la versión TikZ original, ya retirada.
 - `_desing-system-vesta/`: sistema de diseño «Vesta» usado para la interfaz (ver `CLAUDE.md` raíz).
 
@@ -21,9 +21,9 @@ Otros archivos de esta carpeta:
 # Contexto técnico
 
 
-Aplicación de un solo archivo (HTML+CSS+JS embebido, sin dependencias de build) que genera figuras de **fracciones** (círculo, rectángulo en cuadrícula, triángulo subdividido) como SVG descargable para uso educativo. El SVG final se pega en PowerPoint y se convierte a formas editables, así que el archivo debe comportarse bien en ese flujo, no solo verse bien en el navegador — este es el origen de casi todos los bugs ya corregidos (incluidos la tipografía y el agrupamiento, secciones 6 y 7).
+Aplicación sin dependencias de build (`index.html` con la estructura, `style.css` con los estilos propios y `script.js` con toda la lógica) que genera figuras de **fracciones** (círculo, rectángulo en cuadrícula, triángulo subdividido) como SVG descargable para uso educativo. El SVG final se pega en PowerPoint y se convierte a formas editables, así que el archivo debe comportarse bien en ese flujo, no solo verse bien en el navegador — este es el origen de casi todos los bugs ya corregidos (incluidos la tipografía y el agrupamiento, secciones 6 y 7).
 
-Todo el código vive en un único `<script>`. La función central es `buildSVG()`, que lee los controles del DOM, valida, construye la forma elegida (`buildCirculo`/`buildRectangulo`/`buildTriangulo`), opcionalmente le agrega la llave del entero (`appendTotalBrace`), y devuelve el SVG completo como string.
+Todo el código vive en `script.js`; de `../compartido/` toma los glifos (`glifos.js`), el guardado (`guardar-svg.js`) y los tokens de Vesta (`vesta.css`). La función central es `buildSVG()`, que lee los controles del DOM, valida, construye la forma elegida (`buildCirculo`/`buildRectangulo`/`buildTriangulo`), opcionalmente le agrega la llave del entero (`appendTotalBrace`), y devuelve el SVG completo como string.
 
 ## 1. Las tres formas y su geometría
 
@@ -69,10 +69,10 @@ Parser recursivo propio, sin dependencias (`parseLatexToNodes` + `layoutNode`):
 
 **Problema que resolvía**: antes cada carácter era un `<text font-family="KaTeX_Main,…">` y al exportar se incrustaba la fuente en un `@font-face` (base64). "Convertir en forma" de PowerPoint ignora `@font-face` y el texto caía a Cambria Math, aunque en el navegador se viera perfecto. También se descartó parsear la fuente en tiempo real con `opentype.js` (dependía de red al exportar). **No volver a ninguno de esos dos enfoques.**
 
-**Solución actual** (mismo enfoque que el proyecto hermano `_generador-tabla-valor-posicional.html`):
+**Solución actual** (mismo enfoque que el generador hermano de la tabla de valor posicional):
 
-1. `_extraer_glifos.py` (en la carpeta de trabajo) extrae **offline** con `fontTools` los contornos de las fuentes originales de TeX: `cmr10.ttf` (recto), `cmmi10.ttf` (cursiva matemática) y `cmsy10.ttf` (símbolos). Por defecto toma las que trae matplotlib; acepta otra carpeta como argumento. Estas fuentes no tienen un cmap Unicode útil, así que el script mapea a mano Unicode → nombre de glifo. Genera el JSON que se pega como `GLYPH_DATA`.
-2. `GLYPH_DATA = { upm: 2048, r: {car: [avance, yMin, yMax, "d"]}, i: {...} }` está incrustado en el script (unos 130 KB, 153 glifos rectos + 84 cursivos), en unidades de fuente con y hacia arriba. Su `"d"` solo usa `M/L/Q/Z` con pares x y alternados (las cuadráticas de TrueType; PowerPoint ya aceptaba `Q`/`T` en la llave).
+1. `_extraer_glifos.py` (en esta carpeta) extrae **offline** con `fontTools` los contornos de las fuentes originales de TeX: `cmr10.ttf` (recto), `cmmi10.ttf` (cursiva matemática) y `cmsy10.ttf` (símbolos). Por defecto toma las que trae matplotlib; acepta otra carpeta como argumento. Estas fuentes no tienen un cmap Unicode útil, así que el script mapea a mano Unicode → nombre de glifo. Escribe directamente `compartido/glifos.js` (`Banco.GLYPH_DATA`, con su encabezado); no hay que pegar nada a mano.
+2. `GLYPH_DATA = { upm: 2048, r: {car: [avance, yMin, yMax, "d"]}, i: {...} }`, en unidades de fuente con y hacia arriba, vive en `compartido/glifos.js` (unos 130 KB, 153 glifos rectos + 84 cursivos) y `script.js` lo toma con `const GLYPH_DATA = Banco.GLYPH_DATA;`. Estrategias y recta-numerica cargan el mismo archivo, así que agregar o cambiar un glifo también los afecta. Su `"d"` solo usa `M/L/Q/Z` con pares x y alternados (las cuadráticas de TrueType; PowerPoint ya aceptaba `Q`/`T` en la llave).
 3. Subconjunto (pedido por el usuario: "todo a vectores"):
    - **Recto** (`r`): dígitos, `+ = ( ) [ ] . , : ; ! ? % & ' / @ # $ ¡ ¿ – —`, el latín A–Z a–z (para `\text`), el espacio y los acentos del español compuestos (á é í ó ú ü ñ Á É Í Ó Ú Ü Ñ). También el griego mayúsculo (Γ Δ Θ Λ Ξ Π Σ Υ Φ Ψ Ω) y los símbolos de cmsy10: − × ÷ ± ∓ ≤ ≥ ≈ ∞ √ · { } | * ∼ ≡ ∝ → ← ↔ ⇒ ⇔ ∈ ∪ ∩ ∅ ∀ ∃ ∇ ′ ⊥ ∘ • ⟨ ⟩. Por último `<` y `>`, que en TeX vienen de cmmi10.
    - **Cursiva** (`i`): latín A–Z a–z, todo el griego minúsculo con variantes (ϵ ε ϑ ϖ ϱ ς ϕ φ) y ℓ ∂ ℘.
@@ -80,7 +80,7 @@ Parser recursivo propio, sin dependencias (`parseLatexToNodes` + `layoutNode`):
    - `-` se dibuja como el signo menos de cmsy10, igual que en modo matemático.
 4. **Convención recto/cursiva** (`LETRAS_EN_CURSIVA = true`, un solo interruptor): igual que LaTeX, las letras latinas y el griego minúsculo van en cursiva; los dígitos, los operadores, el griego mayúsculo, el contenido de `\text{}`/`\mathrm{}` y los nombres de comandos desconocidos (`\sin`) van en recto. `glyphFor(ch, upright)` resuelve cuál usar.
 5. `glyphRunSvg` dibuja **un `<path>` por carácter** con la escala y el volteo vertical ya aplicados a las coordenadas (sin `transform` propio). Lo usan `layoutNode` (caso `"text"`) y el `√` del caso `"sqrt"`. El radical de cmsy10 cuelga bajo la línea base (TeX lo sube), así que se coloca con su borde superior tocando la barra, y la barra arranca en su extremo derecho.
-6. **Respaldo**: si un carácter no está en `GLYPH_DATA`, esa corrida se mide con canvas y se dibuja como `<text>` con `MATH_FONT_STACK`, para no fallar nunca. Ese carácter no sobrevivirá igual en PowerPoint; para agregarlo, ampliar el mapa del script de Python y volver a pegar `GLYPH_DATA`.
+6. **Respaldo**: si un carácter no está en `GLYPH_DATA`, esa corrida se mide con canvas y se dibuja como `<text>` con `MATH_FONT_STACK`, para no fallar nunca. Ese carácter no sobrevivirá igual en PowerPoint; para agregarlo, ampliar el mapa del script de Python y volver a correrlo para regenerar `compartido/glifos.js`.
 7. **Se retiraron** `getEmbeddedFontCss`, `arrayBufferToBase64`, `CM_FONT_URL`, `KATEX_VERSION`, el `<link>` al CSS de KaTeX y el `<defs><style>@font-face` de `buildSVG`. El SVG exportado ya no contiene ni `<text>` ni `<style>`.
 
 **Verificado**: en 6 casos (las tres formas, etiquetas automáticas y manuales con `\frac`, `x^2`, `\sqrt{2}`, `\alpha+\beta`, `\times`, `\text{2 cm}`, y un total `\frac{3}{4}+\pi-\Omega\neq\sin\theta`) el SVG exportado no tiene `<text>` ni `<style>`, las formas son idénticas a la versión anterior y se revisó una hoja con los 237 glifos. Como la medición ahora sale de los glifos reales de CM, un total ancho puede ensanchar el lienzo un poco distinto que antes, porque los operadores de CM traen sus márgenes laterales.
@@ -103,13 +103,13 @@ svg
 
 ## 8. Descarga del SVG
 
-- `download()`: el SVG ya es autosuficiente (glifos como `<path>`), así que no descarga ni incrusta ninguna fuente. Usa `showSaveFilePicker` (Chrome/Edge), recordando la última carpeta de la sesión (`lastSaveHandle`), con fallback a `<a download>` en otros navegadores.
+- `download()`: el SVG ya es autosuficiente (glifos como `<path>`), así que no descarga ni incrusta ninguna fuente. Arma el SVG y el nombre y llama a `Banco.guardarSVG(svg, filename)` (`compartido/guardar-svg.js`): `showSaveFilePicker` (Chrome/Edge), recordando la última carpeta de la sesión, con fallback a `<a download>` en otros navegadores.
 - **Enter** en los campos de numerador o denominador dispara la descarga (igual que el botón).
 - Nombre de archivo: `buildFilename()` → `[numerador]-[denominador]-[color].svg` (ej. `4-20-azul.svg`). Sin prefijo de forma — el usuario ya organiza los SVG en carpetas separadas por forma.
 
 ## 9. Interfaz
 
-Rediseñada con el sistema de diseño **"Vesta"** (Claude Design) e integrada como HTML/CSS normales: los tokens usados (colores, tipografía, radios, sombras, movimiento) están copiados en línea en el `:root` del `<style>` — el archivo sigue siendo único y autocontenido, sin `support.js`, `_ds/` ni React. La paleta de las figuras (`--morado`, `--azul`, …) no es del sistema de diseño y debe coincidir con `COLORS` del script.
+Rediseñada con el sistema de diseño **"Vesta"** (Claude Design) e integrada como HTML/CSS normales: los tokens (colores, tipografía, radios, sombras, movimiento) vienen de `../compartido/vesta.css`, sin `support.js`, `_ds/` ni React. El `:root` de `style.css` solo declara la paleta de las figuras (`--morado`, `--azul`, …), que no es del sistema de diseño y debe coincidir con `COLORS` del script.
 
 Estructura, de arriba abajo:
 
@@ -121,7 +121,7 @@ Estructura, de arriba abajo:
 - **Avisos** `#err` / `#warn` (estilo Callout: "No se puede generar la figura" / "Revisa este detalle"), ver sección 2.
 - **Vista previa**: tarjeta `.stage-inner` con `#svgHolder`. La regla `#svgHolder svg { max-width:100%; max-height:70vh }` es imprescindible (un rectángulo ancho o la llave ensanchando el lienzo desbordarían la tarjeta).
 
-Puente entre la fachada y el script (bloque al final del `<script>`): `setSelectValue(id, value)` cambia el `<select>` oculto y dispara `change` (así `render()` corre igual que antes); `syncDesignControls(forma, colorSel)` —llamada desde `updateVisibility()`— marca con `aria-pressed` el botón de forma y la muestra de color activos; `setEtiquetasExpanded(open)` abre/cierra el panel.
+Puente entre la fachada y el script (bloque al final de `script.js`): `setSelectValue(id, value)` cambia el `<select>` oculto y dispara `change` (así `render()` corre igual que antes); `syncDesignControls(forma, colorSel)` —llamada desde `updateVisibility()`— marca con `aria-pressed` el botón de forma y la muestra de color activos; `setEtiquetasExpanded(open)` abre/cierra el panel.
 
 Regla clave: **ningún control se quita del DOM para ocultarlo** — el script registra listeners y lee todos los ids al cargar (incluidos `#ancho` y `#colorPersonalizado` aunque no estén visibles). Se ocultan con el atributo `data-hide-when` (`display:none !important`). Los contenedores `#anchoField`, `#colorPersonalizadoField`, `#valorEnteroField`, `#labelModeField`, `#colorValorParteField`, `#colorValorTotalField` son los que alterna `updateVisibility()`.
 

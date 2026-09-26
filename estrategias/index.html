@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Estrategias de cálculo (completar la decena)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Fuentes del sistema de diseño "Vesta" (Fraunces = títulos,
+         Poppins = interfaz). Solo afectan a la interfaz, no al SVG
+         exportado (la ecuación se dibuja con glifos vectoriales). -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../compartido/vesta.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="page">
+      <!-- Cabecera + acción principal -->
+      <div class="section header">
+        <div>
+          <h1>Estrategias de cálculo</h1>
+          <p>
+            Completar la decena y resta como distancia entre dos números.
+            Descarga el resultado como SVG.
+          </p>
+        </div>
+        <button class="btn btn-primary downloadBtn" id="downloadBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Guardar SVG…
+        </button>
+      </div>
+
+      <!-- Selector de operación -->
+      <div class="section" style="margin-top: 20px">
+        <span class="fieldLabel" id="operacionLabel">Operación</span>
+        <div class="opGroup" role="group" aria-labelledby="operacionLabel">
+          <button type="button" class="btn opBtn" data-operacion="suma">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Suma
+          </button>
+          <button type="button" class="btn opBtn" data-operacion="resta">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Resta
+          </button>
+        </div>
+        <!-- select nativo oculto: el script lee #operacion.value -->
+        <select id="operacion" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+          <option value="suma" selected>Suma</option>
+          <option value="resta">Resta</option>
+        </select>
+      </div>
+
+      <!-- Estrategia (solo en la resta): pestañas del componente Tabs de
+           "Vesta", fachada del <select id="estrategia"> oculto. En la
+           suma solo existe "completar", así que la fila se oculta. -->
+      <div class="section" id="estrategiaField" style="margin-top: 18px" data-hide-when="true">
+        <div class="tabs" role="tablist" aria-label="Estrategia">
+          <button type="button" class="tab" role="tab" data-estrategia="completar">Completar la decena</button>
+          <button type="button" class="tab" role="tab" data-estrategia="distancia">Distancia entre dos números</button>
+        </div>
+        <select id="estrategia" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+          <option value="completar" selected>Completar la decena</option>
+          <option value="distancia">Distancia entre dos números</option>
+        </select>
+      </div>
+
+      <!-- Estrategia "completar la decena": números y material -->
+      <div class="section mainRow" id="camposCompletar">
+        <div class="w140">
+          <label class="fieldLabel" for="numero">Número</label>
+          <input class="input" type="number" id="numero" value="28" min="1" max="99" step="1" />
+          <span class="fieldHint">De 1 a 99</span>
+        </div>
+
+        <div class="w140">
+          <label class="fieldLabel" for="segundo" id="segundoLabel">Sumando</label>
+          <input class="input" type="number" id="segundo" value="5" min="1" max="9" step="1" />
+          <span class="fieldHint">Una cifra</span>
+        </div>
+
+        <div class="w260">
+          <label class="fieldLabel" for="modoDecena">Las decenas se muestran como…</label>
+          <select class="input" id="modoDecena">
+            <option value="bloque" selected>Una barra</option>
+            <option value="unidades">10 unidades</option>
+          </select>
+        </div>
+
+        <div class="w260" id="formatoDiezField" data-hide-when="true">
+          <label class="fieldLabel" for="formatoDiez">Acomodar las 10 unidades en…</label>
+          <select class="input" id="formatoDiez">
+            <option value="columna" selected>1 columna de 10</option>
+            <option value="columnas">2 columnas de 5</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Estrategia "distancia entre dos números" (solo resta) -->
+      <div class="section mainRow" id="camposDistancia" data-hide-when="true">
+        <div class="w140">
+          <label class="fieldLabel" for="distA">Minuendo</label>
+          <input class="input" type="number" id="distA" value="36" min="2" max="1000" step="1" />
+          <span class="fieldHint">Número mayor</span>
+        </div>
+
+        <div class="w140">
+          <label class="fieldLabel" for="distB">Sustraendo</label>
+          <input class="input" type="number" id="distB" value="27" min="1" step="1" />
+          <span class="fieldHint">No múltiplo de 10</span>
+        </div>
+
+        <div class="w170">
+          <label class="fieldLabel" for="distIzq">La recta empieza en</label>
+          <input class="input" type="number" id="distIzq" value="0" min="0" step="1" />
+          <span class="fieldHint">Hasta el sustraendo</span>
+        </div>
+
+        <div class="switchCol">
+          <label class="switch">
+            <input type="checkbox" role="switch" id="incluirMaterial" checked />
+            Material sobre la recta
+          </label>
+        </div>
+      </div>
+
+      <div class="section" style="padding-top: 2px; padding-bottom: 18px">
+        <p class="hint" id="hintCompletar">
+          En la suma, las unidades del sumando se dibujan aparte; en la resta,
+          las que se quitan van huecas, con borde punteado. Debajo va la
+          ecuación con tres casillas para completar. En Chrome/Edge, «Guardar
+          SVG» (o Enter en un número) abre un diálogo para elegir carpeta y
+          nombre; en otros navegadores se descarga a tu carpeta de descargas.
+        </p>
+        <p class="hint" id="hintDistancia" data-hide-when="true">
+          La recta va de «La recta empieza en» hasta el minuendo, siempre con
+          el mismo largo. El material mide la distancia real del sustraendo al
+          minuendo: unidades hasta la decena siguiente y, desde ahí, decenas
+          completas y unidades. «La recta empieza en» solo mueve el origen de
+          la recta; no cambia el material. Sin material, el archivo se guarda
+          con el sufijo <code>-sin-material</code>. En Chrome/Edge, «Guardar
+          SVG» (o Enter en un número) abre un diálogo para elegir carpeta y
+          nombre.
+        </p>
+      </div>
+
+      <!-- Banners de estado. #err/#warn son el contenedor que el script
+           muestra/oculta; el mensaje va en #errMsg/#warnMsg para no borrar
+           el título del aviso. -->
+      <div class="section banners">
+        <div id="err" class="callout error" role="alert">
+          <strong>No se puede generar la figura</strong>
+          <span id="errMsg"></span>
+        </div>
+        <div id="warn" class="callout warning" role="status">
+          <strong>Revisa este detalle</strong>
+          <span id="warnMsg"></span>
+        </div>
+      </div>
+
+      <!-- Previsualización -->
+      <div class="section stage">
+        <div class="stage-inner">
+          <div id="svgHolder"></div>
+        </div>
+        <div class="solucion" id="solucion"></div>
+      </div>
+    </div>
+
+    <script src="../compartido/glifos.js" defer></script>
+    <script src="../compartido/guardar-svg.js" defer></script>
+    <script src="script.js" defer></script>
+  </body>
+</html>

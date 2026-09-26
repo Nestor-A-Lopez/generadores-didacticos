@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Generador de números con material concreto</title>
+    <link rel="stylesheet" href="../compartido/vesta.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="topbar">
+      <h1>
+        <span class="c">C</span> <span class="d">D</span>
+        <span class="u">U</span> — Generador de números con material concreto
+      </h1>
+      <p>
+        Visualiza un número usando bloques, barras y cuadritos (al estilo del
+        material base diez). Ajusta las opciones y descarga el resultado como
+        SVG.
+      </p>
+    </div>
+
+    <div class="optionsBar">
+      <div class="optionsGroup">
+        <div class="field numero-field">
+          <label for="numero">Número</label>
+          <input type="text" id="numero" value="236" placeholder="Ej. 236" />
+        </div>
+
+        <div class="field">
+          <label for="tamano">Tamaño del cuadrito</label>
+          <select id="tamano">
+            <option value="14">Pequeño</option>
+            <option value="20" selected>Mediano</option>
+            <option value="28">Grande</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="modoCentena">Las centenas se muestran como…</label>
+          <select id="modoCentena">
+            <option value="bloque" selected>Una sola centena (bloque)</option>
+            <option value="decenas">10 decenas</option>
+            <option value="unidades">100 unidades</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="modoDecena">Las decenas se muestran como…</label>
+          <select id="modoDecena">
+            <option value="bloque" selected>Una sola decena (barra)</option>
+            <option value="unidades">10 unidades</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="formatoDiez">Si es 10 unidades, acomodarlas en…</label>
+          <select id="formatoDiez">
+            <option value="columna" selected>1 columna de 10</option>
+            <option value="columnas">2 columnas de 5</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="optionsGroup checkboxRow">
+        <div class="checkrow">
+          <input type="checkbox" id="mostrarDesglose" checked />
+          <label for="mostrarDesglose">Mostrar desglose C D U</label>
+        </div>
+      </div>
+
+      <div class="downloadArea">
+        <button class="downloadBtn" id="downloadBtn">Guardar SVG…</button>
+        <div id="err" class="error"></div>
+      </div>
+    </div>
+
+    <div
+      class="topbar"
+      style="border-bottom: none; padding-top: 0; padding-bottom: 12px"
+    >
+      <p class="hint">
+        "Las decenas se muestran como…" también controla cómo se ven las decenas
+        cuando una centena se desglosa en "10 decenas". La opción "columna /
+        columnas" solo tiene efecto cuando una decena se muestra como 10
+        unidades.
+      </p>
+    </div>
+
+    <div class="stage">
+      <div class="stage-inner">
+        <div id="svgHolder"></div>
+      </div>
+      <div id="desgloseHolder" class="desglose"></div>
+    </div>
+
+    <script src="../compartido/guardar-svg.js" defer></script>
+    <script src="script.js" defer></script>
+  </body>
+</html>

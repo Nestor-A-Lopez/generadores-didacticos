@@ -1,8 +1,8 @@
-# Generador de tablas de valor posicional — `_generador-tabla-valor-posicional.html`
+# Generador de tablas de valor posicional — `tabla-valor-posicional/tabla-valor-posicional/`
 
-Herramienta de un solo archivo (HTML+CSS+JS) que genera tablas de valor posicional como SVG descargable. El SVG se pega en PowerPoint y se convierte a formas editables: tiene que funcionar en ese flujo, no solo verse bien en el navegador. Proyecto hermano: `../operaciones/` (misma tipografía, bordes y agrupamiento). Las convenciones generales del repo están en el `CLAUDE.md` de la raíz.
+Herramienta web (`index.html` + `style.css` + `script.js`, más lo que carga de `../../compartido/`) que genera tablas de valor posicional como SVG descargable. El SVG se pega en PowerPoint y se convierte a formas editables: tiene que funcionar en ese flujo, no solo verse bien en el navegador. Proyecto hermano: `../operaciones/` (misma tipografía, bordes y agrupamiento). Las convenciones generales del repo están en el `CLAUDE.md` de la raíz.
 
-> En el contexto de abajo el archivo aparece como `generador-tabla-valor-posicional.html`; el nombre real es `_generador-tabla-valor-posicional.html`.
+> Antes era un solo archivo, `_generador-tabla-valor-posicional.html`; se separó el 2026-09-26 sin cambiar la lógica (SVG idéntico byte a byte). En lo que sigue, «el script» es `script.js` y los estilos están en `style.css`.
 
 ## Reglas de trabajo
 
@@ -18,7 +18,7 @@ Herramienta de un solo archivo (HTML+CSS+JS) que genera tablas de valor posicion
 # Contexto técnico
 
 
-Aplicación de un solo archivo HTML (HTML+CSS+JS embebido) que genera **tablas de valor posicional** como SVG descargable, pensadas para insertarse y editarse como formas dentro de PowerPoint. Todo el código vive en un único `<script>`; la función central es `buildSVG(state)`, que recibe el estado de los controles como objeto y devuelve el SVG completo como string (junto con el nombre de archivo sugerido).
+Aplicación web (`index.html`, `style.css`, `script.js`) que genera **tablas de valor posicional** como SVG descargable, pensadas para insertarse y editarse como formas dentro de PowerPoint. Todo el código vive en `script.js`; la función central es `buildSVG(state)`, que recibe el estado de los controles como objeto y devuelve el SVG completo como string (junto con el nombre de archivo sugerido).
 
 ## 1. Rango de órdenes que puede mostrar la tabla
 
@@ -31,7 +31,7 @@ Aplicación de un solo archivo HTML (HTML+CSS+JS embebido) que genera **tablas d
 
 - La tabla puede mostrar **más de un número**, uno por fila, mediante una lista dinámica (`numerosState`, arreglo de `{numero, jerarquia}`) con botones "+ Agregar número" y "Quitar" por fila (mínimo 1 fila).
 - **Cada fila tiene su propio selector de "Jerarquía"** (`.jerarquia-select`, uno por fila, con sus opciones generadas por `jerarquiaOptionsHTML(selectedCode, maxPow, minPow)`), independiente entre filas. La jerarquía indica en qué columna empieza a interpretarse el número escrito (p. ej. "36" en jerarquía "Decenas" se interpreta como 360).
-- Entre cada fila y la siguiente se dibuja una **línea punteada de baja opacidad** (`dashedSeparator`, negro al 22% de opacidad, con patrón de guiones), igual que en `_operaciones-tabla-valor-posicional.html`. La primera fila no lleva línea arriba.
+- Entre cada fila y la siguiente se dibuja una **línea punteada de baja opacidad** (`dashedSeparator`, negro al 22% de opacidad, con patrón de guiones), igual que en el generador de operaciones (`../operaciones/`). La primera fila no lleva línea arriba.
 - Si el rango de órdenes se reduce y la jerarquía guardada de alguna fila deja de ser válida, `clampJerarquias()` la reajusta automáticamente a "Unidades" (sin generar error).
 - La casilla "Tabla en blanco" ignora la lista de números y muestra una sola fila vacía (plantilla para llenar a mano), con la cuadrícula completa de comas/apóstrofes de referencia.
 
@@ -63,10 +63,10 @@ Aplicación de un solo archivo HTML (HTML+CSS+JS embebido) que genera **tablas d
 
 ## 6. Tipografía del SVG exportado: Computer Modern real, como vectores
 
-- Los dígitos y letras **de la tabla dibujada** no usan `<text>` ni ninguna fuente instalada: cada glifo se dibuja como `<path>` vectorial, extraído directamente de las fuentes reales de LaTeX (`cmr10` para dígitos, `cmb10` para negritas) con `fontTools`, e incrustado como JSON (`GLYPH_DATA`, con `upm`, y subconjuntos `regular`/`bold`) directamente en el script. Esto es independiente de la tipografía de la *interfaz de controles* (ver sección 10) — el SVG exportado nunca depende de una fuente externa ni instalada.
+- Los dígitos y letras **de la tabla dibujada** no usan `<text>` ni ninguna fuente instalada: cada glifo se dibuja como `<path>` vectorial, extraído directamente de las fuentes reales de LaTeX (`cmr10` para dígitos, `cmb10` para negritas) con `fontTools`, guardados en `compartido/glifos-tabla.js` (`Banco.GLYPH_DATA_TABLA`, con `upm` y subconjuntos `regular`/`bold`), que comparte con operaciones. `script.js` lo toma con `const GLYPH_DATA = Banco.GLYPH_DATA_TABLA;`. Esto es independiente de la tipografía de la *interfaz de controles* (ver sección 10) — el SVG exportado nunca depende de una fuente externa ni instalada.
 - `glyphRun(str, fontData, cx, rowCenterY, fontSizePx, ref, fill)` centra un texto (horizontal y verticalmente, usando un bbox de referencia `ref` por fila) dibujando cada carácter como un `<g transform="translate(...) scale(...)"><path.../></g>`.
 - `glyphRunClamped(...)` es igual pero recorta (clamp) la posición horizontal si el glifo se saldría por el borde izquierdo/derecho del SVG (usado para comas, apóstrofes y el punto decimal, que pueden caer justo en el borde de la tabla).
-- Si se necesita un carácter nuevo en el futuro, hay que extraerlo con `fontTools` (`SVGPathPen` + `BoundsPen`) de `cmr10.ttf`/`cmb10.ttf` y añadirlo a `GLYPH_DATA`.
+- Si se necesita un carácter nuevo en el futuro, hay que extraerlo con `fontTools` (`SVGPathPen` + `BoundsPen`) de `cmr10.ttf`/`cmb10.ttf` y añadirlo a `compartido/glifos-tabla.js` (afecta también a operaciones).
 
 ## 7. Bordes y cuadrícula (pensados para "Convertir en forma" de PowerPoint)
 
@@ -102,14 +102,14 @@ svg
 - Para los órdenes decimales, el prefijo usa la abreviatura de 3 letras (`dec`, `cen`, `mil`) en vez del código de una letra (`d`, `c`, `m`).
 - Si hay varios números en la lista, cada uno aporta su propio `[Orden]-[Numero]` y se unen con `+` (ej. `U-950-000+D-1-234.svg`).
 - Si la tabla está en blanco, el nombre completo es `vacia.svg`.
-- Función: `buildFilename(numerosState, blank)` — recibe el estado explícitamente (no lee el DOM), y es llamada desde dentro de `buildSVG(state)`, que la incluye en su resultado (`result.filename`). Guardado real: `download()` — usa `showSaveFilePicker` (Chrome/Edge) recordando la última carpeta usada en la sesión (`lastSaveHandle`), con fallback a descarga estándar (`<a download>`) en otros navegadores.
+- Función: `buildFilename(numerosState, blank)` — recibe el estado explícitamente (no lee el DOM), y es llamada desde dentro de `buildSVG(state)`, que la incluye en su resultado (`result.filename`). Guardado real: `download()` arma el SVG y llama a `Banco.guardarSVG(result.svg, filename)` (`compartido/guardar-svg.js`): `showSaveFilePicker` (Chrome/Edge) recordando la última carpeta usada en la sesión, con fallback a descarga estándar (`<a download>`) en otros navegadores.
 - **Enter** en cualquier campo de número dispara el guardado (igual que hacer clic en "Guardar SVG…").
 
 ## 10. Interfaz general
 
 Rediseñada (con Claude Design) a partir de la versión original de barra horizontal; la estructura de controles y sus hooks de JS se conservan/remapean, pero el aspecto visual y algunos detalles de wiring cambiaron. Lo que hay que saber para seguir trabajando aquí:
 
-- **Tipografía de la interfaz**: "Fraunces" (título, serif) + "Poppins" (resto, sans), cargadas por un único `@import url("https://fonts.googleapis.com/...")` en el `<style>`. Esta es una **excepción documentada** a la regla general de "sin dependencias externas" del proyecto: aplica **solo a la interfaz de controles**, nunca al SVG exportado (que sigue usando `GLYPH_DATA`/glifos vectoriales propios, sección 6, sin ninguna fuente externa ni instalada). Si el usuario abre el archivo sin internet, los `@import` fallan silenciosamente y el navegador cae a las fuentes de sistema declaradas como *fallback* en cada `font-family` — la app sigue funcionando igual, solo cambia la tipografía de la interfaz.
+- **Tipografía de la interfaz**: "Fraunces" (título, serif) + "Poppins" (resto, sans), cargadas por un único `@import url("https://fonts.googleapis.com/...")` al principio de `style.css`. Los tokens de Vesta vienen de `../../compartido/vesta.css`. Esta es una **excepción documentada** a la regla general de "sin dependencias externas" del proyecto: aplica **solo a la interfaz de controles**, nunca al SVG exportado (que sigue usando `GLYPH_DATA`/glifos vectoriales propios, sección 6, sin ninguna fuente externa ni instalada). Si el usuario abre el archivo sin internet, los `@import` fallan silenciosamente y el navegador cae a las fuentes de sistema declaradas como *fallback* en cada `font-family` — la app sigue funcionando igual, solo cambia la tipografía de la interfaz.
 - **Layout**: `topbar` (título + subtítulo) → `toolbar` horizontal con grupos separados por `.divider` verticales (Rango → Números → Color → Presentación → botón de guardar), sin panel lateral. El banner de error, cuando aplica, aparece como una franja completa debajo del `toolbar`. Debajo de todo, el área de vista previa (`.stage` > `.stage-inner` > `#svgHolder`), que antes del primer render muestra un placeholder de texto ("Cargando vista previa…") reemplazado de inmediato por el SVG real.
 - **Controles y sus ids** (sin cambios respecto a la versión anterior, para no romper nada que dependa de ellos): `#hastaOrden`, `#hastaOrdenDecimal`, `#numerosList` (contenedor de filas), `#addNumero`, `#colorDigitos`, `#mostrarPeriodos`, `#mostrarClase`, `#coma`, `#mostrarPunto`, `#permitirPuntoSinDigitos`, `#vacia`, `#downloadBtn`, `#svgHolder`. Cada fila de número (`.numeroRow`) sigue teniendo `span.tag`, `input.numero-input`, `select.jerarquia-select` y `button.removeBtn`.
 - **Checkboxes**: mismos 6 ids de siempre (`mostrarPeriodos`, `mostrarClase`, `coma`, `mostrarPunto`, `permitirPuntoSinDigitos`, `vacia`), pero ahora con marcado custom (`label.checkbox` envolviendo el `<input>` oculto + un `<span class="box">` que dibuja la casilla) en vez de `<input>` + `<label>` planos. Siguen disparando `render()` en `input`/`change` igual que antes.

@@ -9,7 +9,7 @@ Generadores de figuras matemáticas para clase (fracciones, material base 10, ta
 ## Decisiones vigentes
 
 1. **Todo se desarrolla en HTML/CSS/JS.** LaTeX/TikZ quedó retirado: ya no hay `.tex`, no se compila nada y no se convierte de PDF a SVG. Si aparece un `.tex` o una carpeta `temp/`, es un resto que se puede eliminar (preguntando antes).
-2. **Cada generador son tres archivos propios**: un HTML, un CSS y un JS, y además carga lo que está en `compartido/` (ver «Arquitectura de un generador» y «Carpeta compartida»). Los generadores actuales todavía son de un solo archivo; separarlos es un pendiente. Los `CLAUDE.md` de las subcarpetas describen el estado de un solo archivo hasta que se separe cada uno: al separarlo, actualizar también su `CLAUDE.md`.
+2. **Cada generador son tres archivos propios**: un HTML, un CSS y un JS, y además carga lo que está en `compartido/` (ver «Arquitectura de un generador» y «Carpeta compartida»). Los seis generadores ya están separados (2026-09-26). En los `CLAUDE.md` de las subcarpetas, «el script» es su `script.js` y «la interfaz» su `index.html` + `style.css`.
 3. **Se permiten dependencias externas** en la aplicación (librerías por CDN, fuentes, iconos). Lo que **no** cambia: el SVG exportado sigue siendo autosuficiente (ver «Reglas transversales»).
 
 ## Arquitectura de un generador
@@ -18,13 +18,14 @@ Generadores de figuras matemáticas para clase (fracciones, material base 10, ta
 <carpeta-del-generador>/
 ├── index.html    ← estructura y controles; enlaza los otros dos
 ├── style.css     ← estilos propios de la interfaz (los tokens vienen de compartido/vesta.css)
-└── script.js     ← toda la lógica (constantes, GLYPH_DATA, cálculo, buildSVG, UI)
+└── script.js     ← toda la lógica (constantes, cálculo, buildSVG, UI); los glifos vienen de compartido/
 ```
 
 - `index.html` porque GitHub Pages sirve `…/fracciones/` directamente, sin escribir el nombre del archivo.
 - El JS se carga como **script clásico**: `<script src="script.js" defer></script>`. **No** usar `type="module"` ni `fetch()` de archivos locales (por ejemplo, cargar `GLYPH_DATA` desde un `.json`): Chrome y Edge los bloquean al abrir el HTML con doble clic (`file://`), y la herramienta tiene que seguir funcionando así. Si algún día se necesitan módulos, se trabaja con un servidor local (`python -m http.server`) y se documenta aquí.
 - Dependencias externas: por CDN (cdnjs, jsDelivr, Google Fonts) y **con versión fija** en la URL. Sin internet la interfaz puede degradarse, pero el SVG exportado no debe depender de nada externo.
-- **Cómo separar un generador de un solo archivo:** mover el contenido de `<style>` a `style.css` y el de `<script>` a `script.js` **sin cambiar lógica**; conservar todos los ids del DOM. Antes de dar por terminada la separación, comprobar que el SVG exportado es **idéntico byte a byte** al de la versión anterior en varios casos representativos (así se validó el rediseño de fracciones y de la tabla de valor posicional).
+- **Cómo se separaron** (por si llega otro generador de un solo archivo): el contenido de `<style>` pasó a `style.css` y el de `<script>` a `script.js` **sin cambiar lógica**, solo quitando la sangría común, y con todos los ids del DOM intactos. Luego se movió a `compartido/` lo repetido. En cada paso se comprobó que el SVG exportado seguía **idéntico byte a byte** en 40 casos representativos (de 6 a 7 por generador) y que las capturas de la interfaz coincidían píxel a píxel.
+- Quitar sangría es seguro salvo dentro de plantillas `` `…` `` de varias líneas que terminen en el SVG: revisarlas antes. Al separar solo había una, en operaciones, y arma HTML de la interfaz.
 
 ## Carpeta compartida
 
@@ -32,14 +33,25 @@ Generadores de figuras matemáticas para clase (fracciones, material base 10, ta
 
 ```
 compartido/
-├── vesta.css        ← tokens de Vesta que usan las interfaces (colores, radios, sombras, tipografía, movimiento)
-├── glifos.js        ← GLYPH_DATA de Computer Modern (lo genera fracciones/_extraer_glifos.py)
-└── guardar-svg.js   ← showSaveFilePicker + respaldo <a download> + Enter para guardar
+├── vesta.css        ← tokens de Vesta (todos los bloques :root de _desing-system-vesta/tokens/, sin base.css ni el @import de fuentes)
+├── glifos.js        ← Banco.GLYPH_DATA: juego completo de Computer Modern (lo escribe fracciones/_extraer_glifos.py)
+├── glifos-tabla.js  ← Banco.GLYPH_DATA_TABLA: glifos de las tablas, en su propio formato {upm, regular, bold}
+└── guardar-svg.js   ← Banco.guardarSVG(svg, filename): showSaveFilePicker (recuerda la carpeta) + respaldo <a download>
 ```
 
-(Los nombres son la propuesta inicial; se crean al separar el primer generador que los necesite.)
+Quién carga qué:
 
-- Cada `index.html` los carga **antes** que los suyos, con rutas relativas: `<link rel="stylesheet" href="../compartido/vesta.css">` antes de `style.css`, y `<script src="../compartido/glifos.js" defer></script>` antes de `script.js`. Los generadores que están un nivel más abajo (`tabla-valor-posicional/operaciones/`) usan `../../compartido/`.
+| Generador | `vesta.css` | `glifos.js` | `glifos-tabla.js` | `guardar-svg.js` |
+| --- | --- | --- | --- | --- |
+| fracciones, estrategias, recta-numerica | sí | sí | — | sí |
+| tabla de valor posicional, operaciones | sí | — | sí | sí |
+| numeros-material | sí (solo usa `--base10-*`) | — | — | sí |
+
+- Cada `index.html` los carga **antes** que los suyos, con rutas relativas: `<link rel="stylesheet" href="../compartido/vesta.css" />` antes de `style.css`, y los `<script src="../compartido/…" defer></script>` antes de `script.js`. Los generadores que están un nivel más abajo (`tabla-valor-posicional/…/`) usan `../../compartido/`.
+- En `script.js` se toman con una línea (`const GLYPH_DATA = Banco.GLYPH_DATA;`), así el resto del código no cambió. `download()` arma el SVG y el nombre, y termina con `await Banco.guardarSVG(svg, filename)`. El atajo de **Enter** se queda en cada generador porque cada uno lo pone en campos distintos.
+- `glifos.js` es el juego completo de fracciones (237 glifos). Estrategias y recta-numerica tenían recortes de 13 glifos, copiados tal cual de ese juego; se unificaron por decisión del usuario, porque solo buscan por carácter y la salida no cambia. Las tablas usan otro formato (con `bold`), así que van aparte en `glifos-tabla.js`.
+- `glifos.js` no se edita a mano: se regenera con `python fracciones/_extraer_glifos.py` (necesita `fontTools` y `matplotlib`), que escribe el archivo directamente.
+- En cada `style.css` quedan solo los tokens que no son de Vesta: la paleta de fracciones (`--morado`…), la paleta propia de numeros-material (`--bg`, `--ink`, `--panel`, `--line`) y los alias `--colU/--colD/--colC`, que ahora valen `var(--base10-*)`.
 - Mismas reglas que `script.js`: scripts clásicos, sin `type="module"` ni `fetch()`, para que todo siga funcionando con doble clic.
 - Los scripts clásicos comparten el ámbito global: lo compartido se expone en **un solo objeto**, `window.Banco` (por ejemplo, `Banco.GLYPH_DATA`, `Banco.guardarSVG(...)`), para no chocar con nombres de los generadores.
 - Solo entra en `compartido/` lo que es **idéntico** en dos o más generadores. Si un generador necesita una variante (por ejemplo, otro subconjunto de glifos), se queda en su `script.js` hasta que se decida unificar.
@@ -48,18 +60,20 @@ compartido/
 
 ## Mapa de carpetas
 
-| Carpeta | Generador (estado actual) | Instrucciones propias |
-| --- | --- | --- |
-| `fracciones/` | `generador_fracciones.html` (círculo, rectángulo, triángulo) | `fracciones/CLAUDE.md` |
-| `fracciones/_desing-system-vesta/` | Sistema de diseño **Vesta** (no es un generador; ver abajo) | `SKILL.md`, `readme.md` |
-| `tabla-valor-posicional/tabla-valor-posicional/` | `_generador-tabla-valor-posicional.html` | su `CLAUDE.md` |
-| `tabla-valor-posicional/operaciones/` | `_operaciones-tabla-valor-posicional.html` (suma, resta, multiplicación, división) | su `CLAUDE.md` |
-| `numeros-material/` | `_generador-numeros-material.html` (material base 10: unidades, decenas, centenas) | — |
-| `estrategias/` | `estrategias.html` (completar la decena en suma y resta; en la resta, pestaña «Distancia entre dos números»: recta numérica + material + ecuación) | — |
-| `recta-numerica/` | `recta-numerica.html` (extremos, paso y separación entre marcas) | — |
-| `compartido/` | (por crear) Tokens, glifos y guardado que usan varios generadores; ver «Carpeta compartida» | — |
+Cada carpeta de generador tiene `index.html` + `style.css` + `script.js`.
 
-Convención actual: el archivo generador lleva prefijo `_` para que quede arriba de la lista de SVG en el explorador. Con la arquitectura de tres archivos pasa a llamarse `index.html`.
+| Carpeta | Generador | Instrucciones propias |
+| --- | --- | --- |
+| `fracciones/` | Fracciones: círculo, rectángulo, triángulo. También tiene `_extraer_glifos.py` | `fracciones/CLAUDE.md` |
+| `fracciones/_desing-system-vesta/` | Sistema de diseño **Vesta** (no es un generador; ver abajo) | `SKILL.md`, `readme.md` |
+| `tabla-valor-posicional/tabla-valor-posicional/` | Tabla de valor posicional | su `CLAUDE.md` |
+| `tabla-valor-posicional/operaciones/` | Operaciones en la tabla: suma, resta, multiplicación, división | su `CLAUDE.md` |
+| `numeros-material/` | Números con material base 10: unidades, decenas, centenas | — |
+| `estrategias/` | Completar la decena en suma y resta; en la resta, pestaña «Distancia entre dos números» (recta numérica + material + ecuación) | — |
+| `recta-numerica/` | Recta numérica: extremos, paso y separación entre marcas | — |
+| `compartido/` | Tokens, glifos y guardado que usan varios generadores; ver «Carpeta compartida» | — |
+
+Antes, cada generador era un solo `.html` con prefijo `_` (para que quedara arriba de la lista de SVG en el explorador); ahora todos se llaman `index.html`. Los nombres viejos siguen en el historial de git (`git log --follow`).
 
 ## Nombres de archivo de los SVG
 
@@ -80,7 +94,7 @@ Los códigos de orden son `U D C UM DM CM UMM…` para enteros y `dec cen mil` (
 ## Colores de las figuras
 
 - Material base 10 (fijos; los alumnos ya los asocian con el material físico): unidad `#57A639` (verde), decena `#1C75BC` (azul), centena `#CC2027` (rojo). Son tokens de Vesta: `--base10-unidad`, `--base10-decena`, `--base10-centena`. Son los únicos colores de figura que viven en el sistema de diseño.
-- Fracciones: `morado #8080F0`, `azul #2ED9D9`, `naranja #f48600`, `rojo #E8384F`, `verde #7CBF33`, `amarillo #ffd500` (`COLORS` de `generador_fracciones.html`).
+- Fracciones: `morado #8080F0`, `azul #2ED9D9`, `naranja #f48600`, `rojo #E8384F`, `verde #7CBF33`, `amarillo #ffd500` (`COLORS` de `fracciones/script.js`).
 - Ninguna paleta de figuras se «armoniza» con la rampa azul de Vesta. La de fracciones no está en Vesta.
 
 ## Sistema de diseño «Vesta»
@@ -104,14 +118,14 @@ Coordinación entre diseño y código:
 
 Aplican a todos los generadores (el detalle y el porqué están en el `CLAUDE.md` de cada subcarpeta):
 
-1. **Sin `<text>` ni `@font-face`**: todo texto se dibuja como `<path>` con glifos de Computer Modern extraídos offline con `fontTools` (`GLYPH_DATA` incrustado en el script; `fracciones/_extraer_glifos.py`). PowerPoint ignora `@font-face` al convertir a formas. Poder usar dependencias externas no cambia esto: nada de fuentes web ni librerías cargadas por red dentro del SVG.
+1. **Sin `<text>` ni `@font-face`**: todo texto se dibuja como `<path>` con glifos de Computer Modern extraídos offline con `fontTools` (`compartido/glifos.js`, que escribe `fracciones/_extraer_glifos.py`, y `compartido/glifos-tabla.js` para las tablas). PowerPoint ignora `@font-face` al convertir a formas. Poder usar dependencias externas no cambia esto: nada de fuentes web ni librerías cargadas por red dentro del SVG.
 2. **Agrupamiento en dos niveles** pensado para «desagrupar una vez / dos veces» en PowerPoint. No añadir un `<g>` envolvente (ni para márgenes: se desplaza el `viewBox`).
 3. **Fondo transparente**, sin `<rect>` de fondo blanco.
 4. En las tablas: bordes como rectángulos rellenos (nada de `<line>` ni `stroke`), medidas redondeadas a enteros y `stroke` par.
-5. Guardado con `showSaveFilePicker` (recuerda la carpeta en la sesión) y respaldo `<a download>`; **Enter** en los campos numéricos guarda.
+5. Guardado con `Banco.guardarSVG` (`compartido/guardar-svg.js`): `showSaveFilePicker`, que recuerda la carpeta en la sesión, y respaldo `<a download>`. **Enter** en los campos numéricos guarda en fracciones, tabla, estrategias y recta-numerica; operaciones y numeros-material todavía no lo tienen.
 6. No quitar controles del DOM para ocultarlos: el script lee todos los ids al cargar.
-7. Los trazos punteados (`stroke-dasharray`) y las formas huecas (`fill="none"`) **sobreviven** a «Convertir en forma»: el usuario lo confirmó en PowerPoint el 2026-09-26 con `estrategias.html`.
-8. **Borde del material concreto, igual en todos los generadores**: blanco (`#FFFFFF`), 0.75 pt en la unidad y 1.05 pt en la decena y la centena. `_generador-numeros-material.html` lo escribe como 1 px / 1.4 px (su SVG está en px y PowerPoint toma 1 px = 0.75 pt); los generadores que dibujan en pt (`estrategias.html`) usan 0.75 / 1.05. Es un grosor absoluto: no se escala con el tamaño del cuadrito.
+7. Los trazos punteados (`stroke-dasharray`) y las formas huecas (`fill="none"`) **sobreviven** a «Convertir en forma»: el usuario lo confirmó en PowerPoint el 2026-09-26 con el generador de estrategias.
+8. **Borde del material concreto, igual en todos los generadores**: blanco (`#FFFFFF`), 0.75 pt en la unidad y 1.05 pt en la decena y la centena. `numeros-material` lo escribe como 1 px / 1.4 px (su SVG está en px y PowerPoint toma 1 px = 0.75 pt); los generadores que dibujan en pt (`estrategias`) usan 0.75 / 1.05. Es un grosor absoluto: no se escala con el tamaño del cuadrito.
 
 ## Plataforma (GitHub Pages)
 
@@ -125,9 +139,8 @@ Objetivo: un solo sitio con una portada que enlace a todos los generadores. GitH
 
 En este orden, y preguntando antes de mover o borrar:
 
-1. **Separar cada generador en tres archivos** (uno por uno, con la comprobación byte a byte), moviendo a `compartido/` lo que ya esté repetido en otro generador separado.
-2. **Montar la plataforma**: portada, estructura final de carpetas y publicación en GitHub Pages.
-3. **Vesta**: mantener sincronizada la copia local con la de claude.ai. En la de claude.ai el componente `Icon` carga Lucide desde jsDelivr; la copia local sigue usando unpkg (misma versión).
+1. **Montar la plataforma**: portada, estructura final de carpetas y publicación en GitHub Pages.
+2. **Vesta**: mantener sincronizada la copia local con la de claude.ai. En la de claude.ai el componente `Icon` carga Lucide desde jsDelivr; la copia local sigue usando unpkg (misma versión).
 
 ## Cómo trabajar aquí
 
