@@ -185,7 +185,6 @@ function buildSVG(n, opts) {
   let x = 0;
   let bodySvg = "";
   let maxH = 0;
-  let usedAny = false;
 
   for (let i = 0; i < centenas; i++) {
     const b = drawHundred(
@@ -200,42 +199,37 @@ function buildSVG(n, opts) {
     bodySvg += b.svg;
     x += b.width + G;
     maxH = Math.max(maxH, b.height);
-    usedAny = true;
   }
   for (let i = 0; i < decenas; i++) {
     const b = drawTen(x, 0, L, G, modoDecena, formatoDiez);
     bodySvg += b.svg;
     x += b.width + G;
     maxH = Math.max(maxH, b.height);
-    usedAny = true;
   }
   if (unidades > 0) {
     const b = drawLooseUnits(x, L, G, unidades);
     bodySvg += b.svg;
     x += b.width;
     maxH = Math.max(maxH, b.height);
-    usedAny = true;
-  } else if (usedAny) {
-    // había algo antes de las unidades sueltas: quitamos la última separación
+  } else {
+    // Sin unidades sueltas (n >= 1, así que hay centenas o decenas antes):
+    // quitamos la última separación
     x -= G;
   }
 
-  const totalW = usedAny ? x : L;
-  const totalH = usedAny ? maxH : L;
+  const totalW = x;
+  const totalH = maxH;
 
   const svgW = totalW + margin * 2;
   const svgH = totalH + margin * 2;
 
   let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${svgW}" height="${svgH}" viewBox="0 0 ${svgW} ${svgH}">`;
-  if (usedAny) {
-    // Volteamos el eje Y para que el material "crezca hacia arriba",
-    // igual que en el archivo .tex de referencia (coordenadas cartesianas).
-    svg += `<g transform="translate(${margin}, ${totalH + margin}) scale(1,-1)">`;
-    svg += bodySvg;
-    svg += `</g>`;
-  } else {
-    svg += `<text x="${svgW / 2}" y="${svgH / 2}" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="${L * 0.8}" fill="#9aa2ad">0</text>`;
-  }
+  // Volteamos el eje Y para que el material "crezca hacia arriba",
+  // igual que en el archivo .tex de referencia (coordenadas cartesianas).
+  // (El número va de NUM_MIN = 1 en adelante: siempre hay material.)
+  svg += `<g transform="translate(${margin}, ${totalH + margin}) scale(1,-1)">`;
+  svg += bodySvg;
+  svg += `</g>`;
   svg += `</svg>`;
 
   return { svg, centenas, decenas, unidades };
@@ -354,9 +348,9 @@ function render() {
   }
 }
 
-function buildFilename() {
-  const numero = document.getElementById("numero").value.trim();
-  return `${numero || "0"}.svg`;
+// Con el número ya convertido, así "007" se guarda como 7.svg.
+function buildFilename(n) {
+  return `${n}.svg`;
 }
 
 
@@ -366,7 +360,7 @@ async function download() {
   const n = parseInt(opts.numeroRaw, 10);
   if (n < NUM_MIN || n > NUM_MAX) return;
   const { svg } = buildSVG(n, opts);
-  const filename = buildFilename();
+  const filename = buildFilename(n);
 
   await Banco.guardarSVG(svg, filename); // compartido/guardar-svg.js
 }
