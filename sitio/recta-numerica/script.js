@@ -50,32 +50,8 @@ const GLYPH_DATA = Banco.GLYPH_DATA; // compartido/glifos.js
 
 const _r2 = (v) => Math.round(v * 100) / 100;
 
-// Igual que en fracciones/script.js: un <path> por carácter, con
-// la escala y el volteo vertical ya aplicados a las coordenadas (sin
-// transform), para que PowerPoint lo convierta a forma libre.
-function glyphRunSvg(text, x, y, fontSize, fill) {
-  const s = fontSize / GLYPH_DATA.upm;
-  let out = "";
-  let cx = x;
-  for (const ch of text) {
-    const g = GLYPH_DATA.r[ch];
-    if (g[3] !== "") {
-      let isX = true;
-      const d = g[3].replace(/[MLQZ]|-?\d+/g, (t) => {
-        if (/[MLQZ]/.test(t)) {
-          isX = true;
-          return t;
-        }
-        const v = isX ? cx + t * s : y - t * s;
-        isX = !isX;
-        return " " + _r2(v);
-      });
-      out += `<path d="${d}" fill="${fill}"/>`;
-    }
-    cx += g[0] * s;
-  }
-  return out;
-}
+// Un <path> por carácter, con glifos rectos (compartido/texto-svg.js).
+const glyphRunSvg = Banco.glyphRunSvg;
 
 // Ancho (avance) y alto de tinta de una cadena, desde los glifos.
 function glyphMetrics(text, fontSize) {

@@ -437,33 +437,12 @@ function glyphMetrics(text, fontSize, upright) {
   };
 }
 
-const _r2 = (v) => Math.round(v * 100) / 100;
-
-// Un <path> por carácter, con la escala y el volteo vertical ya
-// aplicados a las coordenadas (sin transform), para que PowerPoint lo
-// convierta a forma libre sin interpretar nada más.
+// Un <path> por carácter (compartido/texto-svg.js), con la búsqueda de
+// glifos de este generador para respetar la convención recto/cursiva.
 function glyphRunSvg(text, x, y, fontSize, fill, upright) {
-  const s = fontSize / GLYPH_DATA.upm;
-  let out = "";
-  let cx = x;
-  for (const ch of text) {
-    const g = glyphFor(ch, upright);
-    if (g[3] !== "") {
-      let isX = true;
-      const d = g[3].replace(/[MLQZ]|-?\d+/g, (t) => {
-        if (/[MLQZ]/.test(t)) {
-          isX = true;
-          return t;
-        }
-        const v = isX ? cx + t * s : y - t * s;
-        isX = !isX;
-        return " " + _r2(v);
-      });
-      out += `<path d="${d}" fill="${fill}"/>`;
-    }
-    cx += g[0] * s;
-  }
-  return out;
+  return Banco.glyphRunSvg(text, x, y, fontSize, fill, (ch) =>
+    glyphFor(ch, upright),
+  );
 }
 
 function measureText(text, fontSize, upright) {

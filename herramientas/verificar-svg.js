@@ -40,11 +40,11 @@ const CASOS = {
   },
   "numeros-dienes": {
     "236": [],
-    "36-peq": [["set", "#numero", "36"], ["set", "#tamano", "14"]],
+    "36-sin-centenas": [["set", "#numero", "36"]],
     "427-cen-decenas": [["set", "#numero", "427"], ["set", "#modoCentena", "decenas"]],
     "150-dec-unid-col": [["set", "#numero", "150"], ["set", "#modoDecena", "unidades"], ["set", "#formatoDiez", "columnas"]],
     "9-desglose": [["set", "#numero", "9"], ["set", "#mostrarDesglose", true]],
-    "305-cen-unid-grande": [["set", "#numero", "305"], ["set", "#modoCentena", "unidades"], ["set", "#tamano", "28"]],
+    "305-cen-unid": [["set", "#numero", "305"], ["set", "#modoCentena", "unidades"]],
   },
   estrategias: {
     "28+5": [],

@@ -5,7 +5,8 @@
 //
 // Los usan fracciones, estrategias y recta-numerica: cada carácter del SVG
 // se dibuja como <path> porque «Convertir en forma» de PowerPoint ignora
-// <text> y @font-face.
+// <text> y @font-face. numeros-dienes los usa solo en la interfaz, para
+// el desglose de la vista previa.
 // Formato: { upm, r: {car: [avance, yMin, yMax, "d"]}, i: {...} } en
 // unidades de fuente con y hacia ARRIBA; r = recto, i = cursiva
 // matemática; "d" solo usa M/L/Q/Z con pares x y alternados.

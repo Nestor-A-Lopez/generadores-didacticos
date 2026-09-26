@@ -38,8 +38,7 @@
 
       <div class="layout">
         <!-- Controles. Los segmentados son fachada de los <select> ocultos:
-             el script sigue leyendo #tamano, #modoCentena, #modoDecena y
-             #formatoDiez, así que esos ids no se pueden quitar. -->
+             el script sigue leyendo #modoCentena, #modoDecena y #formatoDiez, así que esos ids no se pueden quitar. -->
         <aside class="panel">
           <div class="field fNumero">
             <div class="labelRow">
@@ -49,23 +48,9 @@
             <input class="input" type="text" id="numero" value="236" inputmode="numeric" autocomplete="off" />
           </div>
 
-          <div class="field fTamano">
-            <span class="fieldLabel" id="tamanoLabel">Tamaño del cuadrito</span>
-            <div class="seg segFill1b" role="group" aria-labelledby="tamanoLabel" data-for="tamano">
-              <button type="button" data-value="14">Pequeño</button>
-              <button type="button" data-value="20">Mediano</button>
-              <button type="button" data-value="28">Grande</button>
-            </div>
-            <select id="tamano" class="visuallyHidden" tabindex="-1" aria-hidden="true">
-              <option value="14">Pequeño</option>
-              <option value="20" selected>Mediano</option>
-              <option value="28">Grande</option>
-            </select>
-          </div>
-
           <div class="fDesglose">
             <label class="switch">
-              <input type="checkbox" role="switch" id="mostrarDesglose" checked />
+              <input type="checkbox" role="switch" id="mostrarDesglose" />
               <span class="switchTrack" aria-hidden="true"></span>
               Mostrar desglose C D U
             </label>
@@ -148,7 +133,9 @@
           </div>
           <div class="stage">
             <div id="svgHolder" role="img" aria-label="Figura del número"></div>
-            <div id="desgloseHolder" class="desglose" aria-label="Desglose"></div>
+            <!-- Desglose (solo en la vista previa, no va en el SVG): se dibuja
+                 con los glifos de Computer Modern, como en LaTeX. -->
+            <div id="desgloseHolder" class="desglose"></div>
           </div>
         </main>
       </div>
@@ -160,6 +147,8 @@
       </footer>
     </div>
 
+    <script src="../compartido/glifos.js" defer></script>
+    <script src="../compartido/texto-svg.js" defer></script>
     <script src="../compartido/guardar-svg.js" defer></script>
     <script src="script.js" defer></script>
   </body>

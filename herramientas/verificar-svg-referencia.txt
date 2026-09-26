@@ -6,11 +6,11 @@ fracciones/rect-7-20-ancho14-etiq: 7-20-naranja.svg 14722 3592c3bb35947ca8
 fracciones/circ-1-5-total: 1-5-amarillo.svg 3590 613f81e314b0987a
 fracciones/tri-4-4-personal: 4-4-123456.svg 882 5a922cdec086ce2f
 numeros-dienes/236: 236.svg 1305 f2716ccfc8d1d0e4
-numeros-dienes/36-peq: 36.svg 1072 02915e1b6dd85128
+numeros-dienes/36-sin-centenas: 36.svg 1050 e752709ccd7beacc
 numeros-dienes/427-cen-decenas: 427.svg 5260 8c327c73b4cc43d7
 numeros-dienes/150-dec-unid-col: 150.svg 5313 49ad62ab31da0928
 numeros-dienes/9-desglose: 9.svg 1029 a2e71febb5d8b88e
-numeros-dienes/305-cen-unid-grande: 305.svg 29659 0109fb5986a43724
+numeros-dienes/305-cen-unid: 305.svg 29291 9212e1e1217cd5ed
 estrategias/28+5: 28+5.svg 11487 db8919d45bfde316
 estrategias/47+8-unid: 47+8.svg 13202 35bf979ecd6615fb
 estrategias/51-7: 51-7.svg 8262 eab96ad613d922f5

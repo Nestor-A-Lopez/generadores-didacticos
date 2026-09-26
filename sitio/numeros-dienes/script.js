@@ -5,9 +5,17 @@ const COL_U = "#57A639"; // unidades -> verde
 const COL_D = "#1C75BC"; // decenas  -> azul
 const COL_C = "#CC2027"; // centenas -> rojo
 
+// Lado del cuadrito, fijo. Antes se elegía (14 / 20 / 28); se dejó el de
+// «Mediano» porque el tamaño se ajusta al escalar la figura en PowerPoint.
+const L_CUADRITO = 20;
+
+// Glifos de Computer Modern (compartido/glifos.js). Aquí solo se usan en la
+// interfaz, para que el desglose de la vista previa se vea como en LaTeX.
+const GLYPH_DATA = Banco.GLYPH_DATA;
+
 function getOptions() {
   const numeroRaw = document.getElementById("numero").value.trim();
-  const L = parseFloat(document.getElementById("tamano").value);
+  const L = L_CUADRITO;
   const modoCentena = document.getElementById("modoCentena").value; // bloque | decenas | unidades
   const modoDecena = document.getElementById("modoDecena").value; // bloque | unidades
   const formatoDiez = document.getElementById("formatoDiez").value; // columna | columnas
@@ -215,13 +223,52 @@ function buildSVG(n, opts) {
   return { svg, centenas, decenas, unidades };
 }
 
+const _r2 = (v) => Math.round(v * 100) / 100;
+
+// Un <path> por carácter, con glifos rectos (compartido/texto-svg.js).
+const glyphRunSvg = Banco.glyphRunSvg;
+
+// Desglose de la vista previa (no va en el SVG exportado), como en LaTeX:
+// $2\,\mathrm{C} + 3\,\mathrm{D} + 6\,\mathrm{U}$. Cada parte con el color
+// de su pieza; los signos de suma, en negro. Espacios de TeX: \, (3mu)
+// entre cifra y letra, y 4mu a cada lado del +.
 function buildDesglose(centenas, decenas, unidades) {
   const partes = [];
-  if (centenas > 0) partes.push(`<span class="c">${centenas} C</span>`);
-  if (decenas > 0) partes.push(`<span class="d">${decenas} D</span>`);
+  if (centenas > 0) partes.push([`${centenas}`, "C", COL_C]);
+  if (decenas > 0) partes.push([`${decenas}`, "D", COL_D]);
   if (unidades > 0 || (centenas === 0 && decenas === 0))
-    partes.push(`<span class="u">${unidades} U</span>`);
-  return partes.join('<span class="sep">·</span>');
+    partes.push([`${unidades}`, "U", COL_U]);
+
+  const size = 30; // px de la interfaz; el svg se escala si no cabe
+  const s = size / GLYPH_DATA.upm;
+  const mu = size / 18;
+  const avance = (t) => [...t].reduce((w, ch) => w + GLYPH_DATA.r[ch][0] * s, 0);
+  let ascent = 0,
+    descent = 0;
+  for (const ch of partes.flat().join("") + "+") {
+    const g = GLYPH_DATA.r[ch];
+    if (!g) continue;
+    ascent = Math.max(ascent, g[2] * s);
+    descent = Math.max(descent, -g[1] * s);
+  }
+
+  let x = 0;
+  let paths = "";
+  partes.forEach(([cifras, letra, color], i) => {
+    if (i > 0) {
+      x += 4 * mu;
+      paths += glyphRunSvg("+", x, ascent, size, "#000000");
+      x += avance("+") + 4 * mu;
+    }
+    paths += glyphRunSvg(cifras, x, ascent, size, color);
+    x += avance(cifras) + 3 * mu;
+    paths += glyphRunSvg(letra, x, ascent, size, color);
+    x += avance(letra);
+  });
+  const w = _r2(x);
+  const h = _r2(ascent + descent);
+  const etiqueta = partes.map(([c, l]) => `${c} ${l}`).join(" + ");
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-label="Desglose: ${etiqueta}">${paths}</svg>`;
 }
 
 function render() {
@@ -275,7 +322,6 @@ async function download() {
 
 [
   "numero",
-  "tamano",
   "modoCentena",
   "modoDecena",
   "formatoDiez",

@@ -500,26 +500,16 @@ body {
   max-width: 100%;
   height: auto;
 }
+/* El desglose es un <svg> con glifos de Computer Modern (lo arma
+   script.js con sus colores); aquí solo se centra y se limita al ancho. */
 .desglose {
-  display: flex;
-  flex-wrap: wrap;
   justify-content: center;
-  align-items: baseline;
-  gap: 12px;
-  font-size: var(--text-xl);
-  font-weight: var(--weight-semibold);
+  max-width: 100%;
 }
-.desglose .c {
-  color: var(--colC);
-}
-.desglose .d {
-  color: var(--colD);
-}
-.desglose .u {
-  color: var(--colU);
-}
-.desglose .sep {
-  color: var(--neutral-400);
+.desglose svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
 }
 
 /* ---- Pie (mismo estilo que el de la portada) ----
@@ -565,9 +555,6 @@ body {
   flex: 0 1 220px;
   min-width: 160px;
 }
-.fTamano {
-  flex: 0 1 auto;
-}
 .fDesglose {
   flex: 0 0 auto;
   padding-top: 22px; /* alinea con los campos que llevan etiqueta */
@@ -597,37 +584,13 @@ body {
   }
 }
 
-/* La primera fila se aprieta para que el interruptor quepa junto a los
-   campos. */
-@media (max-width: 899px) {
-  .panel {
-    column-gap: var(--space-6);
-  }
-  .fNumero {
-    flex-basis: 160px;
-  }
-}
-
-/* Ya no cabe en la primera fila: el interruptor pasa a la suya, sin el
-   relleno que lo alineaba con los campos. */
-@media (max-width: 859px) {
-  .fDesglose {
-    flex-basis: 100%;
-    padding-top: 0;
-  }
-}
-
 /* Teléfono: márgenes compactos y controles a todo lo ancho. */
 @media (max-width: 639px) {
   .page {
     padding: 20px 16px 32px;
   }
-  .fNumero,
-  .fTamano {
+  .fNumero {
     flex: 1 1 100%;
-  }
-  .fTamano .seg button {
-    flex: 1 1 0;
   }
   .fDesglose {
     padding-top: 0;
@@ -673,7 +636,6 @@ body {
     box-shadow: var(--shadow-sm);
   }
   .fNumero,
-  .fTamano,
   .fDesglose,
   .piezas {
     flex: 0 0 auto;
@@ -684,12 +646,9 @@ body {
     padding-top: 0;
   }
   /* Aquí las etiquetas largas se parten en dos líneas y las opciones
-     ocupan todo el ancho del panel. */
+     ocupan todo el ancho del panel (.segFill). */
   .seg br {
     display: inline;
-  }
-  .segFill1b button {
-    flex: 1 1 0;
   }
   .piezasGrid {
     grid-auto-flow: row;
