@@ -688,6 +688,10 @@ body {
 .fNumero .labelRow {
   flex: 0 0 auto;
 }
+/* «Número» en negritas (Poppins 700, que index.html carga para esto). */
+.fNumero .fieldLabel {
+  font-weight: var(--weight-bold);
+}
 .fNumero .input {
   flex: 1 1 auto;
   min-width: 0;
