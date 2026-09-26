@@ -64,7 +64,7 @@ E-Mail: bakoma@mail.ru
   - `sitio/index.html` (portada): los iconos de las tarjetas y la flecha de «Abrir generador».
   - `sitio/fracciones/index.html`: gráfica de pastel (`chart-pie`, en la cabecera y como ícono de la pestaña) y descargar.
   - `sitio/recta-numerica/index.html`: flechas a los lados (`move-horizontal`, en la cabecera y como ícono de la pestaña) y descargar.
-  - `sitio/estrategias/index.html`: descargar, más y menos.
+  - `sitio/estrategias/index.html`: foco (`lightbulb`, en la cabecera y como ícono de la pestaña), descargar, más y menos.
   - `sitio/numeros-dienes/index.html`: bloques (`blocks`, en la cabecera y como ícono de la pestaña), descargar, flecha hacia abajo (`chevron-down`), alerta (`circle-alert`) y más (`plus`).
 - **Licencia:** ISC, y MIT para lo derivado de Feather. Texto tomado de https://github.com/lucide-icons/lucide/blob/0.544.0/LICENSE:
 

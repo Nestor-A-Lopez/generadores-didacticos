@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Estrategias de cálculo (completar la decena)</title>
+    <!-- Ícono de la pestaña: el de este generador en la portada (Lucide
+         «lightbulb», con el fondo --blue-50 y el trazo --blue-800 de su
+         tarjeta), incrustado para que funcione también con doble clic. -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23e3f2fd'/%3E%3Cg transform='translate(4 4)' fill='none' stroke='%230d47a1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5'/%3E%3Cpath d='M9 18h6'/%3E%3Cpath d='M10 22h4'/%3E%3C/g%3E%3C/svg%3E" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- Fuentes del sistema de diseño "Vesta" (Fraunces = títulos,
@@ -20,14 +24,20 @@
     <div class="page">
       <!-- Cabecera + acción principal -->
       <div class="section header">
-        <div>
-          <h1>Estrategias de cálculo</h1>
-          <p>
-            Completar la decena y resta como distancia entre dos números.
-            Descarga el resultado como SVG.
-          </p>
+        <div class="headerMarca">
+          <!-- El mismo ícono que en la tarjeta de la portada. -->
+          <span class="icono" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+          </span>
+          <div>
+            <h1>Estrategias de cálculo</h1>
+            <p>
+              Completar la decena y resta como distancia entre dos números.
+              Descarga el resultado como SVG.
+            </p>
+          </div>
         </div>
-        <!-- Iconos (descargar, más, menos) de Lucide/Feather, licencia ISC/MIT: ver
+        <!-- Iconos (foco, descargar, más, menos) de Lucide/Feather, licencia ISC/MIT: ver
              AVISOS-DE-TERCEROS.md en la raíz del repositorio. -->
         <button class="btn btn-primary downloadBtn" id="downloadBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
