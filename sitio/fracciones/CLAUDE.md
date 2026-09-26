@@ -113,7 +113,7 @@ Rediseñada con el sistema de diseño **"Vesta"** (Claude Design) e integrada co
 
 Estructura, de arriba abajo:
 
-- **Cabecera**: título (Fraunces) + subtítulo, y `#downloadBtn` ("Guardar SVG…", botón primario) a la derecha.
+- **Cabecera**: título (Fraunces) + subtítulo, y `#downloadBtn` ("Guardar SVG", botón primario) a la derecha.
 - **Forma**: tres botones `.formaBtn[data-forma]` (Círculo / Rectángulo / Triángulo). Son solo una fachada: el estado real vive en el `<select id="forma">` oculto (`.visuallyHidden`), que es lo que lee todo el script.
 - **Fila principal** (`.mainRow`): `#numerador`, `#denominador`, `#ancho` (dentro de `#anchoField`, solo visible con rectángulo) y "Color de las partes": seis muestras `.swatch[data-color]` + muestra "＋" personalizada, que manejan el `<select id="color">` oculto; `#colorPersonalizado` (dentro de `#colorPersonalizadoField`) aparece bajo las muestras al elegir "Personalizado…".
 - Texto de ayuda sobre tamaños fijos, cuadrados perfectos del triángulo y el diálogo de guardado en Chrome/Edge.

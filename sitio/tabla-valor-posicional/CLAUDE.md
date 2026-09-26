@@ -103,7 +103,7 @@ svg
 - Si hay varios números en la lista, cada uno aporta su propio `[Orden]-[Numero]` y se unen con `+` (ej. `U-950-000+D-1-234.svg`).
 - Si la tabla está en blanco, el nombre completo es `vacia.svg`.
 - Función: `buildFilename(numerosState, blank)` — recibe el estado explícitamente (no lee el DOM), y es llamada desde dentro de `buildSVG(state)`, que la incluye en su resultado (`result.filename`). Guardado real: `download()` arma el SVG y llama a `Banco.guardarSVG(result.svg, filename)` (`compartido/guardar-svg.js`): `showSaveFilePicker` (Chrome/Edge) recordando la última carpeta usada en la sesión, con fallback a descarga estándar (`<a download>`) en otros navegadores.
-- **Enter** en cualquier campo de número dispara el guardado (igual que hacer clic en "Guardar SVG…").
+- **Enter** en cualquier campo de número dispara el guardado (igual que hacer clic en "Guardar SVG").
 
 ## 10. Interfaz general
 
