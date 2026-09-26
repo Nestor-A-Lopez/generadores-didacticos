@@ -16,7 +16,7 @@ AVISOS-DE-TERCEROS.md           ← material de terceros: qué es, de dónde vie
 .claude/skills/vesta/           ← sistema de diseño Vesta (copia local, como skill)
 herramientas/                   ← no se publican
 ├── extraer_glifos.py           ← regenera sitio/compartido/glifos.js
-└── verificar-svg.html/.js      ← comprueba que el SVG exportado no cambió (40 casos)
+└── verificar-svg.html/.js      ← comprueba que el SVG exportado no cambió (42 casos)
 sitio/                          ← lo único que se publica
 ├── index.html  style.css       ← portada
 ├── licencia/index.html         ← «Licencia y avisos» (usa ../style.css)
@@ -93,11 +93,11 @@ Todo lo publicable está en `sitio/`. Cada carpeta de generador tiene `index.htm
 | `sitio/fracciones/` | Fracciones: círculo, rectángulo, triángulo | su `CLAUDE.md` |
 | `sitio/tabla-valor-posicional/` | Tabla de valor posicional | su `CLAUDE.md` |
 | `sitio/operaciones/` | Operaciones en la tabla: suma, resta, multiplicación, división | su `CLAUDE.md` |
-| `sitio/numeros-dienes/` | Números con bloques Dienes (material base 10): unidades, decenas, centenas. Se llamó «Números con material» y estaba en `numeros-material/` hasta el 2026-09-26. Interfaz responsiva (diseño «Pantalla base 10» de Vesta, 2026-09-26): panel lateral (propuesta 1b) desde 1024 px y filas (1a) por debajo; los segmentados son fachada de `<select>` ocultos. El cuadrito mide siempre 20 (`L_CUADRITO`; el tamaño se ajusta en PowerPoint) y el número va de 1 a 999 (`NUM_MIN`, `NUM_MAX`): con 0 no hay material y con 999 cada cifra es una pieza. Bajo la figura, solo en la vista previa y con glifos de Computer Modern: «Mostrar valor» (cada cifra con el color de su pieza) y «Mostrar descomposición» (`#mostrarDesglose`, en valor en unidades o en jerarquía C D U); con los dos, «236 = 200 + 30 + 6» | — |
+| `sitio/numeros-dienes/` | Números con bloques Dienes (material base 10): unidades, decenas, centenas. Se llamó «Números con material» y estaba en `numeros-material/` hasta el 2026-09-26. Interfaz responsiva (diseño «Pantalla base 10» de Vesta, 2026-09-26): panel lateral (propuesta 1b) desde 1024 px y filas (1a) por debajo; los segmentados son fachada de `<select>` ocultos. El cuadrito mide siempre 20 (`L_CUADRITO`; el tamaño se ajusta en PowerPoint) y el número va de 1 a 999 (`NUM_MIN`, `NUM_MAX`): con 0 no hay material y con 999 cada cifra es una pieza. Con «2 filas» (`#filasCentenas`, bajo «Las centenas se muestran como»; por defecto «1 fila») y 2 o más centenas, las centenas van en dos filas (la de abajo se llena primero), reducidas para que las dos filas, con su separación, midan lo mismo que una decena. Bajo la figura, solo en la vista previa y con glifos de Computer Modern: «Mostrar valor» (cada cifra con el color de su pieza) y «Mostrar descomposición» (`#mostrarDesglose`, en valor en unidades o en jerarquía C D U); con los dos, «236 = 200 + 30 + 6» | — |
 | `sitio/estrategias/` | Completar la decena en suma y resta; en la resta, pestaña «Distancia entre dos números» (recta numérica + material + ecuación) | — |
 | `sitio/recta-numerica/` | Recta numérica: extremos, paso y separación entre marcas | — |
 | `sitio/compartido/` | Tokens, glifos y guardado que usan varios generadores; ver «Carpeta compartida» | — |
-| `herramientas/` | `extraer_glifos.py` (regenera `sitio/compartido/glifos.js`) y `verificar-svg.html` (40 casos de exportación con su hash; `verificar-svg-referencia.txt` es la corrida del 2026-09-26) | — |
+| `herramientas/` | `extraer_glifos.py` (regenera `sitio/compartido/glifos.js`) y `verificar-svg.html` (42 casos de exportación con su hash; `verificar-svg-referencia.txt` es la corrida del 2026-09-26) | — |
 | `.claude/skills/vesta/` | Sistema de diseño **Vesta** (no es un generador; ver abajo) | `SKILL.md`, `readme.md` |
 
 Antes, cada generador era un solo `.html` con prefijo `_` (para que quedara arriba de la lista de SVG en el explorador); ahora todos se llaman `index.html`. Hasta el 2026-09-26 los generadores estaban en la raíz (las tablas, en `tabla-valor-posicional/tabla-valor-posicional/` y `tabla-valor-posicional/operaciones/`), el script de glifos en `fracciones/_extraer_glifos.py` y Vesta en `fracciones/_desing-system-vesta/`. Los nombres viejos siguen en el historial de git (`git log --follow`).

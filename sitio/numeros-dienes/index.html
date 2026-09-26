@@ -38,8 +38,8 @@
 
       <div class="layout">
         <!-- Controles. Los segmentados son fachada de los <select> ocultos:
-             el script sigue leyendo #modoCentena, #modoDecena, #formatoDiez y
-             #modoDescomposicion, así que esos ids no se pueden quitar. -->
+             el script sigue leyendo #filasCentenas, #modoCentena, #modoDecena,
+             #formatoDiez y #modoDescomposicion, así que esos ids no se pueden quitar. -->
         <aside class="panel">
           <div class="field fNumero">
             <div class="labelRow">
@@ -97,6 +97,17 @@
                   <div class="piezasGrid">
                     <div class="field">
                       <span class="fieldLabel" id="modoCentenaLabel">Las centenas se muestran como</span>
+                      <!-- En una fila o en dos (la de abajo primero), reducidas para
+                           medir lo mismo que una decena. Con una sola centena no
+                           cambia nada. -->
+                      <div class="seg segFill" role="group" aria-label="Filas de centenas" data-for="filasCentenas" data-animate>
+                        <button type="button" data-value="1">1 fila</button>
+                        <button type="button" data-value="2">2 filas</button>
+                      </div>
+                      <select id="filasCentenas" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+                        <option value="1" selected>1 fila</option>
+                        <option value="2">2 filas</option>
+                      </select>
                       <div class="seg segFill" role="group" aria-labelledby="modoCentenaLabel" data-for="modoCentena" data-animate>
                         <button type="button" data-value="bloque">Bloque</button>
                         <button type="button" data-value="decenas">10 <br />decenas</button>

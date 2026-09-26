@@ -1,4 +1,4 @@
-// Verificación de la salida de los generadores: exporta 40 casos fijos
+// Verificación de la salida de los generadores: exporta 42 casos fijos
 // (de 6 a 7 por generador) y da, para cada uno, el nombre de archivo, el
 // tamaño y un hash SHA-256 del SVG. Sirve para comprobar que un cambio
 // que no debía tocar las figuras (mover archivos, reorganizar compartido/,
@@ -45,6 +45,9 @@ const CASOS = {
     "150-dec-unid-col": [["set", "#numero", "150"], ["set", "#modoDecena", "unidades"], ["set", "#formatoDiez", "columnas"]],
     "9-desglose": [["set", "#numero", "9"], ["set", "#mostrarDesglose", true]],
     "305-cen-unid": [["set", "#numero", "305"], ["set", "#modoCentena", "unidades"]],
+    // Centenas en «2 filas»
+    "475-dos-filas": [["set", "#numero", "475"], ["set", "#filasCentenas", "2"]],
+    "961-dos-filas-cen-unid": [["set", "#numero", "961"], ["set", "#modoCentena", "unidades"], ["set", "#filasCentenas", "2"]],
   },
   estrategias: {
     "28+5": [],

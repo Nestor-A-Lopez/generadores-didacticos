@@ -26,6 +26,7 @@ function getOptions() {
   const modoCentena = document.getElementById("modoCentena").value; // bloque | decenas | unidades
   const modoDecena = document.getElementById("modoDecena").value; // bloque | unidades
   const formatoDiez = document.getElementById("formatoDiez").value; // columna | columnas
+  const filasCentenas = document.getElementById("filasCentenas").value; // 1 | 2
   const mostrarValor = document.getElementById("mostrarValor").checked;
   // "Mostrar descomposición" (el id viene de cuando era "desglose")
   const mostrarDesglose =
@@ -38,6 +39,7 @@ function getOptions() {
     modoCentena,
     modoDecena,
     formatoDiez,
+    filasCentenas,
     mostrarValor,
     mostrarDesglose,
     modoDescomposicion,
@@ -83,8 +85,9 @@ function updatePiezasResumen(opts) {
       : opts.formatoDiez === "columnas"
         ? "Decenas en columnas de 5"
         : "Decenas en columna de 10";
-  document.getElementById("piezasResumen").textContent =
-    `${centena} · ${decena}`;
+  const partes = [centena, decena];
+  if (opts.filasCentenas === "2") partes.push("Centenas en 2 filas");
+  document.getElementById("piezasResumen").textContent = partes.join(" · ");
 }
 
 // ---- Ladrillo básico: un cuadrito "unidad" ----
@@ -174,7 +177,7 @@ function drawLooseUnits(x, L, G, unidades) {
 
 // ---- Construye el SVG completo para el número dado ----
 function buildSVG(n, opts) {
-  const { L, modoCentena, modoDecena, formatoDiez } = opts;
+  const { L, modoCentena, modoDecena, formatoDiez, filasCentenas } = opts;
   const G = L * 0.22;
   const margin = L * 0.9;
 
@@ -186,19 +189,49 @@ function buildSVG(n, opts) {
   let bodySvg = "";
   let maxH = 0;
 
-  for (let i = 0; i < centenas; i++) {
-    const b = drawHundred(
-      x,
-      0,
-      L,
-      G,
-      modoCentena,
-      modoDecena,
-      formatoDiez,
-    );
-    bodySvg += b.svg;
-    x += b.width + G;
-    maxH = Math.max(maxH, b.height);
+  if (filasCentenas === "2" && centenas > 1) {
+    // «2 filas» (con una sola centena no hay nada que repartir): la figura
+    // no queda tan larga.
+    // Las centenas van en dos filas, llenando primero la de abajo (el eje
+    // Y está volteado: y = 0 es abajo), y se reducen para que las dos
+    // filas, con su separación G, midan lo mismo que una decena (10*L).
+    // La escala sale del alto real de una centena en el modo elegido.
+    const ref = drawHundred(0, 0, L, G, modoCentena, modoDecena, formatoDiez);
+    const k = (10 * L - G) / (2 * ref.height);
+    const cols = Math.ceil(centenas / 2);
+    const w = ref.width * k;
+    const h = ref.height * k;
+    for (let i = 0; i < centenas; i++) {
+      const fila = i < cols ? 0 : 1;
+      const col = fila === 0 ? i : i - cols;
+      const b = drawHundred(
+        x + col * (w + G),
+        fila * (h + G),
+        L * k,
+        G * k,
+        modoCentena,
+        modoDecena,
+        formatoDiez,
+      );
+      bodySvg += b.svg;
+    }
+    x += cols * (w + G);
+    maxH = Math.max(maxH, 2 * h + G);
+  } else {
+    for (let i = 0; i < centenas; i++) {
+      const b = drawHundred(
+        x,
+        0,
+        L,
+        G,
+        modoCentena,
+        modoDecena,
+        formatoDiez,
+      );
+      bodySvg += b.svg;
+      x += b.width + G;
+      maxH = Math.max(maxH, b.height);
+    }
   }
   for (let i = 0; i < decenas; i++) {
     const b = drawTen(x, 0, L, G, modoDecena, formatoDiez);
@@ -370,6 +403,7 @@ async function download() {
   "modoCentena",
   "modoDecena",
   "formatoDiez",
+  "filasCentenas",
   "mostrarValor",
   "mostrarDesglose",
   "modoDescomposicion",

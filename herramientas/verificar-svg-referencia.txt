@@ -11,6 +11,8 @@ numeros-dienes/427-cen-decenas: 427.svg 5260 8c327c73b4cc43d7
 numeros-dienes/150-dec-unid-col: 150.svg 5313 49ad62ab31da0928
 numeros-dienes/9-desglose: 9.svg 1029 a2e71febb5d8b88e
 numeros-dienes/305-cen-unid: 305.svg 29291 9212e1e1217cd5ed
+numeros-dienes/475-dos-filas: 475.svg 1832 214ca119bdc85870
+numeros-dienes/961-dos-filas-cen-unid: 961.svg 96290 d48f02a61d0be77d
 estrategias/28+5: 28+5.svg 11487 db8919d45bfde316
 estrategias/47+8-unid: 47+8.svg 13202 35bf979ecd6615fb
 estrategias/51-7: 51-7.svg 8262 eab96ad613d922f5
