@@ -66,14 +66,14 @@ function LessonPreviewScreen({ onNavigate }) {
               <Card elevation="md" padding="0" style={{ overflow: 'hidden' }}>
                 <div style={{ height: 380, background: 'var(--surface-sunken)', position: 'relative' }}>
                   <window.LayerMotif size={420} style={{ position: 'absolute', right: -80, bottom: -120, opacity: .6 }} />
-                  <div style={{ position: 'absolute', left: 32, top: 28, fontFamily: 'var(--font-math)', fontSize: 'var(--text-lg)', color: 'var(--blue-800)' }}>t = 1,8 s · h = 15,9 m</div>
+                  <div style={{ position: 'absolute', left: 32, top: 28, fontFamily: 'var(--font-math)', fontSize: 'var(--text-lg)', color: 'var(--blue-800)' }}>t = 1.8 s · h = 15.9 m</div>
                   <div style={{ position: 'absolute', left: 120, top: 120, width: 22, height: 22, borderRadius: 'var(--radius-pill)', background: 'var(--blue-800)' }} />
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)', padding: 'var(--space-5) var(--space-6)', borderTop: '1px solid var(--border-subtle)' }}>
                   <Button icon="play" size="sm">Soltar</Button>
                   <Button variant="ghost" icon="rotate-ccw" size="sm">Reiniciar</Button>
                   <span style={{ flex: 1 }} />
-                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>Gravedad: Tierra (9,8 m/s²)</span>
+                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>Gravedad: Tierra (9.8 m/s²)</span>
                 </div>
               </Card>
             )}

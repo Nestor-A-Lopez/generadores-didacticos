@@ -38,7 +38,7 @@ function WorkspaceScreen({ onExit }) {
             <Card elevation="md" padding="0" style={{ marginTop: 'var(--space-8)', overflow: 'hidden' }}>
               <div style={{ height: 340, background: 'var(--surface-sunken)', position: 'relative' }}>
                 <window.LayerMotif size={380} style={{ position: 'absolute', right: -90, bottom: -140, opacity: .55 }} />
-                <div style={{ position: 'absolute', left: 32, top: 26, fontFamily: 'var(--font-math)', fontSize: 'var(--text-lg)', color: 'var(--blue-800)' }}>t = 1,8 s · h = 15,9 m</div>
+                <div style={{ position: 'absolute', left: 32, top: 26, fontFamily: 'var(--font-math)', fontSize: 'var(--text-lg)', color: 'var(--blue-800)' }}>t = 1.8 s · h = 15.9 m</div>
                 <div style={{ position: 'absolute', left: 130, top: 130, width: 22, height: 22, borderRadius: 'var(--radius-pill)', background: 'var(--blue-800)' }} />
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)', padding: 'var(--space-5) var(--space-6)', borderTop: '1px solid var(--border-subtle)' }}>
@@ -53,7 +53,7 @@ function WorkspaceScreen({ onExit }) {
               <StepIndicator steps={['Planteamiento', 'Desarrollo', 'Resultado']} current={state === 'correct' ? 2 : 1} />
               <Card elevation="sm" padding="var(--space-8)" style={{ marginTop: 'var(--space-6)' }}>
                 <div style={{ fontSize: 'var(--text-md)', lineHeight: 'var(--leading-normal)', color: 'var(--text-body)' }}>
-                  Una piedra cae desde un puente durante <b>3 segundos</b>. Tomando <span style={{ fontFamily: 'var(--font-math)' }}>g = 9,8 m/s²</span>, ¿qué altura tiene el puente?
+                  Una piedra cae desde un puente durante <b>3 segundos</b>. Tomando <span style={{ fontFamily: 'var(--font-math)' }}>g = 9.8 m/s²</span>, ¿qué altura tiene el puente?
                 </div>
                 <Formula style={{ marginTop: 'var(--space-5)' }} display>h = ½ · g · t²</Formula>
                 <Field label="Altura del puente" hint="Redondea a una cifra decimal." htmlFor="h" style={{ marginTop: 'var(--space-5)' }}>
@@ -69,8 +69,8 @@ function WorkspaceScreen({ onExit }) {
                 <Card tone="soft" padding="var(--space-6)" style={{ marginTop: 'var(--space-4)' }}>
                   <ol style={{ margin: 0, paddingLeft: '1.2em', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', fontSize: 'var(--text-base)', color: 'var(--text-body)' }}>
                     <li>Escribe la fórmula: <span style={{ fontFamily: 'var(--font-math)' }}>h = ½ · g · t²</span></li>
-                    <li>Sustituye: <span style={{ fontFamily: 'var(--font-math)' }}>h = ½ · 9,8 · 3²</span></li>
-                    <li>Opera: <span style={{ fontFamily: 'var(--font-math)' }}>h = 4,9 · 9 = 44,1 m</span></li>
+                    <li>Sustituye: <span style={{ fontFamily: 'var(--font-math)' }}>h = ½ · 9.8 · 3²</span></li>
+                    <li>Opera: <span style={{ fontFamily: 'var(--font-math)' }}>h = 4.9 · 9 = 44.1 m</span></li>
                   </ol>
                 </Card>
               ) : null}
@@ -78,7 +78,7 @@ function WorkspaceScreen({ onExit }) {
               {state ? (
                 <div style={{ marginTop: 'var(--space-4)' }}>
                   <AnswerFeedback state={state} action={<Button variant="outline" size="sm" onClick={() => setSteps(true)}>Ver el desarrollo</Button>}>
-                    {state === 'correct' ? '44,1 metros. Al triplicar el tiempo, la altura se multiplica por nueve.' : 'El planteamiento es correcto; revisa el cuadrado del tiempo antes de multiplicar.'}
+                    {state === 'correct' ? '44.1 metros. Al triplicar el tiempo, la altura se multiplica por nueve.' : 'El planteamiento es correcto; revisa el cuadrado del tiempo antes de multiplicar.'}
                   </AnswerFeedback>
                 </div>
               ) : null}

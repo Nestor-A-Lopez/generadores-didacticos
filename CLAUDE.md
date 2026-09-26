@@ -182,7 +182,7 @@ En este orden, y preguntando antes de mover o borrar:
 
 1. **Vesta**: mantener sincronizada la copia local con la de claude.ai (proyecto `a1e3d138-2f59-4b09-a37b-bfefd2e094f5`). Desde el 2026-09-26 son iguales `readme.md`, `SKILL.md`, los tokens (con `--base10-*`), `thumbnail.html`, las diapositivas, la plantilla y `assets/reference-palette.png` (muestra propia, no la captura de Color Hunt). Quedan tres diferencias, que se resuelven **desde claude.ai**, no subiendo archivos locales:
    - El namespace de los componentes: en claude.ai es `EntornoDesignSystem_a1e3d1` (lo usan los diseños ya hechos, como «Pantalla base 10»); en la copia local, `VestaDesignSystem_a1e3d1`. Por eso **no** se suben `_ds_bundle.js`, `_ds_manifest.json` ni los `.jsx`, y en los `README.md` de los UI kits se sube el namespace de claude.ai. Cambiarlo recompila el bundle y rompe los diseños que usan el nombre viejo.
-   - La marca «Entorno.» dentro de los `.jsx` de los UI kits (`AppChrome`, `LoginScreen`, `SiteChrome`).
+   - Dentro de los `.jsx` de los UI kits: la marca «Entorno.» (`AppChrome`, `LoginScreen`, `SiteChrome`) y la coma decimal de los ejemplos de caída libre (`WorkspaceScreen`, `LessonPreviewScreen`: `9,8`, `4,9`, `44,1`, `1,8`, `15,9`). En la copia local ya usan punto decimal desde el 2026-09-26.
    - El componente `Icon` carga Lucide desde jsDelivr en claude.ai y desde unpkg en la copia local (misma versión).
 
 ## Cómo trabajar aquí

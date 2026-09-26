@@ -11,7 +11,7 @@ const { Field, Input, Select, Checkbox, Radio, Switch } = window.VestaDesignSyst
 function Demo(){const [a,setA]=React.useState('b');const [c,setC]=React.useState(true);const [s,setS]=React.useState(true);
 return <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'24px'}}>
 <div className="col">
-<Field label="Velocidad inicial" hint="En metros por segundo (m/s)." htmlFor="v0"><Input id="v0" defaultValue="9,8" suffix="m/s" inputMode="decimal"/></Field>
+<Field label="Velocidad inicial" hint="En metros por segundo (m/s)." htmlFor="v0"><Input id="v0" defaultValue="9.8" suffix="m/s" inputMode="decimal"/></Field>
 <Field label="Resultado" error="Revisa las unidades del último paso." htmlFor="r"><Input id="r" defaultValue="4900 m" error/></Field>
 <Field label="Unidad temática" htmlFor="u"><Select id="u" options={[{value:'1',label:'Cinemática'},{value:'2',label:'Álgebra lineal'},{value:'3',label:'Circuitos en serie'}]}/></Field>
 </div>
