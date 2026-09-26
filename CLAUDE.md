@@ -12,7 +12,9 @@ Generadores de figuras matemáticas para clase (fracciones, material base 10, ta
 README.md  CLAUDE.md  .gitignore
 .github/workflows/pages.yml     ← publica sitio/ en GitHub Pages
 .claude/skills/vesta/           ← sistema de diseño Vesta (copia local, como skill)
-herramientas/extraer_glifos.py  ← regenera sitio/compartido/glifos.js
+herramientas/                   ← no se publican
+├── extraer_glifos.py           ← regenera sitio/compartido/glifos.js
+└── verificar-svg.html/.js      ← comprueba que el SVG exportado no cambió (40 casos)
 sitio/                          ← lo único que se publica
 ├── index.html  style.css       ← portada
 ├── compartido/
@@ -21,7 +23,7 @@ sitio/                          ← lo único que se publica
 └── operaciones/
 ```
 
-Los SVG generados **no** viven en el repositorio: se guardan en `_recursos/figuras/`, fuera de él (ver «Nombres de archivo de los SVG»).
+Los SVG generados **no** viven en el repositorio: se guardan en `_recursos/figuras/`, al lado de él (ver «Nombres de archivo de los SVG»).
 
 ## Decisiones vigentes
 
@@ -41,7 +43,7 @@ sitio/<carpeta-del-generador>/
 - `index.html` porque GitHub Pages sirve `…/fracciones/` directamente, sin escribir el nombre del archivo.
 - El JS se carga como **script clásico**: `<script src="script.js" defer></script>`. **No** usar `type="module"` ni `fetch()` de archivos locales (por ejemplo, cargar `GLYPH_DATA` desde un `.json`): Chrome y Edge los bloquean al abrir el HTML con doble clic (`file://`), y la herramienta tiene que seguir funcionando así. Si algún día se necesitan módulos, se trabaja con un servidor local (`python -m http.server`) y se documenta aquí.
 - Dependencias externas: por CDN (cdnjs, jsDelivr, Google Fonts) y **con versión fija** en la URL. Sin internet la interfaz puede degradarse, pero el SVG exportado no debe depender de nada externo.
-- **Cómo se separaron** (por si llega otro generador de un solo archivo): el contenido de `<style>` pasó a `style.css` y el de `<script>` a `script.js` **sin cambiar lógica**, solo quitando la sangría común, y con todos los ids del DOM intactos. Luego se movió a `compartido/` lo repetido. En cada paso se comprobó que el SVG exportado seguía **idéntico byte a byte** en 40 casos representativos (de 6 a 7 por generador) y que las capturas de la interfaz coincidían píxel a píxel.
+- **Cómo se separaron** (por si llega otro generador de un solo archivo): el contenido de `<style>` pasó a `style.css` y el de `<script>` a `script.js` **sin cambiar lógica**, solo quitando la sangría común, y con todos los ids del DOM intactos. Luego se movió a `compartido/` lo repetido. En cada paso se comprobó que el SVG exportado seguía **idéntico byte a byte** en 40 casos representativos (de 6 a 7 por generador) y que las capturas de la interfaz coincidían píxel a píxel. Esos casos se perdieron; los actuales, rehechos el 2026-09-26 para la reorganización, están en `herramientas/verificar-svg.js` (ver «Cómo trabajar aquí»).
 - Quitar sangría es seguro salvo dentro de plantillas `` `…` `` de varias líneas que terminen en el SVG: revisarlas antes. Al separar solo había una, en operaciones, y arma HTML de la interfaz.
 
 ## Carpeta compartida
@@ -89,19 +91,31 @@ Todo lo publicable está en `sitio/`. Cada carpeta de generador tiene `index.htm
 | `sitio/estrategias/` | Completar la decena en suma y resta; en la resta, pestaña «Distancia entre dos números» (recta numérica + material + ecuación) | — |
 | `sitio/recta-numerica/` | Recta numérica: extremos, paso y separación entre marcas | — |
 | `sitio/compartido/` | Tokens, glifos y guardado que usan varios generadores; ver «Carpeta compartida» | — |
-| `herramientas/` | `extraer_glifos.py` (regenera `sitio/compartido/glifos.js`) | — |
+| `herramientas/` | `extraer_glifos.py` (regenera `sitio/compartido/glifos.js`) y `verificar-svg.html` (40 casos de exportación con su hash; `verificar-svg-referencia.txt` es la corrida del 2026-09-26) | — |
 | `.claude/skills/vesta/` | Sistema de diseño **Vesta** (no es un generador; ver abajo) | `SKILL.md`, `readme.md` |
 
 Antes, cada generador era un solo `.html` con prefijo `_` (para que quedara arriba de la lista de SVG en el explorador); ahora todos se llaman `index.html`. Hasta el 2026-09-26 los generadores estaban en la raíz (las tablas, en `tabla-valor-posicional/tabla-valor-posicional/` y `tabla-valor-posicional/operaciones/`), el script de glifos en `fracciones/_extraer_glifos.py` y Vesta en `fracciones/_desing-system-vesta/`. Los nombres viejos siguen en el historial de git (`git log --follow`).
 
 ## Nombres de archivo de los SVG
 
-Los SVG se guardan junto a su generador, en la misma carpeta. El nombre describe el contenido, sin prefijo de carpeta ni de tipo de figura.
+Los SVG se guardan **fuera del repositorio**, en `D:\Archivos\Kubix\preparacionClases\banco-didactico\_recursos\figuras\`, con una carpeta por generador (los mismos nombres que en `sitio/`):
+
+```
+_recursos/
+├── generadores-didacticos/   ← este repositorio
+└── figuras/
+    ├── fracciones/circulo/  fracciones/rectangulo/  fracciones/triangulo/
+    ├── numeros-material/  estrategias/  recta-numerica/
+    ├── tabla-valor-posicional/
+    └── operaciones/
+```
+
+Se movieron ahí el 2026-09-26 (439 archivos). Las carpetas que todavía no tienen SVG (`fracciones/triangulo/`, `recta-numerica/`) no existen: se crean al guardar el primero. Al guardar, el diálogo del navegador recuerda la última carpeta de la sesión, así que la primera vez hay que elegir la de `figuras/`. El nombre describe el contenido, sin prefijo de carpeta ni de tipo de figura.
 
 | Generador | Formato | Ejemplos |
 | --- | --- | --- |
 | Fracciones | `[numerador]-[denominador]-[color].svg`, en la subcarpeta de la forma (`circulo/`, `rectangulo/`, `triangulo/`) | `3-4-verde.svg`, `0-6-azul.svg` |
-| Tabla de valor posicional | `[Orden]-[Número].svg`; millares separados con `-`, punto decimal tal cual; varios números unidos con `+`; tabla en blanco → `vacia.svg` (en la carpeta hay un `U-vacia.svg`) | `U-950-000.svg`, `mil-9-673.svg`, `U-0.37+U-0.370.svg`, `U-427..svg` (punto sin dígitos después) |
+| Tabla de valor posicional | `[Orden]-[Número].svg`; millares separados con `-`, punto decimal tal cual; varios números unidos con `+`; tabla en blanco → `vacia.svg` (en `figuras/tabla-valor-posicional/` hay un `U-vacia.svg`) | `U-950-000.svg`, `mil-9-673.svg`, `U-0.37+U-0.370.svg`, `U-427..svg` (punto sin dígitos después) |
 | Operaciones | `[A\|S\|M\|D]-[operando]-[operando]….SVG` (extensión en **mayúsculas**, así la genera `buildFilename()`); cada operando en unidades reales | `A-0.15-0.028.SVG`, `S-8750-2300.SVG` |
 | Números con material | El HTML sugiere `numero-N.svg`, pero los archivos guardados llevan un prefijo con los órdenes: `U-` (todo en unidades), `DU-`, `CDU-` | `U-36.svg`, `DU-36.svg`, `CDU-427.svg` |
 | Completar decena (`estrategias`) | `[A]+[b].svg` (suma) / `[A]-[b].svg` (resta) | `28+5.svg`, `51-7.svg` |
@@ -168,4 +182,5 @@ En este orden, y preguntando antes de mover o borrar:
 - Comentarios en **español**, explicando el porqué. Mantener la organización del script: constantes/metadatos → cálculo puro → `buildSVG` → UI/eventos al final.
 - Si una instrucción es ambigua (a qué forma/fila/operación aplica, un caso límite), preguntar antes de asumir.
 - **Verificar de verdad**: renderizar (en esta máquina no hay Playwright; sirve Edge sin interfaz, `msedge --headless=new --screenshot=salida.png file:///…`; para la interfaz con servidor, `python -m http.server` desde la raíz y abrir `http://localhost:8000/sitio/`), inspeccionar el SVG resultante, medir en píxeles, y simular la manipulación en PowerPoint (añadir `transform="translate(…)"` a un `<g>` y ver que se mueve lo que debe). Mirar la vista previa no alcanza.
-- No mover, renombrar ni borrar SVG ya generados sin preguntar.
+- **Verificar la exportación**: antes y después de un cambio que no debía tocar las figuras, abrir `herramientas/verificar-svg.html` con un servidor local (`python -m http.server 8000` desde la raíz → http://localhost:8000/herramientas/verificar-svg.html; con doble clic no funciona) y comparar las dos corridas. Si el cambio sí debía cambiar alguna figura, solo deben cambiar esos casos; entonces se actualiza `verificar-svg-referencia.txt`.
+- No mover, renombrar ni borrar SVG ya generados (en `_recursos/figuras/`) sin preguntar.
