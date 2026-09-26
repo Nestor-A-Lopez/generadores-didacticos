@@ -64,7 +64,7 @@ E-Mail: bakoma@mail.ru
   - `sitio/index.html` (portada): los iconos de las tarjetas y la flecha de «Abrir generador».
   - `sitio/fracciones/index.html`, `sitio/recta-numerica/index.html`: descargar.
   - `sitio/estrategias/index.html`: descargar, más y menos.
-  - `sitio/numeros-dienes/index.html`: descargar, flecha hacia abajo (`chevron-down`), alerta (`circle-alert`) y más (`plus`).
+  - `sitio/numeros-dienes/index.html`: bloques (`blocks`, en la cabecera y como ícono de la pestaña), descargar, flecha hacia abajo (`chevron-down`), alerta (`circle-alert`) y más (`plus`).
 - **Licencia:** ISC, y MIT para lo derivado de Feather. Texto tomado de https://github.com/lucide-icons/lucide/blob/0.544.0/LICENSE:
 
 ```
