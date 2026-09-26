@@ -505,7 +505,7 @@ document.querySelectorAll(".seg[data-for]").forEach((seg) => {
 });
 
 // ============================================================
-//  Secciones plegables ("Valor y descomposición", "Cómo se ve cada pieza")
+//  Secciones plegables ("¿Cuál es la cantidad?", "¿Cómo se ve cada pieza?")
 // ============================================================
 // .is-settled llega cuando termina de abrirse: hasta entonces el contenido
 // se recorta (para la animación); después se dejan ver los avisos completos.

@@ -154,11 +154,11 @@ body {
   gap: var(--space-2);
   min-width: 0;
 }
+/* Etiqueta y, debajo, su aclaración («Del 1 al 999»). */
 .labelRow {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 4px 12px;
+  flex-direction: column;
+  gap: 2px;
 }
 .fieldLabel {
   font-size: var(--text-sm);
@@ -478,8 +478,8 @@ body {
   box-shadow: var(--focus-ring);
 }
 
-/* ---- Secciones plegables ("Valor y descomposición", "Cómo se ve cada
-   pieza") ---- */
+/* ---- Secciones plegables ("¿Cuál es la cantidad?", "¿Cómo se ve cada
+   pieza?") ---- */
 .plegable {
   display: flex;
   flex-direction: column;
@@ -676,11 +676,23 @@ body {
   align-items: flex-start;
   gap: var(--space-5) var(--space-12);
 }
+/* Dos columnas: a la izquierda «Número» y «Del 1 al 999»; a la derecha,
+   el campo, que ocupa el resto del ancho. */
 .fNumero {
-  flex: 0 1 220px;
-  min-width: 160px;
+  flex: 0 1 360px;
+  min-width: 0;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-4);
 }
-/* Interruptores de "Valor y descomposición" y sus opciones. */
+.fNumero .labelRow {
+  flex: 0 0 auto;
+}
+.fNumero .input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+/* Interruptores de "¿Cuál es la cantidad?" y sus opciones. */
 .fMostrar {
   display: flex;
   flex-direction: column;
