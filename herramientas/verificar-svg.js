@@ -18,7 +18,7 @@
 // Rutas relativas a esta página.
 const RUTAS = {
   fracciones: "../sitio/fracciones/index.html",
-  "numeros-material": "../sitio/numeros-material/index.html",
+  "numeros-dienes": "../sitio/numeros-dienes/index.html",
   estrategias: "../sitio/estrategias/index.html",
   "recta-numerica": "../sitio/recta-numerica/index.html",
   tabla: "../sitio/tabla-valor-posicional/index.html",
@@ -38,7 +38,7 @@ const CASOS = {
     "circ-1-5-total": [["click", "[data-forma=circulo]"], ["set", "#numerador", 1], ["set", "#denominador", 5], ["click", "[data-color=amarillo]"], ["set", "#showTotalLabel", true], ["set", "#valorEntero", "10"], ["set", "#showPartLabels", true]],
     "tri-4-4-personal": [["click", "[data-forma=triangulo]"], ["set", "#numerador", 4], ["set", "#denominador", 4], ["click", "[data-color=personalizado]"], ["set", "#colorPersonalizado", "#123456"]],
   },
-  "numeros-material": {
+  "numeros-dienes": {
     "236": [],
     "36-peq": [["set", "#numero", "36"], ["set", "#tamano", "14"]],
     "427-cen-decenas": [["set", "#numero", "427"], ["set", "#modoCentena", "decenas"]],

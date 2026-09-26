@@ -9,7 +9,7 @@ Herramientas para crear figuras de matemáticas para la clase. Eliges los valore
 - **Fracciones**: un círculo, un rectángulo o un triángulo dividido en partes iguales, con las partes que elijas coloreadas.
 - **Recta numérica**: una recta con marcas y valores; tú decides el inicio, el final y el paso.
 - **Estrategias**: completar la decena en sumas y restas, y la distancia entre dos números en la recta, con material base 10.
-- **Números con material**: un número armado con unidades, decenas y centenas, con los colores del material base 10.
+- **Números con bloques Dienes**: un número armado con unidades, decenas y centenas, con los colores del material base 10.
 - **Tabla de valor posicional**: uno o varios números acomodados en la tabla, con enteros, decimales y periodos.
 - **Operaciones en la tabla**: sumas, restas, multiplicaciones y divisiones acomodadas en la tabla de valor posicional.
 

@@ -34,7 +34,7 @@ const DIST_TRAZO_MARCA = 0.8; // marcas de b y de la decena
 const DIST_TRAZO_GUIA = 0.6; // guía punteada de la etiqueta escalonada
 
 // Borde del material concreto, el MISMO en todas las estrategias y en
-// numeros-material/script.js: blanco, 1 px en
+// numeros-dienes/script.js: blanco, 1 px en
 // la unidad y 1.4 px en la decena. Ese generador escribe el SVG en px
 // (PowerPoint: 1 px = 0.75 pt) y este en pt, de ahí la conversión. Es
 // un grosor absoluto: no cambia con el tamaño del cuadrito.
@@ -135,7 +135,7 @@ function unidad(x, y, hueca) {
 }
 
 // ---- Una decena, respetando el modo elegido (como en
-// numeros-material/script.js). Devuelve { pieza, width }: la
+// numeros-dienes/script.js). Devuelve { pieza, width }: la
 // pieza es un rect (barra) o un grupo de 10 unidades, para que al
 // desagrupar en PowerPoint cada decena se mueva entera.
 function drawTen(x, y, modoDecena, formatoDiez) {
@@ -143,7 +143,7 @@ function drawTen(x, y, modoDecena, formatoDiez) {
     const hijos = [];
     if (formatoDiez === "columnas") {
       // 2 columnas de 5, con separación entre filas y columnas
-      // (igual que numeros-material/script.js)
+      // (igual que numeros-dienes/script.js)
       for (let r = 0; r < 5; r++) {
         const yy = y + r * (L + G);
         hijos.push(unidad(x, yy, false), unidad(x + L + G, yy, false));
