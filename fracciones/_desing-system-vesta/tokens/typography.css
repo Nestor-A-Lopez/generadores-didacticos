@@ -1,0 +1,36 @@
+:root{
+  /* Escala tipográfica — razón ~1.25, anclada en 16px de cuerpo mínimo */
+  --text-2xs:12px;
+  --text-xs:13px;
+  --text-sm:14px;
+  --text-base:16px;
+  --text-md:18px;
+  --text-lg:20px;
+  --text-xl:24px;
+  --text-2xl:30px;
+  --text-3xl:38px;
+  --text-4xl:48px;
+  --text-5xl:60px;
+  --text-6xl:76px;
+
+  --leading-tight:1.08;
+  --leading-snug:1.25;
+  --leading-normal:1.55;
+  --leading-relaxed:1.7;
+
+  --tracking-tight:-0.02em;
+  --tracking-normal:0em;
+  --tracking-wide:0.04em;
+  --tracking-caps:0.12em;
+
+  --weight-light:300;
+  --weight-regular:400;
+  --weight-medium:500;
+  --weight-semibold:600;
+  --weight-bold:700;
+
+  /* Fraunces es variable: el eje óptico se fija por tamaño */
+  --opsz-display:120; /* @kind other */
+  --opsz-heading:48; /* @kind other */
+  --opsz-inline:14; /* @kind other */
+}

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Mazo de diapositivas Vesta" description="Presentación 16:9 con portada, separador, concepto, fórmula, datos y cierre." -->
+<helmet><script src="./ds-base.js"></script><style>body{margin:0;background:#8a97a8}.sl{width:1280px;height:720px;position:relative;overflow:hidden;font-family:var(--font-sans);flex:0 0 auto}.bl{position:absolute;border-radius:58% 42% 47% 53% / 44% 51% 49% 56%}</style></helmet>
+<x-import component-from-global-scope="deck-stage" from="../../export/deck-stage.js" width="1280" height="720" hint-size="100%,100%">
+
+<section class="sl" data-label="Portada" data-screen-label="01" style="background:var(--surface-page);display:flex">
+<div class="bl" style="background:var(--blue-50);left:760px;top:-120px;width:700px;height:700px"></div>
+<div class="bl" style="background:var(--blue-200);left:900px;top:60px;width:480px;height:480px"></div>
+<div class="bl" style="background:var(--blue-500);left:1010px;top:200px;width:320px;height:320px;transform:rotate(18deg)"></div>
+<div class="bl" style="background:var(--blue-950);left:1080px;top:330px;width:180px;height:180px;transform:rotate(-12deg)"></div>
+<div style="position:relative;padding:80px 96px;display:flex;flex-direction:column;justify-content:center;max-width:720px">
+<div style="font-size:15px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--blue-600)">© Néstor A. López · 2026</div>
+<h1 style="font-family:var(--font-serif-display);font-variation-settings:'opsz' 144;font-weight:600;letter-spacing:-.025em;line-height:1.04;color:var(--text-heading);font-size:112px;margin:28px 0 0">Aprender a mirar lo exacto</h1>
+</div></section>
+
+<section class="sl" data-label="Sección: El método" data-screen-label="02" style="background:var(--surface-brand);color:#fff;display:flex">
+<div class="bl" style="background:var(--blue-700);left:-160px;top:380px;width:560px;height:560px;opacity:.5"></div>
+<div class="bl" style="background:var(--blue-500);left:-60px;top:520px;width:320px;height:320px;opacity:.35"></div>
+<div style="position:relative;padding:80px 96px;display:flex;flex-direction:column;justify-content:center">
+<div style="font-size:22px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--blue-200);font-size:30px">02 · El método</div>
+<h2 style="font-family:var(--font-serif-display);font-variation-settings:'opsz' 144;font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:78px;color:#fff;margin:28px 0 0;max-width:18ch">Primero la intuición. Después el símbolo.</h2>
+</div></section>
+
+<section class="sl" data-label="Método (3 pasos)" data-screen-label="03" style="background:var(--surface-page)">
+<div style="padding:80px 96px;height:100%;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center">
+<div style="font-size:15px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--blue-600)">Cómo se aprende en Vesta</div>
+<h2 style="font-family:var(--font-serif-display);font-variation-settings:'opsz' 144;font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:52px;color:var(--text-heading);margin:22px 0 0">Tres movimientos, siempre en el mismo orden</h2>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:56px">
+<div style="background:var(--surface-sunken);border-radius:var(--radius-lg);padding:32px"><div style="width:44px;height:44px;border-radius:999px;background:var(--blue-800);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:18px">1</div><div style="font-family:var(--font-serif-display);font-variation-settings:'opsz' 48;font-size:28px;font-weight:600;letter-spacing:-.02em;color:var(--text-heading);margin:20px 0 10px">Mira</div><div style="font-size:19px;line-height:1.5;color:var(--text-muted)">Cada idea empieza con algo que puedes ver moverse: un péndulo, una curva, una corriente.</div></div>
+<div style="background:var(--surface-sunken);border-radius:var(--radius-lg);padding:32px"><div style="width:44px;height:44px;border-radius:999px;background:var(--blue-800);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:18px">2</div><div style="font-family:var(--font-serif-display);font-variation-settings:'opsz' 48;font-size:28px;font-weight:600;letter-spacing:-.02em;color:var(--text-heading);margin:20px 0 10px">Prueba</div><div style="font-size:19px;line-height:1.5;color:var(--text-muted)">Cambias un valor y el simulador responde. La intuición llega antes que la fórmula.</div></div>
+<div style="background:var(--surface-sunken);border-radius:var(--radius-lg);padding:32px"><div style="width:44px;height:44px;border-radius:999px;background:var(--blue-800);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:18px">3</div><div style="font-family:var(--font-serif-display);font-variation-settings:'opsz' 48;font-size:28px;font-weight:600;letter-spacing:-.02em;color:var(--text-heading);margin:20px 0 10px">Formaliza</div><div style="font-size:19px;line-height:1.5;color:var(--text-muted)">Sólo entonces aparece la ecuación, y ya no es un símbolo extraño.</div></div>
+</div></div></section>
+
+<section class="sl" data-label="Método (6 pasos)" data-screen-label="03b" style="background:var(--surface-page)">
+<div style="padding:64px 96px;height:100%;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center">
+<div style="font-size:15px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--blue-600)">Cómo se aprende en Vesta</div>
+<h2 style="font-family:var(--font-serif-display);font-variation-settings:'opsz' 144;font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:44px;color:var(--text-heading);margin:16px 0 0">Seis movimientos, siempre en el mismo orden</h2>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:36px">
+<div style="background:var(--surface-sunken);border-radius:var(--radius-lg);padding:20px"><div style="width:36px;height:36px;border-radius:999px;background:var(--blue-800);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px">1</div><div style="font-family:var(--font-serif-display);font-variation-settings:'opsz' 48;font-size:21px;font-weight:600;letter-spacing:-.02em;color:var(--text-heading);margin:14px 0 6px">Mira</div><div style="font-size:15px;line-height:1.45;color:var(--text-muted)">Algo que puedes ver moverse: un péndulo, una curva, una corriente.</div></div>
+<div style="background:var(--surface-sunken);border-radius:var(--radius-lg);padding:20px"><div style="width:36px;height:36px;border-radius:999px;background:var(--blue-800);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px">2</div><div style="font-family:var(--font-serif-display);font-variation-settings:'opsz' 48;font-size:21px;font-weight:600;letter-spacing:-.02em;color:var(--text-heading);margin:14px 0 6px">Prueba</div><div style="font-size:15px;line-height:1.45;color:var(--text-muted)">Cambias un valor y el simulador responde.</div></div>
+<div style="background:var(--surface-sunken);border-radius:var(--radius-lg);padding:20px"><div style="width:36px;height:36px;border-radius:999px;background:var(--blue-800);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px">3</div><div style="font-family:var(--font-serif-display);font-variation-settings:'opsz' 48;font-size:21px;font-weight:600;letter-spacing:-.02em;color:var(--text-heading);margin:14px 0 6px">Formaliza</div><div style="font-size:15px;line-height:1.45;color:var(--text-muted)">Aparece la ecuación, y ya no es un símbolo extraño.</div></div>
+<div style="background:var(--surface-sunken);border-radius:var(--radius-lg);padding:20px"><div style="width:36px;height:36px;border-radius:999px;background:var(--blue-800);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px">4</div><div style="font-family:var(--font-serif-display);font-variation-settings:'opsz' 48;font-size:21px;font-weight:600;letter-spacing:-.02em;color:var(--text-heading);margin:14px 0 6px">Aplica</div><div style="font-size:15px;line-height:1.45;color:var(--text-muted)">Resuelves un problema con la idea ya formal.</div></div>
+<div style="background:var(--surface-sunken);border-radius:var(--radius-lg);padding:20px"><div style="width:36px;height:36px;border-radius:999px;background:var(--blue-800);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px">5</div><div style="font-family:var(--font-serif-display);font-variation-settings:'opsz' 48;font-size:21px;font-weight:600;letter-spacing:-.02em;color:var(--text-heading);margin:14px 0 6px">Comparte</div><div style="font-size:15px;line-height:1.45;color:var(--text-muted)">Explicas tu razonamiento con tus palabras.</div></div>
+<div style="background:var(--surface-sunken);border-radius:var(--radius-lg);padding:20px"><div style="width:36px;height:36px;border-radius:999px;background:var(--blue-800);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px">6</div><div style="font-family:var(--font-serif-display);font-variation-settings:'opsz' 48;font-size:21px;font-weight:600;letter-spacing:-.02em;color:var(--text-heading);margin:14px 0 6px">Repite</div><div style="font-size:15px;line-height:1.45;color:var(--text-muted)">Vuelves con una variante hasta que se vuelve costumbre.</div></div>
+</div></div></section>
+
+<section class="sl" data-label="Fórmula" data-screen-label="04" style="background:var(--surface-page)">
+<div class="bl" style="background:var(--blue-50);left:-180px;top:420px;width:520px;height:520px"></div>
+<div style="position:relative;padding:80px 96px;height:100%;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center">
+<div style="font-size:15px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--subject-physics)">Física · Caída libre</div>
+<h2 style="font-family:var(--font-serif-display);font-variation-settings:'opsz' 144;font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:48px;color:var(--text-heading);margin:22px 0 0;max-width:20ch">La altura no depende del peso</h2>
+<div style="margin-top:52px;background:var(--surface-sunken);border-radius:var(--radius-lg);padding:56px 96px;font-family:var(--font-math);font-size:76px;color:var(--text-heading)">h = ½ · g · t²</div>
+<p style="margin-top:32px;font-size:21px;line-height:1.55;color:var(--text-muted);max-width:52ch">h es la altura recorrida; g, la gravedad del lugar; t, el tiempo que el cuerpo lleva cayendo.</p>
+</div></section>
+
+<section class="sl" data-label="Cierre" data-screen-label="06" style="background:var(--blue-950);color:#fff;display:flex">
+<div class="bl" style="background:var(--blue-800);left:820px;top:-140px;width:640px;height:640px;opacity:.75"></div>
+<div class="bl" style="background:var(--blue-700);left:1000px;top:180px;width:380px;height:380px;opacity:.6"></div>
+<div class="bl" style="background:var(--blue-500);left:1120px;top:340px;width:200px;height:200px;opacity:.55"></div>
+<div style="position:relative;padding:80px 96px;display:flex;flex-direction:column;justify-content:center;max-width:740px">
+<h2 style="font-family:var(--font-serif-display);font-variation-settings:'opsz' 144;font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:68px;color:#fff;margin:0;max-width:18ch">Ninguna ciencia exacta es sólo para quien ya la entiende</h2>
+<p style="font-size:24px;line-height:1.55;margin:32px 0 0;color:rgba(255,255,255,.75);max-width:44ch">Gracias. Las preguntas también son parte del método.</p>
+<div style="margin-top:48px;display:flex;gap:16px;align-items:center"><span style="display:inline-flex;padding:15px 28px;border-radius:999px;background:#fff;color:var(--blue-900);font-size:19px;font-weight:500">vesta.edu</span><span style="font-size:19px;color:rgba(255,255,255,.7)">equipo@vesta.edu</span></div>
+</div></section>
+
+</x-import>
+</x-dc>
+</body>
+</html>

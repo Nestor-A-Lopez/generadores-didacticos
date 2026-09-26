@@ -1,0 +1,52 @@
+:root{
+  /* Superficies */
+  --surface-page:var(--neutral-0);
+  --surface-subtle:var(--neutral-25);
+  --surface-sunken:var(--blue-50);
+  --surface-card:var(--neutral-0);
+  --surface-raised:var(--neutral-0);
+  --surface-inverse:var(--blue-950);
+  --surface-brand:var(--blue-800);
+  --surface-brand-soft:var(--blue-50);
+  --surface-overlay:rgba(6,28,64,.52);
+
+  /* Texto */
+  --text-body:var(--neutral-800);
+  --text-heading:var(--blue-950);
+  --text-muted:var(--neutral-500);
+  --text-inverse:var(--neutral-0);
+  --text-inverse-muted:rgba(255,255,255,.72);
+  --text-link:var(--blue-700);
+  --text-link-hover:var(--blue-900);
+  --text-brand:var(--blue-800);
+
+  /* Bordes */
+  --border-subtle:var(--neutral-100);
+  --border-default:var(--neutral-200);
+  --border-strong:var(--neutral-300);
+  --border-brand:var(--blue-500);
+
+  /* Interacción */
+  --action-primary:var(--blue-700);
+  --action-primary-hover:var(--blue-800);
+  --action-primary-active:var(--blue-900);
+  --action-secondary:var(--blue-50);
+  --action-secondary-hover:var(--blue-100);
+  --action-disabled-bg:var(--neutral-100);
+  --action-disabled-fg:var(--neutral-400);
+  --focus-ring:var(--ring-focus);
+
+  /* Feedback */
+  --feedback-correct-bg:var(--green-100);
+  --feedback-correct-fg:var(--green-700);
+  --feedback-correct-line:var(--green-500);
+  --feedback-retry-bg:var(--amber-100);
+  --feedback-retry-fg:var(--amber-700);
+  --feedback-retry-line:var(--amber-500);
+  --feedback-error-bg:var(--red-100);
+  --feedback-error-fg:var(--red-700);
+  --feedback-error-line:var(--red-500);
+  --feedback-info-bg:var(--blue-50);
+  --feedback-info-fg:var(--blue-800);
+  --feedback-info-line:var(--blue-500);
+}

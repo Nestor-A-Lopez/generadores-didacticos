@@ -1,0 +1,13 @@
+/* Vesta webfonts — served from Google Fonts CDN (no local binaries shipped).
+   Fraunces  = titulares (serif de alto contraste, registro LaTeX)
+   Poppins   = contenido e interfaz
+   STIX Two Text = texto en registro matemático / fallback de KaTeX */
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=STIX+Two+Text:ital,wght@0,400..700;1,400..700&display=swap");
+/* KaTeX / MathJax: fijar el motor a STIX Two Math o New Computer Modern Math.
+   Si el motor no está presente, las fórmulas caen a --font-math. */
+:root{
+  --font-serif-display:"Fraunces","STIX Two Text",Georgia,"Times New Roman",serif;
+  --font-sans:"Poppins",-apple-system,"Segoe UI",system-ui,sans-serif;
+  --font-math:"STIX Two Math","STIX Two Text","Latin Modern Math",Cambria Math,serif;
+  --font-mono:"SFMono-Regular",Menlo,Consolas,"Liberation Mono",monospace;
+}

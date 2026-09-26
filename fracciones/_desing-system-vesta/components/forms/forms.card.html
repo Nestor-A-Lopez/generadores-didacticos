@@ -1,0 +1,29 @@
+<!-- @dsCard group="Components" viewport="700x400" name="Forms" subtitle="Field, Input, Select, Checkbox, Radio, Switch" -->
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Forms</title>
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:20px;background:var(--surface-page)}.row{display:flex;flex-wrap:wrap;align-items:center;gap:14px}.col{display:flex;flex-direction:column;gap:14px}.lbl{font-family:var(--font-sans);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Field, Input, Select, Checkbox, Radio, Switch } = window.VestaDesignSystem_a1e3d1;
+function Demo(){const [a,setA]=React.useState('b');const [c,setC]=React.useState(true);const [s,setS]=React.useState(true);
+return <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'24px'}}>
+<div className="col">
+<Field label="Velocidad inicial" hint="En metros por segundo (m/s)." htmlFor="v0"><Input id="v0" defaultValue="9,8" suffix="m/s" inputMode="decimal"/></Field>
+<Field label="Resultado" error="Revisa las unidades del último paso." htmlFor="r"><Input id="r" defaultValue="4900 m" error/></Field>
+<Field label="Unidad temática" htmlFor="u"><Select id="u" options={[{value:'1',label:'Cinemática'},{value:'2',label:'Álgebra lineal'},{value:'3',label:'Circuitos en serie'}]}/></Field>
+</div>
+<div className="col">
+<span className="lbl">Opción múltiple</span>
+<div style={{display:'flex',flexDirection:'column'}}>
+<Radio name="q" label="v = d · t" checked={a==='a'} onChange={()=>setA('a')}/>
+<Radio name="q" label="v = d / t" checked={a==='b'} onChange={()=>setA('b')}/>
+<Radio name="q" label="v = t / d" checked={a==='c'} onChange={()=>setA('c')}/>
+</div>
+<Checkbox label="Incluir el rozamiento del aire" checked={c} onChange={e=>setC(e.target.checked)}/>
+<Switch label="Mostrar el desarrollo paso a paso" checked={s} onChange={e=>setS(e.target.checked)}/>
+</div></div>}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo/>);
+</script></body></html>

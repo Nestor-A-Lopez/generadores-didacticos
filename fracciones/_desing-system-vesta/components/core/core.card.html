@@ -1,0 +1,25 @@
+<!-- @dsCard group="Components" viewport="700x400" name="Core" subtitle="Button, IconButton, Badge, Tag, Card, Icon" -->
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Core</title>
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:20px;background:var(--surface-page)}.row{display:flex;flex-wrap:wrap;align-items:center;gap:14px}.col{display:flex;flex-direction:column;gap:14px}.lbl{font-family:var(--font-sans);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Button, IconButton, Badge, Tag, Card, Icon } = window.VestaDesignSystem_a1e3d1;
+function Demo(){return <div className="col">
+<div className="row"><Button>Empezar</Button><Button variant="secondary">Guardar</Button><Button variant="outline">Ver teoría</Button><Button variant="ghost">Omitir</Button><Button disabled>Bloqueado</Button></div>
+<div className="row"><Button size="sm" icon="play">Pequeño</Button><Button size="md" iconRight="arrow-right">Mediano</Button><Button size="lg" icon="graduation-cap">Grande</Button></div>
+<div className="row"><IconButton icon="volume-2" label="Escuchar" variant="ghost"/><IconButton icon="bookmark" label="Guardar" variant="soft"/><IconButton icon="play" label="Reproducir" variant="solid"/>
+<span style={{width:1,height:32,background:'var(--border-default)'}}/>
+<Badge>Borrador</Badge><Badge tone="brand">Nivel 2</Badge><Badge tone="correct">Completado</Badge><Badge tone="retry">En curso</Badge><Badge tone="solid">Nuevo</Badge></div>
+<div className="row"><Tag subject="math">Matemáticas</Tag><Tag subject="physics" selected>Física</Tag><Tag subject="electronics">Electrónica</Tag><Tag subject="code" onRemove={()=>{}}>Programación</Tag></div>
+<div className="row" style={{alignItems:'stretch'}}>
+<Card padding="16px" style={{flex:1}}><span className="lbl">default</span><div style={{marginTop:6}}>Tarjeta base</div></Card>
+<Card tone="soft" padding="16px" style={{flex:1}}><span className="lbl">soft</span><div style={{marginTop:6}}>Azul suave</div></Card>
+<Card tone="inverse" padding="16px" style={{flex:1}}><span className="lbl" style={{color:'rgba(255,255,255,.7)'}}>inverse</span><div style={{marginTop:6,color:'#fff'}}>Azul profundo</div></Card>
+<Card tone="outline" padding="16px" style={{flex:1,display:'flex',gap:10,alignItems:'center',color:'var(--text-brand)'}}><Icon name="sigma" size={20}/><Icon name="atom" size={20}/><Icon name="circuit-board" size={20}/><Icon name="terminal" size={20}/></Card>
+</div></div>}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo/>);
+</script></body></html>
