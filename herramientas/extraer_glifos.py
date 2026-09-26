@@ -2,16 +2,16 @@
 """
 Extrae offline (con fontTools) los contornos vectoriales de Computer Modern
 (cmr10 / cmmi10 / cmsy10, las fuentes originales de TeX) y genera
-compartido/glifos.js (Banco.GLYPH_DATA), que cargan fracciones, estrategias
+sitio/compartido/glifos.js (Banco.GLYPH_DATA), que cargan fracciones, estrategias
 y recta-numerica.
 
 Por qué offline y no en el navegador: el SVG exportado se convierte a formas
 en PowerPoint, que ignora @font-face; solo sobreviven <path> reales. Parsear
 la fuente en tiempo real (opentype.js) se descartó por depender de red.
 
-Uso:  python _extraer_glifos.py [carpeta_con_ttf]
+Uso:  python herramientas/extraer_glifos.py [carpeta_con_ttf]
       (por defecto usa las cmr10/cmmi10/cmsy10 que trae matplotlib)
-      Escribe ../compartido/glifos.js directamente, en UTF-8 y con saltos LF
+      Escribe sitio/compartido/glifos.js directamente, en UTF-8 y con saltos LF
       (redirigir la salida en Windows la pasaría a cp1252 y CRLF).
 
 Formato de salida (unidades de fuente, y hacia ARRIBA, upm = 2048):
@@ -215,7 +215,7 @@ CABECERA = """\
 // ---------------------------------------------------------------
 // Glifos vectoriales de Computer Modern (cmr10 / cmmi10 / cmsy10),
 // extraídos offline con fontTools. ARCHIVO GENERADO: no editar a mano;
-// se regenera con  python fracciones/_extraer_glifos.py
+// se regenera con  python herramientas/extraer_glifos.py
 //
 // Los usan fracciones, estrategias y recta-numerica: cada carácter del SVG
 // se dibuja como <path> porque «Convertir en forma» de PowerPoint ignora
@@ -226,7 +226,7 @@ CABECERA = """\
 // ---------------------------------------------------------------
 window.Banco = window.Banco || {};
 """
-SALIDA = Path(__file__).resolve().parent.parent / "compartido" / "glifos.js"
+SALIDA = Path(__file__).resolve().parent.parent / "sitio" / "compartido" / "glifos.js"
 with open(SALIDA, "w", encoding="utf-8", newline="\n") as f:
     f.write(CABECERA + "Banco.GLYPH_DATA = " + js + ";\n")
 sys.stderr.write("glifos: %d rectos + %d cursivos, %d bytes -> %s\n" % (len(R), len(I), len(js), SALIDA))

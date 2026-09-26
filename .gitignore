@@ -4,8 +4,15 @@ temp/
 # Presentaciones de referencia subidas al sistema de diseño
 **/uploads/*.pptx
 
-# SVG generados: se quedan en la computadora, no se suben al repositorio.
-# Las carpetas que solo tienen SVG (p. ej. fracciones/circulo/) tampoco se
-# suben, porque git no rastrea carpetas sin archivos.
+# SVG generados: se guardan fuera del repositorio (en _recursos/figuras/).
+# La regla sigue por si alguno se guarda aquí por error.
 *.svg
 *.SVG
+
+# Vesta: material de terceros cuya licencia no permite redistribuirlo
+# (plantilla de Slidesgo e imagen de banco). Solo existe en la copia local.
+.claude/skills/vesta/uploads/
+.claude/skills/vesta/assets/reference-landing-mood.jpg
+
+# Configuración local de Claude Code
+.claude/settings.local.json

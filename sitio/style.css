@@ -1,0 +1,289 @@
+/* Portada del sitio. Los tokens (colores, tipografía, espacios, sombras)
+   vienen de compartido/vesta.css, que index.html carga antes que este archivo. */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans);
+  color: var(--text-body);
+  background: var(--surface-page);
+}
+
+.contenedor {
+  max-width: var(--container-max);
+  margin: 0 auto;
+}
+
+/* ---------- Barra superior ---------- */
+.barra {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0 var(--gutter-lg);
+}
+
+.barraInterior {
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+}
+
+.marca {
+  font-family: var(--font-serif-display);
+  font-variation-settings: "opsz" 48;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--text-heading);
+}
+
+.marcaPunto {
+  color: var(--blue-500);
+}
+
+.barraNota {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+/* ---------- Portada con el motivo de capas ---------- */
+.portada {
+  position: relative;
+  overflow: hidden;
+  padding: var(--space-20) var(--gutter-lg) var(--space-16);
+}
+
+.motivo {
+  position: absolute;
+  right: -200px;
+  top: -180px;
+  width: 620px;
+  height: 620px;
+}
+
+.capa {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: var(--radius-blob);
+}
+.capa1 {
+  width: 620px;
+  height: 620px;
+  transform: translate(-45%, -52%) rotate(0deg);
+  background: var(--blue-50);
+}
+.capa2 {
+  width: 484px;
+  height: 484px;
+  transform: translate(-45%, -52%) rotate(14deg);
+  background: var(--blue-200);
+}
+.capa3 {
+  width: 360px;
+  height: 360px;
+  transform: translate(-45%, -52%) rotate(28deg);
+  background: var(--blue-500);
+}
+.capa4 {
+  width: 248px;
+  height: 248px;
+  transform: translate(-45%, -52%) rotate(42deg);
+  background: var(--blue-800);
+}
+
+.portadaTexto {
+  position: relative;
+}
+
+.antetitulo {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  font-weight: var(--weight-semibold);
+  color: var(--blue-600);
+  margin-bottom: var(--space-4);
+}
+
+.portada h1 {
+  max-width: 30ch;
+  font-family: var(--font-serif-display);
+  font-variation-settings: "opsz" 120;
+  font-size: clamp(40px, 6vw, 64px);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+  color: var(--text-heading);
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.portada p {
+  font-size: var(--text-md);
+  line-height: var(--leading-normal);
+  margin: var(--space-6) 0 0;
+  max-width: 40ch;
+  text-wrap: pretty;
+}
+
+/* ---------- Tarjetas de los generadores ---------- */
+.principal {
+  flex: 1;
+  padding: 0 var(--gutter-lg) var(--space-24);
+}
+
+.rejilla {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: var(--space-5);
+}
+
+.rejilla li {
+  display: flex;
+}
+
+/* Misma apariencia que el componente Card de Vesta (elevation="sm",
+   interactive): borde 1px, --shadow-sm y, al pasar el cursor, --shadow-lg
+   con un leve desplazamiento hacia arriba. */
+.tarjeta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
+  color: inherit;
+  text-decoration: none;
+  transition:
+    box-shadow var(--duration-base) var(--ease-out),
+    transform var(--duration-base) var(--ease-out);
+}
+
+.tarjeta:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.tarjeta:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-lg), var(--ring-focus);
+}
+
+.icono {
+  display: inline-flex;
+  width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  background: var(--blue-50);
+  color: var(--blue-800);
+}
+
+/* Iconos de Lucide: trazo de 2 en currentColor, sin relleno. */
+.tarjeta svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.icono svg {
+  width: 24px;
+  height: 24px;
+}
+
+.tarjeta h2 {
+  font-family: var(--font-serif-display);
+  font-variation-settings: "opsz" 48;
+  font-size: var(--text-xl);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+  color: var(--text-heading);
+  margin: 0 0 var(--space-2);
+}
+
+.tarjeta p {
+  margin: 0;
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+.abrir {
+  margin-top: auto;
+  padding-top: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  color: var(--text-brand);
+}
+
+.abrir svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ---------- Pie ---------- */
+.pie {
+  border-top: 1px solid var(--border-subtle);
+  padding: var(--space-6) var(--gutter-lg);
+}
+
+.pieInterior {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+/* ---------- Pantallas angostas ---------- */
+@media (max-width: 640px) {
+  .barra,
+  .portada,
+  .principal,
+  .pie {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .portada {
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-12);
+  }
+  .motivo {
+    right: -320px;
+    top: -260px;
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tarjeta {
+    transition: none;
+  }
+  .tarjeta:hover {
+    transform: none;
+  }
+}

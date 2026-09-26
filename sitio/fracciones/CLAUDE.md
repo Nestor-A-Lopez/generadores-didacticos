@@ -1,11 +1,11 @@
-# Generador de fracciones — `fracciones/`
+# Generador de fracciones — `sitio/fracciones/`
 
 Herramienta web (`index.html` + `style.css` + `script.js`, más lo que carga de `../compartido/`) que genera figuras de fracciones (círculo, rectángulo en cuadrícula, triángulo subdividido) como SVG descargable. El SVG se pega en PowerPoint y se convierte a formas editables: tiene que funcionar en ese flujo, no solo verse bien en el navegador. Las convenciones generales del repo (nombres de archivo, sistema de diseño, compilación) están en el `CLAUDE.md` de la raíz.
 
-Otros archivos de esta carpeta:
-- `_extraer_glifos.py`: extrae offline con `fontTools` los glifos de Computer Modern y escribe `../compartido/glifos.js` (sección 6).
-- `circulo/`, `rectangulo/`, `triangulo/`: los SVG generados, separados por forma (por eso el nombre de archivo no lleva la forma). No están en el repositorio (los SVG se ignoran en `.gitignore`). `triangulo/` se eliminó porque había quedado vacía; se vuelve a crear al guardar el primer triángulo. Las fórmulas de `buildTriangulo` salen de la versión TikZ original, ya retirada.
-- `_desing-system-vesta/`: sistema de diseño «Vesta» usado para la interfaz (ver `CLAUDE.md` raíz).
+Archivos relacionados:
+- Los SVG generados se guardan fuera del repositorio, separados por forma en `circulo/`, `rectangulo/` y `triangulo/` (por eso el nombre de archivo no lleva la forma); ver «Nombres de archivo de los SVG» en el `CLAUDE.md` raíz. Las fórmulas de `buildTriangulo` salen de la versión TikZ original, ya retirada.
+
+Fuera de esta carpeta: `herramientas/extraer_glifos.py` (en la raíz del repo) extrae offline con `fontTools` los glifos de Computer Modern y escribe `sitio/compartido/glifos.js` (sección 6). El sistema de diseño «Vesta» de la interfaz está en `.claude/skills/vesta/` (ver `CLAUDE.md` raíz).
 
 ## Reglas de trabajo
 
@@ -71,7 +71,7 @@ Parser recursivo propio, sin dependencias (`parseLatexToNodes` + `layoutNode`):
 
 **Solución actual** (mismo enfoque que el generador hermano de la tabla de valor posicional):
 
-1. `_extraer_glifos.py` (en esta carpeta) extrae **offline** con `fontTools` los contornos de las fuentes originales de TeX: `cmr10.ttf` (recto), `cmmi10.ttf` (cursiva matemática) y `cmsy10.ttf` (símbolos). Por defecto toma las que trae matplotlib; acepta otra carpeta como argumento. Estas fuentes no tienen un cmap Unicode útil, así que el script mapea a mano Unicode → nombre de glifo. Escribe directamente `compartido/glifos.js` (`Banco.GLYPH_DATA`, con su encabezado); no hay que pegar nada a mano.
+1. `herramientas/extraer_glifos.py` (en la raíz del repo) extrae **offline** con `fontTools` los contornos de las fuentes originales de TeX: `cmr10.ttf` (recto), `cmmi10.ttf` (cursiva matemática) y `cmsy10.ttf` (símbolos). Por defecto toma las que trae matplotlib; acepta otra carpeta como argumento. Estas fuentes no tienen un cmap Unicode útil, así que el script mapea a mano Unicode → nombre de glifo. Escribe directamente `sitio/compartido/glifos.js` (`Banco.GLYPH_DATA`, con su encabezado); no hay que pegar nada a mano.
 2. `GLYPH_DATA = { upm: 2048, r: {car: [avance, yMin, yMax, "d"]}, i: {...} }`, en unidades de fuente con y hacia arriba, vive en `compartido/glifos.js` (unos 130 KB, 153 glifos rectos + 84 cursivos) y `script.js` lo toma con `const GLYPH_DATA = Banco.GLYPH_DATA;`. Estrategias y recta-numerica cargan el mismo archivo, así que agregar o cambiar un glifo también los afecta. Su `"d"` solo usa `M/L/Q/Z` con pares x y alternados (las cuadráticas de TrueType; PowerPoint ya aceptaba `Q`/`T` en la llave).
 3. Subconjunto (pedido por el usuario: "todo a vectores"):
    - **Recto** (`r`): dígitos, `+ = ( ) [ ] . , : ; ! ? % & ' / @ # $ ¡ ¿ – —`, el latín A–Z a–z (para `\text`), el espacio y los acentos del español compuestos (á é í ó ú ü ñ Á É Í Ó Ú Ü Ñ). También el griego mayúsculo (Γ Δ Θ Λ Ξ Π Σ Υ Φ Ψ Ω) y los símbolos de cmsy10: − × ÷ ± ∓ ≤ ≥ ≈ ∞ √ · { } | * ∼ ≡ ∝ → ← ↔ ⇒ ⇔ ∈ ∪ ∩ ∅ ∀ ∃ ∇ ′ ⊥ ∘ • ⟨ ⟩. Por último `<` y `>`, que en TeX vienen de cmmi10.

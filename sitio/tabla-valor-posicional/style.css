@@ -1,11 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=Poppins:wght@400;500;600;700&display=swap");
 /* Los tokens de Vesta (colores, radios, sombras, tipografía, movimiento)
-   vienen de ../../compartido/vesta.css, que index.html carga antes que este archivo. */
-:root {
-  --colC: var(--base10-centena);
-  --colD: var(--base10-decena);
-  --colU: var(--base10-unidad);
-}
+   vienen de ../compartido/vesta.css, que index.html carga antes que este archivo. */
 * {
   box-sizing: border-box;
 }
@@ -34,15 +29,6 @@ body {
   letter-spacing: -0.01em;
   color: var(--text-heading);
 }
-.topbar h1 .c {
-  color: var(--colC);
-}
-.topbar h1 .d {
-  color: var(--colD);
-}
-.topbar h1 .u {
-  color: var(--colU);
-}
 .topbar p {
   margin: 6px 0 0;
   font-size: 13px;
@@ -51,7 +37,7 @@ body {
 .toolbar {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
+  align-items: center;
   padding: 16px 32px;
   row-gap: 14px;
   border-bottom: 1px solid var(--border-subtle);
@@ -69,7 +55,7 @@ body {
 .caption {
   font-size: 10.5px;
   font-weight: 600;
-  letter-spacing: .12em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-muted);
 }
@@ -94,7 +80,7 @@ select,
   min-height: 44px;
   padding: 10px 14px;
   font-family: var(--font-sans);
-  font-size: 15px;
+  font-size: 16px;
   color: var(--text-body);
   background: var(--neutral-0);
   border-radius: var(--radius-md);
@@ -118,45 +104,29 @@ select:focus,
   border-color: var(--red-500);
   box-shadow: var(--ring-error);
 }
-.panel {
-  padding: 16px 32px;
-  border-bottom: 1px solid var(--border-subtle);
-  background: var(--surface-subtle);
-  flex-direction: column;
-  gap: 12px;
-  width: 100%;
-}
-.termsList {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.termRow {
+.numeroRow {
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
 }
-.termRow .tag {
-  min-width: 108px;
+.numeroRow .tag {
+  min-width: 70px;
   font-weight: 600;
   font-size: 12px;
   color: var(--text-body);
   flex: 0 0 auto;
 }
-.termRow .textInput.num {
+.numeroRow .textInput {
   flex: 1 1 140px;
   min-width: 120px;
 }
-.termRow select.jer {
-  flex: 0 1 220px;
-  min-width: 180px;
+.numeroRow select {
+  flex: 0 1 190px;
+  min-width: 160px;
 }
-.termRow .removeBtn {
+.numeroRow .removeBtn {
   flex: 0 0 auto;
-}
-.panelActions {
-  margin-top: 10px;
 }
 .btn {
   display: inline-flex;
@@ -169,7 +139,9 @@ select:focus,
   cursor: pointer;
   border: 1px solid transparent;
   white-space: nowrap;
-  transition: background .14s, box-shadow .14s;
+  transition:
+    background 0.14s,
+    box-shadow 0.14s;
 }
 .btn-primary {
   background: var(--action-primary);
@@ -197,18 +169,17 @@ select:focus,
 }
 .btn-ghost {
   background: transparent;
-  color: var(--red-700);
-  border-color: var(--red-100);
+  color: var(--blue-800);
   font-size: 12.5px;
   min-height: 34px;
   padding: 8px 12px;
 }
 .btn-ghost:hover {
-  background: var(--red-100);
+  background: var(--blue-50);
 }
 .btn-ghost:disabled,
 .btn-ghost[disabled] {
-  opacity: .4;
+  opacity: 0.4;
   cursor: not-allowed;
   background: transparent;
 }
@@ -227,7 +198,6 @@ select:focus,
   cursor: pointer;
   font-size: 14px;
   color: var(--text-body);
-  white-space: nowrap;
 }
 .checkbox input {
   position: absolute;
@@ -257,31 +227,22 @@ select:focus,
   background: var(--feedback-error-bg);
   border-left: 3px solid var(--feedback-error-line);
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
-  padding: 12px 18px;
+  padding: 14px 18px;
   color: var(--feedback-error-fg);
-  font-size: 13.5px;
+  font-size: 14px;
   line-height: 1.5;
   margin: 0 32px 16px;
 }
-.hint {
-  font-size: 11.5px;
-  color: var(--text-muted);
-  line-height: 1.5;
-  margin: 10px 0 0;
+.callout strong {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 2px;
 }
 .stage {
   display: flex;
-  align-items: center;
   justify-content: center;
   padding: 32px;
   background: var(--surface-subtle);
-  overflow: auto;
-  min-height: calc(100vh - 300px);
-}
-#svgHolder svg {
-  max-width: 100%;
-  height: auto;
-  display: block;
 }
 .stage-inner {
   background: #fff;
@@ -292,6 +253,13 @@ select:focus,
   max-width: 100%;
   overflow: auto;
 }
-[data-op-panel] {
-  display: none;
+#svgHolder svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+.loading {
+  font-size: 14px;
+  color: var(--text-muted);
+  padding: 48px 80px;
 }

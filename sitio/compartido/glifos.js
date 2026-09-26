@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------
 // Glifos vectoriales de Computer Modern (cmr10 / cmmi10 / cmsy10),
 // extraídos offline con fontTools. ARCHIVO GENERADO: no editar a mano;
-// se regenera con  python fracciones/_extraer_glifos.py
+// se regenera con  python herramientas/extraer_glifos.py
 //
 // Los usan fracciones, estrategias y recta-numerica: cada carácter del SVG
 // se dibuja como <path> porque «Convertir en forma» de PowerPoint ignora

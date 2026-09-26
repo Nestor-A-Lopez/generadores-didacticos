@@ -60,7 +60,7 @@ const EJE_MATEMATICO = 0.25 * TAM_FUENTE;
 // ---------------------------------------------------------------
 // Glifos vectoriales de Computer Modern (cmr10 / cmsy10): el juego
 // completo de compartido/glifos.js (extraído offline por
-// fracciones/_extraer_glifos.py), del que esta figura solo usa
+// herramientas/extraer_glifos.py), del que esta figura solo usa
 // dígitos, +, − y =. Cada carácter se dibuja como <path>
 // porque "Convertir en forma" de PowerPoint ignora <text>/@font-face.
 // Formato: { upm, r: {car: [avance, yMin, yMax, "d"]} } en unidades

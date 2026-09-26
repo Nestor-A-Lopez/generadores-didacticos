@@ -82,7 +82,7 @@ function toPx(x, y, offsetX, offsetY) {
 // ---------------------------------------------------------------
 // Glifos vectoriales de Computer Modern (cmr10 / cmmi10 / cmsy10, las
 // fuentes originales de TeX), extraídos offline con fontTools por
-// _extraer_glifos.py. Cada carácter se dibuja como <path> real: es lo
+// herramientas/extraer_glifos.py. Cada carácter se dibuja como <path> real: es lo
 // único que sobrevive a "Convertir en forma" de PowerPoint, que ignora
 // <text> con @font-face y cae a Cambria Math. Los datos viven en
 // compartido/glifos.js (también los usan estrategias y recta-numerica).

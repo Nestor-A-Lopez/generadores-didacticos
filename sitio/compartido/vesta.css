@@ -1,7 +1,7 @@
 /* ==========================================================================
    Tokens del sistema de diseño Vesta para las interfaces de los generadores.
 
-   Copia de fracciones/_desing-system-vesta/tokens/*.css (a su vez copia de
+   Copia de .claude/skills/vesta/tokens/*.css (a su vez copia de
    Vesta en claude.ai), solo con los bloques :root. No se incluyen:
    - base.css: da estilo a body, títulos y enlaces; cada generador tiene los
      suyos en su style.css.

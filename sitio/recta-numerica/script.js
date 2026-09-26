@@ -39,7 +39,7 @@ const MAX_MARCAS = 200;
 // ---------------------------------------------------------------
 // Glifos vectoriales de Computer Modern (cmr10 / cmsy10): el juego
 // completo de compartido/glifos.js (extraído offline por
-// fracciones/_extraer_glifos.py), del que los números de la recta
+// herramientas/extraer_glifos.py), del que los números de la recta
 // solo usan dígitos, − (menos de cmsy10), punto y coma.
 // Cada carácter se dibuja como <path> porque "Convertir en forma" de
 // PowerPoint ignora <text>/@font-face.
