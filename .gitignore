@@ -1,0 +1,11 @@
+# Auxiliares y PDF de LaTeX (latexmk -outdir/-auxdir = temp/)
+temp/
+
+# Presentaciones de referencia subidas al sistema de diseño
+**/uploads/*.pptx
+
+# SVG generados: se quedan en la computadora, no se suben al repositorio.
+# Las carpetas que solo tienen SVG (p. ej. fracciones/circulo/) tampoco se
+# suben, porque git no rastrea carpetas sin archivos.
+*.svg
+*.SVG
