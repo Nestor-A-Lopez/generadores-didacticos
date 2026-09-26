@@ -72,24 +72,6 @@ function updateDisabledStates() {
   syncSegmented("modoDescomposicion");
 }
 
-// Resumen que se lee con "Cómo se ve cada pieza" plegado.
-function updatePiezasResumen(opts) {
-  const centena = {
-    bloque: "Centenas en bloque",
-    decenas: "Centenas en 10 decenas",
-    unidades: "Centenas en 100 unidades",
-  }[opts.modoCentena];
-  const decena =
-    opts.modoDecena === "bloque"
-      ? "Decenas en barra"
-      : opts.formatoDiez === "columnas"
-        ? "Decenas en columnas de 5"
-        : "Decenas en columna de 10";
-  const partes = [centena, decena];
-  if (opts.filasCentenas === "2") partes.push("Centenas en 2 filas");
-  document.getElementById("piezasResumen").textContent = partes.join(" · ");
-}
-
 // ---- Ladrillo básico: un cuadrito "unidad" ----
 function drawUnit(x, y, L) {
   return `<rect x="${x}" y="${y}" width="${L}" height="${L}" fill="${COL_U}" stroke="#ffffff" stroke-width="1"/>`;
@@ -352,7 +334,6 @@ function buildLectura(n, centenas, decenas, unidades, opts) {
 function render() {
   updateDisabledStates();
   const opts = getOptions();
-  updatePiezasResumen(opts);
 
   if (!/^\d+$/.test(opts.numeroRaw)) {
     showError(
