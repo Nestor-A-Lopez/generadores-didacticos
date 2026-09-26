@@ -58,9 +58,8 @@ compartido/
 | `estrategias/` | `estrategias.html` (completar la decena en suma y resta; en la resta, pestaña «Distancia entre dos números»: recta numérica + material + ecuación) | — |
 | `recta-numerica/` | `recta-numerica.html` (extremos, paso y separación entre marcas) | — |
 | `compartido/` | (por crear) Tokens, glifos y guardado que usan varios generadores; ver «Carpeta compartida» | — |
-| `_respaldo-marca-x/` | Respaldo del design system anterior «Marca X», ya eliminado de claude.ai. Solo referencia; no usar como fuente de diseño | — |
 
-Convención actual: el archivo generador lleva prefijo `_` para que quede arriba de la lista de SVG en el explorador. Con la arquitectura de tres archivos pasa a llamarse `index.html`. Los `_contexto.md` y `_prompt.md` son los contextos que se usaron en el chat de Claude; su contenido ya está en los `CLAUDE.md` de cada subcarpeta.
+Convención actual: el archivo generador lleva prefijo `_` para que quede arriba de la lista de SVG en el explorador. Con la arquitectura de tres archivos pasa a llamarse `index.html`.
 
 ## Nombres de archivo de los SVG
 
@@ -120,18 +119,13 @@ Objetivo: un solo sitio con una portada que enlace a todos los generadores. GitH
 
 - Portada: `index.html` en la raíz del repo, con una tarjeta por generador (diseñada con Vesta).
 - Cada generador queda en su carpeta con sus tres archivos, así su URL es `…/<carpeta>/`; `compartido/` se publica junto a ellos.
-- **Los SVG generados NO se publican** en GitHub Pages. El sitio se publica con un flujo de GitHub Actions que copia al sitio solo los `index.html`, `style.css` y `script.js` y la carpeta `compartido/`, en lugar de publicar la rama completa. Por lo mismo, `_desing-system-vesta/`, `_respaldo-marca-x/` y los `CLAUDE.md` tampoco se publican. Ojo: si el repositorio es público, los SVG siguen visibles en GitHub aunque no estén en el sitio.
+- **Los SVG generados NO se publican** en GitHub Pages. El sitio se publica con un flujo de GitHub Actions que copia al sitio solo los `index.html`, `style.css` y `script.js` y la carpeta `compartido/`, en lugar de publicar la rama completa. Por lo mismo, `_desing-system-vesta/` y los `CLAUDE.md` tampoco se publican. Ojo: si el repositorio es público, los SVG siguen visibles en GitHub aunque no estén en el sitio.
 
 ## Pendientes
 
 En este orden, y preguntando antes de mover o borrar:
 
 1. **Limpieza**
-   - `tabla-valor-posicional/operaciones/Claude outputs/generador-tabla-valor-posicional-INTEGRADO.html`: versión intermedia; comparar con el generador vigente y eliminar si no aporta nada.
-   - `_contexto.md` y `_prompt.md` de cada subcarpeta: ya están en los `CLAUDE.md`; se pueden eliminar.
-   - `fracciones/triangulo/`: la carpeta quedó vacía al quitar el `.tex`.
-   - `_respaldo-marca-x/`: eliminar cuando ya no se necesite como referencia.
-   - `textColorFor` en fracciones: función sin uso.
    - Comentarios que todavía dicen «Entorno» en `estrategias.html` y `recta-numerica.html`: cambiarlos a «Vesta».
 2. **Separar cada generador en tres archivos** (uno por uno, con la comprobación byte a byte), moviendo a `compartido/` lo que ya esté repetido en otro generador separado.
 3. **Montar la plataforma**: portada, estructura final de carpetas y publicación en GitHub Pages.

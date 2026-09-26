@@ -996,15 +996,6 @@
         return formatAuto(valorEnteroStr, nTotal);
       }
 
-      function textColorFor(hex) {
-        const h = hex.replace("#", "");
-        const r = parseInt(h.substring(0, 2), 16);
-        const g = parseInt(h.substring(2, 4), 16);
-        const b = parseInt(h.substring(4, 6), 16);
-        const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-        return lum > 0.75 ? "#1a1a2e" : "#ffffff";
-      }
-
       // ---------------------------------------------------------------
       // Mini-motor LaTeX → SVG (vectorial, sin dependencias externas)
       // Soporta: \frac \dfrac \tfrac, ^{} _{}, \sqrt{}, {...} agrupación,

@@ -2,8 +2,6 @@
 
 Generador de tablas SVG de valor posicional para suma, resta, multiplicación y división, pensado para exportarse y convertirse en formas editables de PowerPoint. Proyecto hermano: `../tabla-valor-posicional/` (misma tipografía, bordes y agrupamiento). Las convenciones generales del repo están en el `CLAUDE.md` de la raíz.
 
-`Claude outputs/generador-tabla-valor-posicional-INTEGRADO.html` **no** pertenece a este generador: es una versión anterior del de `../tabla-valor-posicional/`. No editarla.
-
 ## Reglas de diseño obligatorias
 
 1. **Fondo transparente**: nunca reintroducir rects de fondo blanco.

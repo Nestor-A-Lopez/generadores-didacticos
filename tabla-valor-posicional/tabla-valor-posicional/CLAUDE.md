@@ -38,7 +38,7 @@ Aplicación de un solo archivo HTML (HTML+CSS+JS embebido) que genera **tablas d
 ## 3. Interpretación del número escrito
 
 - Función central: `computeColumns(numStr, jerarquia, maxPow, minPow, puntoForzado)`.
-- Acepta un punto decimal opcional (`/^\d+(\.\d*)?$/`). Los ceros a la izquierda se recortan como superfluos (`"0950"` → `"950"`), **excepto** cuando la parte entera es exactamente `"0"` y hay decimales (`"0.7"` conserva el 0 en su columna).
+- Acepta un punto decimal opcional (`/^\d+(\.\d*)?$/`). Los ceros a la izquierda **no** se recortan: si el usuario escribe `"0950"` o `"04.8"`, cada cero ocupa su columna (sirve para mostrar que esa posición vale cero). Por eso la validación de «no cabe» usa la **posición** del dígito escrito más a la izquierda (`leadPow = shift + numDigits - 1 > maxPow`) y no el valor numérico: con el valor, `"0950"` pasaría con 3 columnas y el cero se perdería sin aviso. Una parte entera vacía (`".7"`) se toma como `"0"`.
 - El **punto decimal se coloca siempre justo a la derecha de la columna de la jerarquía elegida** (no en una posición fija): si la jerarquía es "Decenas", el punto va después de la columna D, sin importar si hay columnas de milésimos visibles o no. Esto permite que dígitos "decimales" caigan en columnas enteras reales (ej. "9.5 decenas" → 9 en D, 5 en U).
 - **Excepción "punto sin dígitos después"**: escribir `"36."` (sin nada después del punto) es inválido por defecto (muestra error explicando que es una excepción poco común) — solo se permite si se activa la casilla "Permitir punto sin dígitos después", y entonces coloca el punto sin necesidad de que haya columnas decimales visibles.
 - Aritmética con `BigInt` para evitar errores de precisión con números grandes.

@@ -4,8 +4,7 @@ Herramienta de un solo archivo (HTML+CSS+JS) que genera figuras de fracciones (c
 
 Otros archivos de esta carpeta:
 - `_extraer_glifos.py`: extrae offline con `fontTools` los glifos de Computer Modern que se pegan como `GLYPH_DATA` (sección 6).
-- `triangulo/`: antes tenía la versión TikZ original del triángulo (de ahí salen las fórmulas de `buildTriangulo`); el `.tex` se eliminó al retirar LaTeX.
-- `circulo/`, `rectangulo/`, `triangulo/`: los SVG generados, separados por forma (por eso el nombre de archivo no lleva la forma).
+- `circulo/`, `rectangulo/`, `triangulo/`: los SVG generados, separados por forma (por eso el nombre de archivo no lleva la forma). No están en el repositorio (los SVG se ignoran en `.gitignore`). `triangulo/` se eliminó porque había quedado vacía; se vuelve a crear al guardar el primer triángulo. Las fórmulas de `buildTriangulo` salen de la versión TikZ original, ya retirada.
 - `_desing-system-vesta/`: sistema de diseño «Vesta» usado para la interfaz (ver `CLAUDE.md` raíz).
 
 ## Reglas de trabajo
@@ -48,7 +47,7 @@ Todo el código vive en un único `<script>`. La función central es `buildSVG()
 - Toggles `#showPartLabels` / `#showTotalLabel`. `#valorEntero` es texto libre: acepta número, decimal, fracción simple `a/b`, o LaTeX.
 - `#labelMode`: **Automático** (`formatAuto`: entero ÷ denominador; si no da entero exacto, se simplifica a fracción con `gcd`, ej. 4÷3 → `4/3`, nunca decimal feo) o **Personalizado por parte** (`rebuildManualPanel` genera un `<input>` de texto por cada parte *coloreada*, guardados en `customLabels[]`; el placeholder muestra el valor automático de referencia).
 - Solo se etiquetan las partes **coloreadas** (`labelForPart`), nunca las blancas — así se ve en las imágenes de referencia que usó el usuario.
-- Colores de texto independientes entre sí: `#colorValorParte` (blanco por defecto) para las etiquetas por parte, `#colorValorTotal` (negro por defecto) para la llave + el valor total. Ya no hay cálculo automático de contraste (existió brevemente vía `textColorFor`, quedó sin uso, se puede borrar).
+- Colores de texto independientes entre sí: `#colorValorParte` (blanco por defecto) para las etiquetas por parte, `#colorValorTotal` (negro por defecto) para la llave + el valor total. No hay cálculo automático de contraste (existió brevemente vía `textColorFor`; se eliminó por no usarse).
 - Tamaños: `INTEGER_SIZE_FACTOR = 0.68` reduce el tope de enteros/decimales frente a fracciones (una fracción ocupa más alto por numerador+barra+denominador, así que a tamaño de fuente igual se ve más grande). Topes geométricos por forma, ya afinados con varias rondas de feedback visual:
   - Círculo: ancho `min(R*0.46, cuerda*0.62)`; alto `R*0.44` (entero) / `min(R*0.30, cuerda*0.7)` (fracción) — la cuerda se calcula en el radio donde se centra el número, para que sectores angostos (denominadores grandes) reduzcan el tope también en alto, no solo en ancho.
   - Rectángulo: `w*0.62, h*0.56` de la celda.
@@ -137,4 +136,3 @@ Fuentes cargadas por `<link>`: solo Google Fonts (Fraunces + Poppins para la int
 - No reintroducir el halo blanco de los márgenes salvo pedido explícito (se quitó a propósito).
 - Cualquier cambio de tipografía o de agrupamiento debe verificarse pensando en el flujo real: convertir el SVG a formas en PowerPoint, no solo la vista previa del navegador — así es como se detectaron los problemas de tipografía y agrupamiento.
 - Si se cambia la interfaz, conservar todos los ids que usa el script y no eliminar controles del DOM para ocultarlos (sección 9). Tras el rediseño se verificó que el SVG exportado es idéntico byte a byte al de la versión anterior en 8 casos (tres formas, círculo 1/2, error, warning, etiquetas auto/manual con LaTeX, llave, color personalizado).
-- `textColorFor` quedó sin usar tras agregar los selectores de color manuales; se puede eliminar en una limpieza futura.
