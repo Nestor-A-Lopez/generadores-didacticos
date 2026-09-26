@@ -676,12 +676,12 @@ body {
   flex-direction: column;
   padding-top: 22px; /* alinea con los campos que llevan etiqueta */
 }
-/* Bajo su interruptor, sin sangría: ocupa todo el ancho, como las demás
-   barras de opciones. */
-.descOpcion {
-  margin-top: var(--space-1);
+/* Opción de un interruptor (#valorOpcion, #descOpcion): bajo él, sin
+   sangría, ocupa todo el ancho como las demás barras de opciones. */
+.subOpcion {
+  margin: var(--space-1) 0 var(--space-2);
 }
-.descOpcion.is-hidden {
+.subOpcion.is-hidden {
   display: none;
 }
 .piezas {

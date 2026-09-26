@@ -39,6 +39,7 @@ function getOptions() {
     document.getElementById("mostrarDesglose").checked;
   const modoDescomposicion =
     document.getElementById("modoDescomposicion").value; // unidades | jerarquia
+  const colorValor = document.getElementById("colorValor").value; // negro | color
   const colores = {
     u: colorElegido("u"),
     d: colorElegido("d"),
@@ -52,6 +53,7 @@ function getOptions() {
     formatoDiez,
     filasCentenas,
     mostrarValor,
+    colorValor,
     mostrarDesglose,
     modoDescomposicion,
     colores,
@@ -87,7 +89,12 @@ function updateDisabledStates() {
   // Fachada del segmentado + tooltip que explica por qué está desactivado
   document.getElementById("formatoDiezField").classList.toggle("is-disabled", off);
   syncSegmented("formatoDiez");
-  // Cómo se escribe la descomposición: solo tiene sentido si se muestra.
+  // Las opciones del valor y de la descomposición solo tienen sentido si
+  // se muestran.
+  document
+    .getElementById("valorOpcion")
+    .classList.toggle("is-hidden", !document.getElementById("mostrarValor").checked);
+  syncSegmented("colorValor");
   document
     .getElementById("descOpcion")
     .classList.toggle("is-hidden", !document.getElementById("mostrarDesglose").checked);
@@ -280,7 +287,7 @@ const glyphRunSvg = Banco.glyphRunSvg;
 
 // Línea bajo la figura (solo en la vista previa, no va en el SVG
 // exportado), como en LaTeX, con glifos de Computer Modern:
-//   valor:            $236$, cada cifra con el color de su pieza
+//   valor:            $236$, en negro o cada cifra con el color de su pieza
 //   descomposición:   $200 + 30 + 6$ (valor en unidades) o
 //                     $2\,\mathrm{C} + 3\,\mathrm{D} + 6\,\mathrm{U}$ (jerarquía)
 //   las dos:          $236 = 200 + 30 + 6$
@@ -302,8 +309,12 @@ function buildLectura(n, centenas, decenas, unidades, opts) {
   };
 
   if (opts.mostrarValor) {
-    // De derecha a izquierda: unidades, decenas, centenas
-    const colores = [opts.colores.u, opts.colores.d, opts.colores.c];
+    // «Negro» (por defecto) o «Color»: cada cifra con el color de su
+    // bloque, de derecha a izquierda: unidades, decenas, centenas.
+    const colores =
+      opts.colorValor === "color"
+        ? [opts.colores.u, opts.colores.d, opts.colores.c]
+        : [NEGRO, NEGRO, NEGRO];
     const cifras = String(n);
     [...cifras].forEach((ch, i) => poner(ch, colores[cifras.length - 1 - i]));
   }
@@ -409,6 +420,7 @@ async function download() {
   "formatoDiez",
   "filasCentenas",
   "mostrarValor",
+  "colorValor",
   "mostrarDesglose",
   "modoDescomposicion",
 ].forEach((id) => {

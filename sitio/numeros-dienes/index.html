@@ -39,7 +39,7 @@
       <div class="layout">
         <!-- Controles. Los segmentados son fachada de los <select> ocultos:
              el script sigue leyendo #filasCentenas, #modoCentena, #modoDecena,
-             #formatoDiez y #modoDescomposicion, así que esos ids no se pueden quitar. -->
+             #formatoDiez, #colorValor y #modoDescomposicion, así que esos ids no se pueden quitar. -->
         <aside class="panel">
           <div class="field fNumero">
             <div class="labelRow">
@@ -57,6 +57,18 @@
               <span class="switchTrack" aria-hidden="true"></span>
               Mostrar valor
             </label>
+            <!-- Solo se ve con «Mostrar valor» activado. -->
+            <div class="field subOpcion" id="valorOpcion">
+              <span class="fieldLabel" id="colorValorLabel">Las cifras del valor van en</span>
+              <div class="seg segFill" role="group" aria-labelledby="colorValorLabel" data-for="colorValor" data-animate>
+                <button type="button" data-value="negro">Negro</button>
+                <button type="button" data-value="color">Color</button>
+              </div>
+              <select id="colorValor" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+                <option value="negro" selected>Negro</option>
+                <option value="color">Color</option>
+              </select>
+            </div>
             <!-- El id sigue siendo mostrarDesglose: lo usan el script y
                  herramientas/verificar-svg.js. -->
             <label class="switch">
@@ -65,7 +77,7 @@
               Mostrar descomposición
             </label>
             <!-- Solo se ve con «Mostrar descomposición» activado. -->
-            <div class="field descOpcion" id="descOpcion">
+            <div class="field subOpcion" id="descOpcion">
               <span class="fieldLabel" id="modoDescomposicionLabel">Cada cifra se escribe con su</span>
               <div class="seg segFill" role="group" aria-labelledby="modoDescomposicionLabel" data-for="modoDescomposicion" data-animate>
                 <button type="button" data-value="unidades">Valor en unidades</button>
