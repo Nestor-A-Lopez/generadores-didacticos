@@ -9,8 +9,15 @@ const COL_C = "#CC2027"; // centenas -> rojo
 // «Mediano» porque el tamaño se ajusta al escalar la figura en PowerPoint.
 const L_CUADRITO = 20;
 
+// Límites del número. Desde 1: con 0 no hay material que dibujar. Hasta
+// 999: así cada cifra es una pieza (centenas, decenas, unidades) y el valor
+// coloreado no tiene millares.
+const NUM_MIN = 1;
+const NUM_MAX = 999;
+
 // Glifos de Computer Modern (compartido/glifos.js). Aquí solo se usan en la
-// interfaz, para que el desglose de la vista previa se vea como en LaTeX.
+// interfaz, para que el valor y la descomposición de la vista previa se
+// vean como en LaTeX.
 const GLYPH_DATA = Banco.GLYPH_DATA;
 
 function getOptions() {
@@ -19,15 +26,21 @@ function getOptions() {
   const modoCentena = document.getElementById("modoCentena").value; // bloque | decenas | unidades
   const modoDecena = document.getElementById("modoDecena").value; // bloque | unidades
   const formatoDiez = document.getElementById("formatoDiez").value; // columna | columnas
+  const mostrarValor = document.getElementById("mostrarValor").checked;
+  // "Mostrar descomposición" (el id viene de cuando era "desglose")
   const mostrarDesglose =
     document.getElementById("mostrarDesglose").checked;
+  const modoDescomposicion =
+    document.getElementById("modoDescomposicion").value; // unidades | jerarquia
   return {
     numeroRaw,
     L,
     modoCentena,
     modoDecena,
     formatoDiez,
+    mostrarValor,
     mostrarDesglose,
+    modoDescomposicion,
   };
 }
 
@@ -50,6 +63,11 @@ function updateDisabledStates() {
   // Fachada del segmentado + tooltip que explica por qué está desactivado
   document.getElementById("formatoDiezField").classList.toggle("is-disabled", off);
   syncSegmented("formatoDiez");
+  // Cómo se escribe la descomposición: solo tiene sentido si se muestra.
+  document
+    .getElementById("descOpcion")
+    .classList.toggle("is-hidden", !document.getElementById("mostrarDesglose").checked);
+  syncSegmented("modoDescomposicion");
 }
 
 // Resumen que se lee con "Cómo se ve cada pieza" plegado.
@@ -228,47 +246,80 @@ const _r2 = (v) => Math.round(v * 100) / 100;
 // Un <path> por carácter, con glifos rectos (compartido/texto-svg.js).
 const glyphRunSvg = Banco.glyphRunSvg;
 
-// Desglose de la vista previa (no va en el SVG exportado), como en LaTeX:
-// $2\,\mathrm{C} + 3\,\mathrm{D} + 6\,\mathrm{U}$. Cada parte con el color
-// de su pieza; los signos de suma, en negro. Espacios de TeX: \, (3mu)
-// entre cifra y letra, y 4mu a cada lado del +.
-function buildDesglose(centenas, decenas, unidades) {
-  const partes = [];
-  if (centenas > 0) partes.push([`${centenas}`, "C", COL_C]);
-  if (decenas > 0) partes.push([`${decenas}`, "D", COL_D]);
-  if (unidades > 0 || (centenas === 0 && decenas === 0))
-    partes.push([`${unidades}`, "U", COL_U]);
-
+// Línea bajo la figura (solo en la vista previa, no va en el SVG
+// exportado), como en LaTeX, con glifos de Computer Modern:
+//   valor:            $236$, cada cifra con el color de su pieza
+//   descomposición:   $200 + 30 + 6$ (valor en unidades) o
+//                     $2\,\mathrm{C} + 3\,\mathrm{D} + 6\,\mathrm{U}$ (jerarquía)
+//   las dos:          $236 = 200 + 30 + 6$
+// Las partes en cero no se escriben (205 = 200 + 5). Los signos + e =, en
+// negro. Espacios de TeX: \, (3mu) entre cifra y letra, 4mu alrededor del
+// + y 5mu alrededor del =.
+function buildLectura(n, centenas, decenas, unidades, opts) {
+  const NEGRO = "#000000";
   const size = 30; // px de la interfaz; el svg se escala si no cabe
   const s = size / GLYPH_DATA.upm;
   const mu = size / 18;
-  const avance = (t) => [...t].reduce((w, ch) => w + GLYPH_DATA.r[ch][0] * s, 0);
+
+  // Piezas de texto: [texto, color, espacio antes en mu]
+  const piezas = [];
+  let espacio = 0;
+  const poner = (t, fill, antes = 0) => {
+    piezas.push([t, fill, espacio + antes]);
+    espacio = 0;
+  };
+
+  if (opts.mostrarValor) {
+    // De derecha a izquierda: unidades, decenas, centenas
+    const colores = [COL_U, COL_D, COL_C];
+    const cifras = String(n);
+    [...cifras].forEach((ch, i) => poner(ch, colores[cifras.length - 1 - i]));
+  }
+  if (opts.mostrarValor && opts.mostrarDesglose) {
+    poner("=", NEGRO, 5);
+    espacio = 5;
+  }
+  if (opts.mostrarDesglose) {
+    const partes = [];
+    if (centenas > 0) partes.push([centenas, 100, "C", COL_C]);
+    if (decenas > 0) partes.push([decenas, 10, "D", COL_D]);
+    if (unidades > 0 || partes.length === 0)
+      partes.push([unidades, 1, "U", COL_U]);
+    partes.forEach(([cifra, valor, letra, color], i) => {
+      if (i > 0) {
+        poner("+", NEGRO, 4);
+        espacio = 4;
+      }
+      if (opts.modoDescomposicion === "jerarquia") {
+        poner(String(cifra), color);
+        poner(letra, color, 3);
+      } else {
+        poner(String(cifra * valor), color);
+      }
+    });
+  }
+
+  // Alto de la línea: el de todos los glifos que aparecen, más + y =
   let ascent = 0,
     descent = 0;
-  for (const ch of partes.flat().join("") + "+") {
+  for (const ch of piezas.map((p) => p[0]).join("") + "+=") {
     const g = GLYPH_DATA.r[ch];
-    if (!g) continue;
     ascent = Math.max(ascent, g[2] * s);
     descent = Math.max(descent, -g[1] * s);
   }
 
   let x = 0;
   let paths = "";
-  partes.forEach(([cifras, letra, color], i) => {
-    if (i > 0) {
-      x += 4 * mu;
-      paths += glyphRunSvg("+", x, ascent, size, "#000000");
-      x += avance("+") + 4 * mu;
-    }
-    paths += glyphRunSvg(cifras, x, ascent, size, color);
-    x += avance(cifras) + 3 * mu;
-    paths += glyphRunSvg(letra, x, ascent, size, color);
-    x += avance(letra);
-  });
+  let etiqueta = "";
+  for (const [t, fill, antes] of piezas) {
+    x += antes * mu;
+    paths += glyphRunSvg(t, x, ascent, size, fill);
+    for (const ch of t) x += GLYPH_DATA.r[ch][0] * s;
+    etiqueta += (antes ? " " : "") + t;
+  }
   const w = _r2(x);
   const h = _r2(ascent + descent);
-  const etiqueta = partes.map(([c, l]) => `${c} ${l}`).join(" + ");
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-label="Desglose: ${etiqueta}">${paths}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-label="${etiqueta}">${paths}</svg>`;
 }
 
 function render() {
@@ -283,9 +334,8 @@ function render() {
     return;
   }
   const n = parseInt(opts.numeroRaw, 10);
-  if (n > 99999) {
-    // Con números más grandes la imagen queda enorme.
-    showError("Escribe un número entre 0 y 99999.");
+  if (n < NUM_MIN || n > NUM_MAX) {
+    showError(`Escribe un número entre ${NUM_MIN} y ${NUM_MAX}.`);
     return;
   }
   showError(null);
@@ -296,8 +346,8 @@ function render() {
   holder.setAttribute("aria-label", `Figura del número ${n}`);
 
   const desgloseHolder = document.getElementById("desgloseHolder");
-  if (opts.mostrarDesglose) {
-    desgloseHolder.innerHTML = buildDesglose(centenas, decenas, unidades);
+  if (opts.mostrarValor || opts.mostrarDesglose) {
+    desgloseHolder.innerHTML = buildLectura(n, centenas, decenas, unidades, opts);
     desgloseHolder.style.display = "flex";
   } else {
     desgloseHolder.style.display = "none";
@@ -314,6 +364,7 @@ async function download() {
   const opts = getOptions();
   if (!/^\d+$/.test(opts.numeroRaw)) return;
   const n = parseInt(opts.numeroRaw, 10);
+  if (n < NUM_MIN || n > NUM_MAX) return;
   const { svg } = buildSVG(n, opts);
   const filename = buildFilename();
 
@@ -325,7 +376,9 @@ async function download() {
   "modoCentena",
   "modoDecena",
   "formatoDiez",
+  "mostrarValor",
   "mostrarDesglose",
+  "modoDescomposicion",
 ].forEach((id) => {
   document.getElementById(id).addEventListener("input", render);
   document.getElementById(id).addEventListener("change", render);

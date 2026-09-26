@@ -38,22 +38,44 @@
 
       <div class="layout">
         <!-- Controles. Los segmentados son fachada de los <select> ocultos:
-             el script sigue leyendo #modoCentena, #modoDecena y #formatoDiez, así que esos ids no se pueden quitar. -->
+             el script sigue leyendo #modoCentena, #modoDecena, #formatoDiez y
+             #modoDescomposicion, así que esos ids no se pueden quitar. -->
         <aside class="panel">
           <div class="field fNumero">
             <div class="labelRow">
               <label class="fieldLabel" for="numero">Número</label>
-              <span class="fieldHint">De 0 a 99999</span>
+              <span class="fieldHint">De 1 a 999</span>
             </div>
             <input class="input" type="text" id="numero" value="236" inputmode="numeric" autocomplete="off" />
           </div>
 
-          <div class="fDesglose">
+          <!-- Lo que se escribe debajo de la figura (solo en la vista previa,
+               no va en el SVG). Con los dos activados: valor = descomposición. -->
+          <div class="fMostrar">
+            <label class="switch">
+              <input type="checkbox" role="switch" id="mostrarValor" />
+              <span class="switchTrack" aria-hidden="true"></span>
+              Mostrar valor
+            </label>
+            <!-- El id sigue siendo mostrarDesglose: lo usan el script y
+                 herramientas/verificar-svg.js. -->
             <label class="switch">
               <input type="checkbox" role="switch" id="mostrarDesglose" />
               <span class="switchTrack" aria-hidden="true"></span>
-              Mostrar desglose C D U
+              Mostrar descomposición
             </label>
+            <!-- Solo se ve con «Mostrar descomposición» activado. -->
+            <div class="field descOpcion" id="descOpcion">
+              <span class="fieldLabel" id="modoDescomposicionLabel">Cada cifra se escribe con su</span>
+              <div class="seg segFill" role="group" aria-labelledby="modoDescomposicionLabel" data-for="modoDescomposicion" data-animate>
+                <button type="button" data-value="unidades">Valor en <br />unidades</button>
+                <button type="button" data-value="jerarquia">Jerarquía</button>
+              </div>
+              <select id="modoDescomposicion" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+                <option value="unidades" selected>Valor en unidades</option>
+                <option value="jerarquia">Jerarquía</option>
+              </select>
+            </div>
           </div>
 
           <!-- "Cómo se ve cada pieza": sección plegable (cerrada al abrir). -->

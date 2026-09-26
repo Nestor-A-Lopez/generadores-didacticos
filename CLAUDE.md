@@ -69,7 +69,7 @@ Quién carga qué:
 | --- | --- | --- | --- | --- |
 | fracciones, estrategias, recta-numerica | sí | sí | — | sí |
 | tabla de valor posicional, operaciones | sí | — | sí | sí |
-| numeros-dienes | sí | sí (solo para el desglose de la vista previa) | — | sí |
+| numeros-dienes | sí | sí (solo para el valor y la descomposición de la vista previa) | — | sí |
 
 - Cada `index.html` los carga **antes** que los suyos, con rutas relativas: `<link rel="stylesheet" href="../compartido/vesta.css" />` antes de `style.css`, y los `<script src="../compartido/…" defer></script>` antes de `script.js`. Todos los generadores están al mismo nivel dentro de `sitio/`, así que la ruta es siempre `../compartido/` (la portada, que está en `sitio/`, usa `compartido/`).
 - En `script.js` se toman con una línea (`const GLYPH_DATA = Banco.GLYPH_DATA;`), así el resto del código no cambió. `download()` arma el SVG y el nombre, y termina con `await Banco.guardarSVG(svg, filename)`. El atajo de **Enter** se queda en cada generador porque cada uno lo pone en campos distintos.
@@ -93,7 +93,7 @@ Todo lo publicable está en `sitio/`. Cada carpeta de generador tiene `index.htm
 | `sitio/fracciones/` | Fracciones: círculo, rectángulo, triángulo | su `CLAUDE.md` |
 | `sitio/tabla-valor-posicional/` | Tabla de valor posicional | su `CLAUDE.md` |
 | `sitio/operaciones/` | Operaciones en la tabla: suma, resta, multiplicación, división | su `CLAUDE.md` |
-| `sitio/numeros-dienes/` | Números con bloques Dienes (material base 10): unidades, decenas, centenas. Se llamó «Números con material» y estaba en `numeros-material/` hasta el 2026-09-26. Interfaz responsiva (diseño «Pantalla base 10» de Vesta, 2026-09-26): panel lateral (propuesta 1b) desde 1024 px y filas (1a) por debajo; los segmentados son fachada de `<select>` ocultos. El cuadrito mide siempre 20 (`L_CUADRITO`; el tamaño se ajusta en PowerPoint) y el desglose de la vista previa se dibuja con glifos de Computer Modern | — |
+| `sitio/numeros-dienes/` | Números con bloques Dienes (material base 10): unidades, decenas, centenas. Se llamó «Números con material» y estaba en `numeros-material/` hasta el 2026-09-26. Interfaz responsiva (diseño «Pantalla base 10» de Vesta, 2026-09-26): panel lateral (propuesta 1b) desde 1024 px y filas (1a) por debajo; los segmentados son fachada de `<select>` ocultos. El cuadrito mide siempre 20 (`L_CUADRITO`; el tamaño se ajusta en PowerPoint) y el número va de 1 a 999 (`NUM_MIN`, `NUM_MAX`): con 0 no hay material y con 999 cada cifra es una pieza. Bajo la figura, solo en la vista previa y con glifos de Computer Modern: «Mostrar valor» (cada cifra con el color de su pieza) y «Mostrar descomposición» (`#mostrarDesglose`, en valor en unidades o en jerarquía C D U); con los dos, «236 = 200 + 30 + 6» | — |
 | `sitio/estrategias/` | Completar la decena en suma y resta; en la resta, pestaña «Distancia entre dos números» (recta numérica + material + ecuación) | — |
 | `sitio/recta-numerica/` | Recta numérica: extremos, paso y separación entre marcas | — |
 | `sitio/compartido/` | Tokens, glifos y guardado que usan varios generadores; ver «Carpeta compartida» | — |

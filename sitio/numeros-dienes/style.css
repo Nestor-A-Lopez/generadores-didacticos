@@ -555,9 +555,19 @@ body {
   flex: 0 1 220px;
   min-width: 160px;
 }
-.fDesglose {
+/* Interruptores de "Mostrar…" y la opción de la descomposición. */
+.fMostrar {
   flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
   padding-top: 22px; /* alinea con los campos que llevan etiqueta */
+}
+/* Colgada bajo su interruptor: ancho del riel (46px) + separación (12px). */
+.descOpcion {
+  margin: var(--space-1) 0 0 58px;
+}
+.descOpcion.is-hidden {
+  display: none;
 }
 .piezas {
   flex: 1 1 100%;
@@ -592,7 +602,7 @@ body {
   .fNumero {
     flex: 1 1 100%;
   }
-  .fDesglose {
+  .fMostrar {
     padding-top: 0;
   }
   .stage {
@@ -636,13 +646,13 @@ body {
     box-shadow: var(--shadow-sm);
   }
   .fNumero,
-  .fDesglose,
+  .fMostrar,
   .piezas {
     flex: 0 0 auto;
     min-width: 0;
   }
-  .fDesglose {
-    order: 1; /* el interruptor va al final, después de las piezas */
+  .fMostrar {
+    order: 1; /* los interruptores van al final, después de las piezas */
     padding-top: 0;
   }
   /* Aquí las etiquetas largas se parten en dos líneas y las opciones
