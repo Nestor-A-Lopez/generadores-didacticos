@@ -1,0 +1,44 @@
+/* ---------------------------------------------------------------
+   Ícono de la cabecera, igual en todos los generadores.
+   Cada index.html pone, a la izquierda del título, el mismo ícono que el
+   generador tiene en su tarjeta de la portada:
+
+     <div class="headerMarca">
+       <span class="icono" aria-hidden="true"><svg …/></span>
+       <div> <h1>…</h1> <p>…</p> </div>
+     </div>
+
+   Usa los tokens de vesta.css, así que se carga después de él y antes
+   del style.css de cada generador (que puede ajustar .headerMarca).
+   --------------------------------------------------------------- */
+
+/* Ícono + título van juntos aunque la cabecera se parta en dos filas. */
+.headerMarca {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-width: 0;
+}
+/* Recuadro del ícono, igual que en las tarjetas de la portada. */
+.icono {
+  display: inline-flex;
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  background: var(--blue-50);
+  color: var(--blue-800);
+}
+.icono svg {
+  width: 24px;
+  height: 24px;
+}
+/* En pantallas angostas el título y el texto ocupan varias líneas: el
+   ícono va con el título, arriba, y no a media altura del bloque. */
+@media (max-width: 640px) {
+  .headerMarca {
+    align-items: flex-start;
+  }
+}

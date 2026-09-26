@@ -57,6 +57,7 @@ sitio/<carpeta-del-generador>/
 ```
 compartido/
 ├── vesta.css        ← tokens de Vesta (todos los bloques :root de .claude/skills/vesta/tokens/, sin base.css ni el @import de fuentes)
+├── cabecera.css     ← .headerMarca + .icono: el ícono de la tarjeta de la portada a la izquierda del título
 ├── glifos.js        ← Banco.GLYPH_DATA: juego completo de Computer Modern (lo escribe herramientas/extraer_glifos.py)
 ├── texto-svg.js     ← Banco.glyphRunSvg(text, x, y, fontSize, fill, glyphFor?): texto como un <path> por carácter, con glifos.js
 ├── glifos-tabla.js  ← Banco.GLYPH_DATA_TABLA: glifos de las tablas, en su propio formato {upm, regular, bold}
@@ -65,15 +66,16 @@ compartido/
 
 Quién carga qué:
 
-| Generador | `vesta.css` | `glifos.js` + `texto-svg.js` | `glifos-tabla.js` | `guardar-svg.js` |
+| Generador | `vesta.css` + `cabecera.css` | `glifos.js` + `texto-svg.js` | `glifos-tabla.js` | `guardar-svg.js` |
 | --- | --- | --- | --- | --- |
 | fracciones, estrategias, recta-numerica | sí | sí | — | sí |
 | tabla de valor posicional, operaciones | sí | — | sí | sí |
 | numeros-dienes | sí | sí (solo para el valor y la descomposición de la vista previa) | — | sí |
 
-- Cada `index.html` los carga **antes** que los suyos, con rutas relativas: `<link rel="stylesheet" href="../compartido/vesta.css" />` antes de `style.css`, y los `<script src="../compartido/…" defer></script>` antes de `script.js`. Todos los generadores están al mismo nivel dentro de `sitio/`, así que la ruta es siempre `../compartido/` (la portada, que está en `sitio/`, usa `compartido/`).
+- Cada `index.html` los carga **antes** que los suyos, con rutas relativas: `<link rel="stylesheet" href="../compartido/vesta.css" />` y `cabecera.css` (en ese orden, porque usa sus tokens) antes de `style.css`, y los `<script src="../compartido/…" defer></script>` antes de `script.js`. Todos los generadores están al mismo nivel dentro de `sitio/`, así que la ruta es siempre `../compartido/` (la portada, que está en `sitio/`, usa `compartido/`).
 - En `script.js` se toman con una línea (`const GLYPH_DATA = Banco.GLYPH_DATA;`), así el resto del código no cambió. `download()` arma el SVG y el nombre, y termina con `await Banco.guardarSVG(svg, filename)`. El atajo de **Enter** se queda en cada generador porque cada uno lo pone en campos distintos.
 - `glifos.js` es el juego completo de fracciones (237 glifos). Estrategias y recta-numerica tenían recortes de 13 glifos, copiados tal cual de ese juego; se unificaron por decisión del usuario, porque solo buscan por carácter y la salida no cambia. Las tablas usan otro formato (con `bold`), así que van aparte en `glifos-tabla.js`.
+- `cabecera.css` (desde el 2026-09-26): todos los generadores muestran, a la izquierda del título, el ícono de su tarjeta de la portada en un recuadro de 48 px (`<div class="headerMarca"><span class="icono">…</span><div>h1 + p</div></div>`), y el mismo ícono como ícono de la pestaña (`<link rel="icon">` con el SVG incrustado en `data:`, para que funcione con doble clic). El ícono de cada uno está en su `index.html`; `cabecera.css` solo tiene los estilos. numeros-dienes añade en su `style.css` el ancho flexible de `.headerMarca`.
 - `texto-svg.js` (desde el 2026-09-26) es la función que dibuja texto con esos glifos, que estaba copiada en los cuatro generadores que cargan `glifos.js`. Las copias solo diferían en cómo buscan el glifo, así que eso es un parámetro opcional: por defecto, el recto (`GLYPH_DATA.r`); fracciones pasa su `glyphFor` para respetar recto/cursiva. Se carga después de `glifos.js`. En los scripts se toma como `const glyphRunSvg = Banco.glyphRunSvg;` (fracciones la envuelve para pasar `upright`). `glyphMetrics` sigue en cada generador porque sus versiones no son iguales.
 - `glifos.js` no se edita a mano: se regenera con `python herramientas/extraer_glifos.py` desde la raíz del repo (necesita `fontTools` y `matplotlib`: `pip install fonttools matplotlib`), que escribe `sitio/compartido/glifos.js` directamente.
 - En cada `style.css` quedan solo los tokens que no son de Vesta: la paleta de fracciones (`--morado`…) y los alias `--colU/--colD/--colC`, que ahora valen `var(--base10-*)`.
