@@ -554,9 +554,10 @@ body {
   flex-direction: column;
   padding-top: 22px; /* alinea con los campos que llevan etiqueta */
 }
-/* Colgada bajo su interruptor: ancho del riel (46px) + separación (12px). */
+/* Bajo su interruptor, sin sangría: ocupa todo el ancho, como las demás
+   barras de opciones. */
 .descOpcion {
-  margin: var(--space-1) 0 0 58px;
+  margin-top: var(--space-1);
 }
 .descOpcion.is-hidden {
   display: none;
