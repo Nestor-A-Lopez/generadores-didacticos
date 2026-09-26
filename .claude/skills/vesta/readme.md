@@ -65,11 +65,13 @@ Nunca «¡Incorrecto!», nunca «¡Genial!», nunca signos de exclamación apila
 ## Fundamentos visuales
 
 ### Color
+
 La rampa azul es el sistema entero; no hay segundo color de marca. `--blue-800 #0d47a1` es la tinta profunda (titulares invertidos, fondos plenos, barra lateral); `--blue-500 #2196f3` es el azul señal (foco, enlaces, barras de progreso); `--blue-200 #90caf9` y `--blue-50 #e3f2fd` son aire (superficies hundidas, fondos de fórmula). Los neutros llevan **una gota de azul** — nunca grises puros, que al lado de la rampa se ven sucios.
 
 Máximo **dos fondos por pantalla o por mazo**: blanco y uno de {azul hundido, azul profundo}. Nunca tres.
 
 ### Tipografía
+
 Tres familias con roles separados y sin solapamiento:
 
 - **Fraunces** (`--font-serif-display`) — titulares. Serif variable de alto contraste, mismo registro clásico que la tipografía matemática. Eje óptico fijado por tamaño: `opsz 120–144` en display, `opsz 48` en títulos de tarjeta. Peso 600, `letter-spacing: -.02em`. Itálica sólo en citas.
@@ -79,25 +81,31 @@ Tres familias con roles separados y sin solapamiento:
 **Mínimos innegociables:** 16px de cuerpo de lectura, 14px de texto secundario, 12px sólo para cintillos en versalitas. En diapositivas, 19px. Contraste ≥ 4.5:1 en texto y ≥ 3:1 en titulares; nunca texto atenuado con `opacity` sobre fondos de color.
 
 ### Espacio y retícula
+
 Base de 4px (`--space-1`). Dentro de un componente, pasos 2–6 (8–24px); entre bloques de página, 12–24 (48–96px). Contenedor máximo 1200px, canalón 48px. Medida de lectura 66ch; en columnas estrechas, 48ch.
 
 ### Fondos y motivo
+
 El fondo por defecto es **blanco**. La profundidad viene del **motivo de capas**: formas orgánicas superpuestas, cada una un **plano de color liso** en un peldaño distinto de la rampa (`--radius-blob`). **Nunca degradados** — la referencia de marca es papel recortado, no luz. Las capas se sangran fuera del lienzo (esquinas, bordes) y quedan siempre detrás del texto, nunca bajo él.
 
 Sin texturas, sin grano, sin patrones repetidos, sin fotografía de banco. Si hace falta imagen real (aula, montaje, laboratorio), pídela: el sistema no incluye ninguna.
 
 ### Bordes, radios y tarjetas
+
 Nada es cuadrado y nada es una cápsula salvo las acciones. Radios: 4px casillas, 6px tooltips, 10px campos y bloques de fórmula, 16px tarjetas, 24px modales, 32px secciones grandes, `999px` botones y etiquetas.
 
 Una tarjeta = fondo blanco + **borde de 1px** `--border-subtle` + **sombra `--shadow-sm`**. Borde y sombra siempre juntos; una sombra sin borde flota, un borde sin sombra se ve plano. La única franja de color lateral del sistema es la del `Callout` (3px); no la uses en tarjetas genéricas.
 
 ### Sombras
+
 Cinco escalones, todos con tinte azul (`rgba(9,47,107,…)`) y difusos. `xs/sm` para reposo, `md` para elementos elevados, `lg` para hover de tarjeta clicable y toasts, `xl` sólo para modales. Sombras interiores: sólo el brillo superior `--shadow-inset` en superficies claras; nunca sombra interior como decoración.
 
 ### Movimiento
+
 **Sin rebotes.** El movimiento acompaña, no celebra: `--ease-out` (entra rápido, se posa lento) por defecto. 140ms para tintes de hover y foco, 220ms para paneles y pestañas, 380ms para la barra de progreso y el despliegue del desarrollo, 700ms para escenas de simulador. Las transiciones de opacidad son fundidos limpios, sin escalados. `prefers-reduced-motion` anula todo (ya está en `tokens/base.css`).
 
 ### Estados
+
 - **Hover:** el fondo se **oscurece un peldaño** en acciones sólidas (`--action-primary` → `--action-primary-hover`) y se **tiñe de azul claro** en las fantasma y contorneadas. Las tarjetas clicables suben 2px y pasan a `--shadow-lg`. Nunca se usa opacidad para el hover.
 - **Press:** `translateY(1px)` y se retira la sombra. Sin escalado.
 - **Foco:** anillo `--ring-focus` de 3px en `rgba(33,150,243,.35)`, visible sobre cualquier fondo. Jamás se elimina el foco.
@@ -105,9 +113,11 @@ Cinco escalones, todos con tinte azul (`rgba(9,47,107,…)`) y difusos. `xs/sm` 
 - **Error:** borde `--red-500` + anillo `--ring-error`; el mensaje sustituye a la ayuda, nunca se apilan.
 
 ### Transparencia y desenfoque
+
 Se usan en **dos sitios y sólo dos**: la cabecera pegajosa del sitio (`rgba(255,255,255,.88)` + `blur(10px)`) y el velo de los modales (`--surface-overlay`, azul profundo al 52% + `blur(3px)`). En ningún otro lugar hay vidrio esmerilado. El texto **nunca** se pone semitransparente; para bajar jerarquía se usa `--text-muted`, que es un color real.
 
 ### Disposición
+
 La cabecera del sitio es pegajosa; la barra lateral de la app es fija; la columna auxiliar de la lección es `sticky` a 96px. No hay elementos flotantes sobre el contenido salvo el toast (abajo, centrado, 4s) y los modales.
 
 ---
@@ -146,6 +156,7 @@ No había fuente que definiera un inventario de componentes, así que se autoró
 ## Índice
 
 ### Raíz
+
 | Archivo | Qué es |
 | --- | --- |
 | `styles.css` | **Punto de entrada único.** Sólo `@import`. Enlázalo y tendrás todos los tokens. |
@@ -154,9 +165,11 @@ No había fuente que definiera un inventario de componentes, así que se autoró
 | `thumbnail.html` | Miniatura del sistema. |
 
 ### Tokens — `tokens/`
+
 `fonts.css` (familias + carga desde Google Fonts) · `colors.css` (rampa azul, neutros, semánticos, disciplinas) · `typography.css` (escala, interlineados, pesos, ejes ópticos) · `spacing.css` · `radius.css` · `elevation.css` · `motion.css` · `semantic.css` (alias: superficies, texto, bordes, interacción, feedback) · `base.css` (reset y defaults heredables).
 
 ### Componentes — `components/`
+
 | Grupo | Componentes |
 | --- | --- |
 | `core/` | `Button` · `IconButton` · `Card` · `Badge` · `Tag` · `Icon` |
@@ -168,17 +181,22 @@ No había fuente que definiera un inventario de componentes, así que se autoró
 Cada uno trae `.d.ts` (contrato de props) y `.prompt.md` (cuándo y cómo usarlo). Cada carpeta tiene su tarjeta de previsualización `*.card.html`.
 
 ### UI kits — `ui_kits/`
+
 - `website/` — sitio público navegable: portada, catálogo, vista previa de lección. Ver su `README.md`.
 - `app/` — entorno de aprendizaje navegable: acceso, panel, lección, avance. Ver su `README.md`.
 
 ### Diapositivas — `slides/`
+
 Ocho tipos a 1280×720 (`TitleSlide`, `SectionSlide`, `ConceptSlide`, `FormulaSlide`, `ComparisonSlide`, `DataSlide`, `QuoteSlide`, `ClosingSlide`) + `README.md` con las reglas del mazo.
 
 ### Plantillas — `templates/`
+
 - `slide-deck/SlideDeck.dc.html` — mazo completo de seis diapositivas listo para copiar en un proyecto consumidor.
 
 ### Fundamentos visibles — `guidelines/`
+
 17 tarjetas de especimen que pueblan la pestaña Design System, agrupadas en **Colors**, **Type**, **Spacing** y **Brand**.
 
 ### Activos — `assets/`
+
 `reference-palette.png` y `reference-landing-mood.jpg`: las dos referencias entregadas, guardadas como procedencia (el `.jpg` solo en la copia local; no se sube a GitHub por su licencia). `reference-palette.png` se rehízo el 2026-09-26 como muestra propia de los cuatro colores, en franjas iguales, para no redistribuir la captura de Color Hunt. **No hay logotipo ni imágenes de producto.**

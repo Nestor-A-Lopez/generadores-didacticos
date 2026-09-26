@@ -1,4 +1,4 @@
-# UI kit — Vesta de aprendizaje (aplicación)
+# UI kit — Aplicación de aprendizaje
 
 Recorrido navegable: **acceso → panel → lección → avance**.
 
