@@ -1,0 +1,1564 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Generador de tablas de valor posicional</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=Poppins:wght@400;500;600;700&display=swap");
+      :root {
+        --blue-50: #e3f2fd;
+        --blue-100: #c6e3fb;
+        --blue-200: #90caf9;
+        --blue-500: #2196f3;
+        --blue-600: #1877cf;
+        --blue-700: #125aa8;
+        --blue-800: #0d47a1;
+        --blue-900: #092f6b;
+        --blue-950: #061c40;
+        --neutral-0: #ffffff;
+        --neutral-25: #f8fafc;
+        --neutral-50: #f1f5f9;
+        --neutral-100: #e6ecf3;
+        --neutral-200: #d2dbe6;
+        --neutral-300: #b3c0d0;
+        --neutral-400: #8695a9;
+        --neutral-500: #637185;
+        --neutral-700: #35404f;
+        --neutral-800: #222c39;
+        --neutral-900: #141b26;
+        --red-100: #fadfe3;
+        --red-500: #d1495b;
+        --red-700: #8e2b39;
+        --surface-page: var(--neutral-0);
+        --surface-subtle: var(--neutral-25);
+        --surface-sunken: var(--blue-50);
+        --text-body: var(--neutral-800);
+        --text-heading: var(--blue-950);
+        --text-muted: var(--neutral-500);
+        --border-subtle: var(--neutral-100);
+        --border-default: var(--neutral-200);
+        --border-strong: var(--neutral-300);
+        --border-brand: var(--blue-500);
+        --action-primary: var(--blue-700);
+        --action-primary-hover: var(--blue-800);
+        --action-disabled-bg: var(--neutral-100);
+        --action-disabled-fg: var(--neutral-400);
+        --feedback-error-bg: var(--red-100);
+        --feedback-error-fg: var(--red-700);
+        --feedback-error-line: var(--red-500);
+        --ring-focus: 0 0 0 3px rgba(33, 150, 243, 0.35);
+        --ring-error: 0 0 0 3px rgba(209, 73, 91, 0.28);
+        --shadow-sm:
+          0 1px 3px rgba(9, 47, 107, 0.08), 0 1px 2px rgba(9, 47, 107, 0.04);
+        --shadow-md:
+          0 4px 12px rgba(9, 47, 107, 0.08), 0 1px 3px rgba(9, 47, 107, 0.05);
+        --radius-xs: 4px;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --radius-pill: 999px;
+        --font-serif-display: "Fraunces", "Georgia", "Times New Roman", serif;
+        --font-sans:
+          "Poppins", -apple-system, "Segoe UI", system-ui, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font-sans);
+        background: var(--surface-subtle);
+        color: var(--text-body);
+      }
+      .app {
+        max-width: 1440px;
+        margin: 0 auto;
+        background: var(--surface-page);
+        min-height: 100vh;
+      }
+      .topbar {
+        padding: 22px 32px 18px;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+      .topbar h1 {
+        margin: 0;
+        font-family: var(--font-serif-display);
+        font-optical-sizing: auto;
+        font-size: 23px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: var(--text-heading);
+      }
+      .topbar p {
+        margin: 6px 0 0;
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        padding: 16px 32px;
+        row-gap: 14px;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+      .group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding-right: 22px;
+      }
+      .group.grow {
+        flex: 1 1 400px;
+        min-width: 400px;
+      }
+      .caption {
+        font-size: 10.5px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+      .divider {
+        width: 1px;
+        align-self: stretch;
+        background: var(--border-default);
+        margin: 0 22px;
+      }
+      .row2 {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      label.fieldLabel {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-body);
+      }
+      select,
+      .textInput {
+        min-height: 44px;
+        padding: 10px 14px;
+        font-family: var(--font-sans);
+        font-size: 16px;
+        color: var(--text-body);
+        background: var(--neutral-0);
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-default);
+        outline: none;
+      }
+      select {
+        appearance: none;
+        cursor: pointer;
+        padding-right: 38px;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><path d='M1 3 L5 7 L9 3' stroke='%23637185' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+      }
+      select:focus,
+      .textInput:focus {
+        border-color: var(--border-brand);
+        box-shadow: var(--ring-focus);
+      }
+      .textInput.hasError {
+        border-color: var(--red-500);
+        box-shadow: var(--ring-error);
+      }
+      .numeroRow {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 6px;
+      }
+      .numeroRow .tag {
+        min-width: 70px;
+        font-weight: 600;
+        font-size: 12px;
+        color: var(--text-body);
+        flex: 0 0 auto;
+      }
+      .numeroRow .textInput {
+        flex: 1 1 140px;
+        min-width: 120px;
+      }
+      .numeroRow select {
+        flex: 0 1 190px;
+        min-width: 160px;
+      }
+      .numeroRow .removeBtn {
+        flex: 0 0 auto;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-family: var(--font-sans);
+        font-weight: 500;
+        border-radius: var(--radius-pill);
+        cursor: pointer;
+        border: 1px solid transparent;
+        white-space: nowrap;
+        transition:
+          background 0.14s,
+          box-shadow 0.14s;
+      }
+      .btn-primary {
+        background: var(--action-primary);
+        color: #fff;
+        border-color: var(--action-primary);
+        box-shadow: var(--shadow-sm);
+        font-size: 16px;
+        min-height: 44px;
+        padding: 11px 20px;
+      }
+      .btn-primary:hover {
+        background: var(--action-primary-hover);
+        border-color: var(--action-primary-hover);
+      }
+      .btn-outline {
+        background: transparent;
+        color: var(--blue-800);
+        border-color: var(--border-brand);
+        font-size: 14px;
+        min-height: 34px;
+        padding: 8px 14px;
+      }
+      .btn-outline:hover {
+        background: var(--blue-50);
+      }
+      .btn-ghost {
+        background: transparent;
+        color: var(--blue-800);
+        font-size: 12.5px;
+        min-height: 34px;
+        padding: 8px 12px;
+      }
+      .btn-ghost:hover {
+        background: var(--blue-50);
+      }
+      .btn-ghost:disabled,
+      .btn-ghost[disabled] {
+        opacity: 0.4;
+        cursor: not-allowed;
+        background: transparent;
+      }
+      .checkGroup {
+        display: flex;
+        flex-wrap: wrap;
+        column-gap: 18px;
+        row-gap: 0;
+      }
+      .checkbox {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 36px;
+        padding: 4px 0;
+        cursor: pointer;
+        font-size: 14px;
+        color: var(--text-body);
+      }
+      .checkbox input {
+        position: absolute;
+        opacity: 0;
+        width: 1px;
+        height: 1px;
+      }
+      .checkbox .box {
+        width: 20px;
+        height: 20px;
+        flex: 0 0 auto;
+        border-radius: var(--radius-xs);
+        border: 1px solid var(--border-strong);
+        background: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+      }
+      .checkbox input:checked + .box {
+        background: var(--action-primary);
+        border-color: var(--action-primary);
+      }
+      .callout {
+        display: flex;
+        gap: 12px;
+        background: var(--feedback-error-bg);
+        border-left: 3px solid var(--feedback-error-line);
+        border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        padding: 14px 18px;
+        color: var(--feedback-error-fg);
+        font-size: 14px;
+        line-height: 1.5;
+        margin: 0 32px 16px;
+      }
+      .callout strong {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 2px;
+      }
+      .stage {
+        display: flex;
+        justify-content: center;
+        padding: 32px;
+        background: var(--surface-subtle);
+      }
+      .stage-inner {
+        background: #fff;
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
+        padding: 28px;
+        max-width: 100%;
+        overflow: auto;
+      }
+      #svgHolder svg {
+        display: block;
+        max-width: 100%;
+        height: auto;
+      }
+      .loading {
+        font-size: 14px;
+        color: var(--text-muted);
+        padding: 48px 80px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div class="topbar">
+        <h1>Generador de tablas de valor posicional</h1>
+        <p>
+          Configura la tabla y descarga el resultado como SVG para pegarlo en
+          PowerPoint. La vista previa se actualiza al instante, sin botón
+          "aplicar".
+        </p>
+      </div>
+
+      <div class="toolbar">
+        <div class="group">
+          <span class="caption">Rango</span>
+          <div class="row2">
+            <select id="hastaOrden">
+              <option value="0">Unidades</option>
+              <option value="1">Decenas de unidad</option>
+              <option value="2">Centenas de unidad</option>
+              <option value="5" selected>Centenas de millar</option>
+              <option value="8">Centenas de millón</option>
+              <option value="11">Centenas de millares de millón</option>
+            </select>
+            <select id="hastaOrdenDecimal">
+              <option value="0" selected>No mostrar decimales</option>
+              <option value="-1">Décimos</option>
+              <option value="-2">Centésimos</option>
+              <option value="-3">Milésimos</option>
+            </select>
+          </div>
+        </div>
+        <div class="divider"></div>
+
+        <div class="group grow">
+          <span class="caption">Números</span>
+          <div id="numerosList"></div>
+          <button
+            type="button"
+            class="btn btn-outline"
+            id="addNumero"
+            style="width: fit-content"
+          >
+            + Agregar número
+          </button>
+        </div>
+        <div class="divider"></div>
+
+        <div class="group">
+          <span class="caption">Color</span>
+          <input
+            type="color"
+            id="colorDigitos"
+            value="#000000"
+            style="
+              width: 52px;
+              height: 40px;
+              padding: 2px;
+              border: 1px solid var(--border-default);
+              border-radius: var(--radius-sm);
+              cursor: pointer;
+              background: #fff;
+            "
+          />
+        </div>
+        <div class="divider"></div>
+
+        <div class="group grow" style="min-width: 440px">
+          <span class="caption">Presentación</span>
+          <div class="checkGroup">
+            <label class="checkbox"
+              ><input type="checkbox" id="mostrarPeriodos" checked /><span
+                class="box"
+                >✓</span
+              >Mostrar periodos</label
+            >
+            <label class="checkbox"
+              ><input type="checkbox" id="mostrarClase" checked /><span
+                class="box"
+                >✓</span
+              >Mostrar clases</label
+            >
+            <label class="checkbox"
+              ><input type="checkbox" id="coma" checked /><span class="box"
+                >✓</span
+              >Mostrar comas y apóstrofes</label
+            >
+            <label class="checkbox"
+              ><input type="checkbox" id="mostrarPunto" checked /><span
+                class="box"
+                >✓</span
+              >Mostrar punto decimal</label
+            >
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="downloadBtn">
+          Guardar SVG…
+        </button>
+      </div>
+
+      <div class="callout" id="errorCallout" style="display: none">
+        <div>
+          <strong>No se puede generar la tabla</strong>
+          <span id="errorMessage"></span>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-inner">
+          <div id="svgHolder">
+            <div class="loading">Cargando vista previa…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      // Módulo puro de generación de la tabla de valor posicional como SVG.
+      // Extraído de _generador-tabla-valor-posicional.html: mismas reglas y
+      // misma tipografía vectorial (glifos Computer Modern), sin acoplarse al DOM.
+      // buildSVG(state) recibe { numerosState, maxPow, minPow, showComma,
+      // showPunto, showClase, showPeriodos, digitColor }
+      // y devuelve { svg, filename } o { error: { message, rowIndex } }.
+      // Un punto decimal sin dígitos después (ej. "36.") siempre se permite: no
+      // existe una casilla que lo desactive.
+
+      const DECIMAL_CLASS = "decimal";
+      const ORDERS = [
+        {
+          pow: -1,
+          code: "d",
+          label: "Décimos (d)",
+          classIndex: DECIMAL_CLASS,
+          cellLabel: "dec",
+          colorKey: "D",
+        },
+        {
+          pow: -2,
+          code: "c",
+          label: "Centésimos (c)",
+          classIndex: DECIMAL_CLASS,
+          cellLabel: "cen",
+          colorKey: "C",
+        },
+        {
+          pow: -3,
+          code: "m",
+          label: "Milésimos (m)",
+          classIndex: DECIMAL_CLASS,
+          cellLabel: "mil",
+          colorKey: "U",
+        },
+        { pow: 0, code: "U", label: "Unidades (U)", classIndex: 0 },
+        { pow: 1, code: "D", label: "Decenas (D)", classIndex: 0 },
+        { pow: 2, code: "C", label: "Centenas (C)", classIndex: 0 },
+        { pow: 3, code: "UM", label: "Unidades de millar (UM)", classIndex: 1 },
+        { pow: 4, code: "DM", label: "Decenas de millar (DM)", classIndex: 1 },
+        { pow: 5, code: "CM", label: "Centenas de millar (CM)", classIndex: 1 },
+        {
+          pow: 6,
+          code: "UMM",
+          label: "Unidades de millón (UMM)",
+          classIndex: 2,
+        },
+        {
+          pow: 7,
+          code: "DMM",
+          label: "Decenas de millón (DMM)",
+          classIndex: 2,
+        },
+        {
+          pow: 8,
+          code: "CMM",
+          label: "Centenas de millón (CMM)",
+          classIndex: 2,
+        },
+        {
+          pow: 9,
+          code: "UMMM",
+          label: "Unidades de millar de millón (UMMM)",
+          classIndex: 3,
+        },
+        {
+          pow: 10,
+          code: "DMMM",
+          label: "Decenas de millar de millón (DMMM)",
+          classIndex: 3,
+        },
+        {
+          pow: 11,
+          code: "CMMM",
+          label: "Centenas de millar de millón (CMMM)",
+          classIndex: 3,
+        },
+      ];
+      const ORDER_BY_CODE = Object.fromEntries(ORDERS.map((o) => [o.code, o]));
+      const ORDER_BY_POW = Object.fromEntries(ORDERS.map((o) => [o.pow, o])); // admite claves negativas
+      const NIVEL = Object.fromEntries(ORDERS.map((o) => [o.code, o.pow]));
+
+      const CLASS_LABELS = [
+        "Clase de las unidades",
+        "Clase de los millares",
+        "Clase de los millones",
+        "Clase de los millares de millones",
+      ];
+      const DECIMAL_CLASS_LABEL = "Clase de los milesimos"; // sin acento: glifo no disponible
+
+      // Un "periodo" agrupa 2 clases (6 órdenes): unidades+millares = primer
+      // periodo, millones+millares de millón = segundo periodo, etc. Los órdenes
+      // decimales no forman parte de ningún periodo.
+      const PERIOD_LABELS = [
+        "Primer periodo",
+        "Segundo periodo",
+        "Tercer periodo",
+        "Cuarto periodo",
+      ];
+      const PERIOD_COLORS = ["#FFF200", "#FFA500"];
+
+      // Rellena un <select> de jerarquía con las opciones disponibles según el
+      // orden máximo elegido en "hastaOrden" y el orden decimal en
+      // "hastaOrdenDecimal", conservando su selección previa si sigue siendo
+      // válida. Se usa una vez por cada fila de la lista de números (cada número
+      // puede tener su propia jerarquía).
+      const GLYPH_DATA = {
+        upm: 2048,
+        regular: {
+          0: {
+            d: "M512 -45Q261 -45 170.5 161.5Q80 368 80 653Q80 831 112.5 988.0Q145 1145 241.5 1254.5Q338 1364 512 1364Q647 1364 733.0 1298.0Q819 1232 864.0 1127.5Q909 1023 925.5 903.5Q942 784 942 653Q942 477 909.5 323.5Q877 170 782.0 62.5Q687 -45 512 -45ZM512 8Q626 8 682.0 125.0Q738 242 751.0 384.0Q764 526 764 686Q764 840 751.0 970.0Q738 1100 682.5 1205.5Q627 1311 512 1311Q396 1311 340.0 1205.0Q284 1099 271.0 969.5Q258 840 258 686Q258 572 263.5 471.0Q269 370 293.0 262.5Q317 155 370.5 81.5Q424 8 512 8Z",
+            adv: 1024,
+            bounds: [80, -45, 942, 1364],
+          },
+          1: {
+            d: "M190 0V72Q446 72 446 137V1212Q340 1161 178 1161V1233Q429 1233 557 1364H586Q593 1364 599.5 1358.5Q606 1353 606 1346V137Q606 72 862 72V0Z",
+            adv: 1024,
+            bounds: [178, 0, 862, 1364],
+          },
+          2: {
+            d: "M102 0V55Q102 60 106 66L424 418Q496 496 541.0 549.0Q586 602 630.0 671.0Q674 740 699.5 811.5Q725 883 725 963Q725 1047 694.0 1123.5Q663 1200 601.5 1246.0Q540 1292 453 1292Q364 1292 293.0 1238.5Q222 1185 193 1100Q201 1102 215 1102Q261 1102 293.5 1071.0Q326 1040 326 991Q326 944 293.5 911.5Q261 879 215 879Q167 879 134.5 912.5Q102 946 102 991Q102 1068 131.0 1135.5Q160 1203 214.5 1255.5Q269 1308 337.5 1336.0Q406 1364 483 1364Q600 1364 701.0 1314.5Q802 1265 861.0 1174.5Q920 1084 920 963Q920 874 881.0 794.0Q842 714 781.0 648.5Q720 583 625.0 500.0Q530 417 500 389L268 166H465Q610 166 707.5 168.5Q805 171 811 176Q835 202 860 365H920L862 0Z",
+            adv: 1024,
+            bounds: [102, 0, 920, 1364],
+          },
+          3: {
+            d: "M195 158Q243 88 324.0 54.0Q405 20 498 20Q617 20 667.0 121.5Q717 223 717 352Q717 410 706.5 468.0Q696 526 671.0 576.0Q646 626 602.5 656.0Q559 686 496 686H360Q342 686 342 705V723Q342 739 360 739L473 748Q545 748 592.5 802.0Q640 856 662.0 933.5Q684 1011 684 1081Q684 1179 638.0 1242.0Q592 1305 498 1305Q420 1305 349.0 1275.5Q278 1246 236 1186Q240 1187 243.0 1187.5Q246 1188 250 1188Q296 1188 327.0 1156.0Q358 1124 358 1079Q358 1035 327.0 1003.0Q296 971 250 971Q205 971 173.0 1003.0Q141 1035 141 1079Q141 1167 194.0 1232.0Q247 1297 330.5 1330.5Q414 1364 498 1364Q560 1364 629.0 1345.5Q698 1327 754.0 1292.5Q810 1258 845.5 1204.0Q881 1150 881 1081Q881 995 842.5 922.0Q804 849 737.0 796.0Q670 743 590 717Q679 700 759.0 650.0Q839 600 887.5 522.0Q936 444 936 354Q936 241 874.0 149.5Q812 58 711.0 6.5Q610 -45 498 -45Q402 -45 305.5 -8.5Q209 28 147.5 101.0Q86 174 86 276Q86 327 120.0 361.0Q154 395 205 395Q238 395 265.5 379.5Q293 364 308.5 336.0Q324 308 324 276Q324 226 289.0 192.0Q254 158 205 158Z",
+            adv: 1024,
+            bounds: [86, -45, 936, 1364],
+          },
+          4: {
+            d: "M57 338V410L690 1354Q697 1364 711 1364H741Q764 1364 764 1341V410H965V338H764V137Q764 95 824.0 83.5Q884 72 963 72V0H399V72Q478 72 538.0 83.5Q598 95 598 137V338ZM125 410H610V1135Z",
+            adv: 1024,
+            bounds: [57, 0, 965, 1364],
+          },
+          5: {
+            d: "M178 233Q199 173 242.5 124.0Q286 75 345.5 47.5Q405 20 469 20Q617 20 673.0 135.0Q729 250 729 414Q729 485 726.5 533.5Q724 582 713 627Q694 699 646.5 753.0Q599 807 530 807Q461 807 411.5 786.0Q362 765 331.0 737.0Q300 709 276.0 678.0Q252 647 246 645H223Q218 645 210.5 651.5Q203 658 203 664V1348Q203 1353 209.5 1358.5Q216 1364 223 1364H229Q367 1298 522 1298Q674 1298 815 1364H821Q828 1364 834.0 1359.0Q840 1354 840 1348V1329Q840 1319 836 1319Q766 1226 660.5 1174.0Q555 1122 442 1122Q360 1122 274 1145V758Q342 813 395.5 836.5Q449 860 532 860Q645 860 734.5 795.0Q824 730 872.0 625.5Q920 521 920 412Q920 289 859.5 184.0Q799 79 695.0 17.0Q591 -45 469 -45Q368 -45 283.5 7.0Q199 59 150.5 147.0Q102 235 102 334Q102 380 132.0 409.0Q162 438 207 438Q252 438 282.5 408.5Q313 379 313 334Q313 290 282.5 259.5Q252 229 207 229Q200 229 191.0 230.5Q182 232 178 233Z",
+            adv: 1024,
+            bounds: [102, -45, 920, 1364],
+          },
+          6: {
+            d: "M512 -45Q385 -45 300.0 22.5Q215 90 168.5 197.5Q122 305 104.0 423.0Q86 541 86 662Q86 824 149.0 987.0Q212 1150 334.5 1257.0Q457 1364 625 1364Q695 1364 755.5 1337.5Q816 1311 850.5 1259.5Q885 1208 885 1135Q885 1093 856.5 1064.5Q828 1036 786 1036Q746 1036 717.0 1065.0Q688 1094 688 1135Q688 1175 717.0 1204.0Q746 1233 786 1233H797Q771 1270 723.5 1287.5Q676 1305 625 1305Q563 1305 510.5 1278.0Q458 1251 416.0 1205.0Q374 1159 346.0 1103.5Q318 1048 302.5 977.0Q287 906 283.0 844.0Q279 782 279 688Q315 772 381.0 825.5Q447 879 530 879Q621 879 696.0 842.0Q771 805 825.0 739.5Q879 674 907.5 590.0Q936 506 936 420Q936 300 882.5 191.5Q829 83 732.0 19.0Q635 -45 512 -45ZM512 20Q591 20 639.0 56.0Q687 92 709.5 151.5Q732 211 737.5 271.5Q743 332 743 420Q743 536 732.0 618.0Q721 700 672.0 762.5Q623 825 522 825Q439 825 385.5 769.0Q332 713 307.5 627.5Q283 542 283 463Q283 436 285 422Q285 419 284.5 417.0Q284 415 283 412Q283 324 301.0 234.0Q319 144 370.0 82.0Q421 20 512 20Z",
+            adv: 1024,
+            bounds: [86, -45, 936, 1364],
+          },
+          7: {
+            d: "M356 53Q356 167 376.0 276.0Q396 385 434.5 491.5Q473 598 527.5 700.5Q582 803 647 893L834 1153H600Q236 1153 225 1143Q198 1110 174 954H115L182 1384H242V1378Q242 1341 367.0 1330.0Q492 1319 612 1319H993V1266Q993 1264 992.5 1263.0Q992 1262 991 1260L709 864Q605 710 579.0 522.0Q553 334 553 53Q553 13 524.0 -16.0Q495 -45 455 -45Q414 -45 385.0 -16.0Q356 13 356 53Z",
+            adv: 1024,
+            bounds: [115, -45, 993, 1384],
+          },
+          8: {
+            d: "M86 311Q86 434 167.0 528.5Q248 623 375 686L299 735Q229 781 185.0 857.5Q141 934 141 1018Q141 1116 192.5 1195.0Q244 1274 329.5 1319.0Q415 1364 512 1364Q603 1364 687.5 1327.0Q772 1290 826.5 1221.0Q881 1152 881 1057Q881 988 848.5 929.0Q816 870 759.5 823.0Q703 776 639 743L756 668Q837 615 886.5 529.0Q936 443 936 348Q936 237 876.5 146.0Q817 55 719.0 5.0Q621 -45 512 -45Q406 -45 307.5 -2.0Q209 41 147.5 122.5Q86 204 86 311ZM197 311Q197 230 241.5 163.0Q286 96 359.0 58.0Q432 20 512 20Q631 20 728.0 89.5Q825 159 825 274Q825 313 809.5 351.5Q794 390 766.5 421.5Q739 453 705 473L430 651Q366 617 312.5 565.0Q259 513 228.0 448.0Q197 383 197 311ZM338 936 586 776Q672 826 727.0 897.0Q782 968 782 1057Q782 1126 743.5 1183.5Q705 1241 643.0 1273.0Q581 1305 510 1305Q448 1305 385.0 1281.0Q322 1257 281.0 1209.5Q240 1162 240 1098Q240 1002 338 936Z",
+            adv: 1024,
+            bounds: [86, -45, 936, 1364],
+          },
+          9: {
+            d: "M231 86Q287 20 426 20Q504 20 571.5 73.0Q639 126 676 203Q719 290 731.0 388.5Q743 487 743 633Q708 550 642.5 497.0Q577 444 492 444Q373 444 279.5 508.5Q186 573 136.0 678.5Q86 784 86 903Q86 1026 142.0 1132.5Q198 1239 297.0 1301.5Q396 1364 522 1364Q646 1364 729.5 1296.5Q813 1229 857.0 1122.5Q901 1016 918.5 897.0Q936 778 936 662Q936 504 878.0 339.5Q820 175 704.5 65.0Q589 -45 426 -45Q305 -45 221.0 12.0Q137 69 137 184Q137 226 165.5 254.5Q194 283 236 283Q277 283 305.5 254.5Q334 226 334 184Q334 144 305.0 115.0Q276 86 236 86ZM500 498Q584 498 637.5 554.5Q691 611 715.0 695.0Q739 779 739 862V901V909Q739 1063 694.0 1184.0Q649 1305 522 1305Q441 1305 390.5 1269.5Q340 1234 316.0 1175.0Q292 1116 285.5 1049.0Q279 982 279 903Q279 787 290.0 705.0Q301 623 350.0 560.5Q399 498 500 498Z",
+            adv: 1024,
+            bounds: [86, -45, 936, 1364],
+          },
+        },
+        bold: {
+          C: {
+            d: "M514 274Q574 180 671.5 131.0Q769 82 885 82Q992 82 1076.5 138.5Q1161 195 1209.0 289.0Q1257 383 1257 487Q1264 507 1284 512H1337Q1362 506 1362 481Q1362 376 1321.0 284.0Q1280 192 1205.5 122.5Q1131 53 1037.0 15.0Q943 -23 842 -23Q680 -23 546.5 28.5Q413 80 316.0 176.5Q219 273 167.0 406.5Q115 540 115 702Q115 865 167.5 999.0Q220 1133 315.0 1228.0Q410 1323 545.0 1375.0Q680 1427 842 1427Q1022 1427 1163 1303L1294 1419Q1302 1424 1313 1427H1337Q1357 1422 1362 1403V895Q1357 873 1337 868H1272Q1250 873 1245 895Q1245 952 1217.0 1031.5Q1189 1111 1155 1163Q1106 1235 1034.5 1279.0Q963 1323 881 1323Q767 1323 670.5 1274.0Q574 1225 514 1130Q481 1075 463.0 1003.0Q445 931 440.5 867.0Q436 803 436 707V700Q436 560 451.0 459.0Q466 358 514 274Z",
+            adv: 1479,
+            bounds: [115, -23, 1362, 1427],
+          },
+          D: {
+            d: "M70 0V104H262V1300H70V1405H829Q981 1405 1099.5 1348.5Q1218 1292 1296.5 1193.5Q1375 1095 1414.5 966.0Q1454 837 1454 690Q1454 547 1414.0 421.5Q1374 296 1293.0 200.5Q1212 105 1095.0 52.5Q978 0 829 0ZM549 104H750Q846 104 931.5 142.5Q1017 181 1067 254Q1120 333 1132.5 433.5Q1145 534 1145 690Q1145 852 1132.5 957.5Q1120 1063 1067 1143Q1034 1193 983.0 1229.0Q932 1265 871.5 1282.5Q811 1300 750 1300H549Z",
+            adv: 1569,
+            bounds: [70, 0, 1454, 1405],
+          },
+          U: {
+            d: "M262 465V1300H70V1405H754V1300H561V465Q561 383 571.0 316.0Q581 249 608.5 196.0Q636 143 690.5 112.5Q745 82 831 82Q949 82 1031.0 130.5Q1113 179 1153.5 266.5Q1194 354 1194 473V1282Q1194 1289 1175.0 1292.5Q1156 1296 1145 1296Q1098 1300 1001 1300V1405H1503V1300Q1407 1300 1360 1296Q1350 1296 1330.5 1292.5Q1311 1289 1311 1282V465Q1311 359 1277.0 269.5Q1243 180 1180.0 114.0Q1117 48 1027.0 12.5Q937 -23 831 -23Q719 -23 617.0 7.0Q515 37 433.0 100.5Q351 164 306.5 255.5Q262 347 262 465Z",
+            adv: 1575,
+            bounds: [70, -23, 1503, 1405],
+          },
+          l: {
+            d: "M49 0V104H190V1243Q190 1281 150.0 1290.5Q110 1300 49 1300V1405L420 1421V104H561V0Z",
+            adv: 567,
+            bounds: [49, 0, 561, 1421],
+          },
+          a: {
+            d: "M57 229Q57 346 150.0 417.5Q243 489 370.5 518.0Q498 547 616 547V623Q616 713 577.0 779.5Q538 846 453 846Q398 846 336 836Q379 796 379 735Q379 678 342.0 640.0Q305 602 248 602Q191 602 153.0 640.0Q115 678 115 735Q115 813 169.5 856.0Q224 899 300.0 913.5Q376 928 455 928Q554 928 646.0 897.5Q738 867 798.0 799.5Q858 732 858 629V145Q867 104 961 104Q987 98 993 72V33Q987 6 961 0H819Q757 0 704.0 32.0Q651 64 651 123V139Q615 70 547.0 29.0Q479 -12 401 -12Q272 -12 164.5 49.0Q57 110 57 229ZM426 70Q479 70 522.5 97.5Q566 125 591.0 170.5Q616 216 616 268V473Q543 473 471.0 444.5Q399 416 352.0 360.0Q305 304 305 229Q305 171 338.5 120.5Q372 70 426 70Z",
+            adv: 995,
+            bounds: [57, -12, 993, 928],
+          },
+          s: {
+            d: "M68 14V299Q73 318 94 324H147Q167 317 172 299Q225 70 403 70Q584 70 584 219Q584 256 565.0 285.5Q546 315 515.0 334.5Q484 354 449 362L326 387Q215 414 141.5 482.5Q68 551 68 653Q68 727 93.5 781.0Q119 835 165.5 867.5Q212 900 271.0 914.0Q330 928 403 928Q499 928 563 893L629 926L637 928H662Q681 923 686 903V678Q681 656 662 651H608Q587 656 582 678Q582 732 559.5 771.5Q537 811 496.0 832.5Q455 854 399 854Q221 854 221 731Q221 686 259.5 655.5Q298 625 348 612L473 588Q548 569 607.0 529.5Q666 490 701.5 428.5Q737 367 737 291Q737 137 647.0 62.5Q557 -12 403 -12Q287 -12 211 45L125 -10L117 -12H94Q73 -7 68 14Z",
+            adv: 807,
+            bounds: [68, -12, 737, 928],
+          },
+          e: {
+            d: "M57 461Q57 594 112.0 700.5Q167 807 269.5 867.5Q372 928 506 928Q641 928 728.0 872.5Q815 817 856.0 717.5Q897 618 897 487Q897 457 864 446H328Q328 345 342.5 265.5Q357 186 408.0 132.0Q459 78 557 78Q640 78 706.5 126.0Q773 174 795 252Q806 271 825 276H864Q897 269 897 240Q897 238 895 227Q871 152 817.0 98.5Q763 45 688.0 16.5Q613 -12 535 -12Q431 -12 343.0 21.5Q255 55 191.0 117.5Q127 180 92.0 267.5Q57 355 57 461ZM328 522H694Q694 598 678.5 670.5Q663 743 621.0 794.5Q579 846 506 846Q400 846 364.0 749.0Q328 652 328 522Z",
+            adv: 954,
+            bounds: [57, -12, 897, 928],
+          },
+          d: {
+            d: "M492 -12Q360 -12 264.0 49.5Q168 111 118.0 218.5Q68 326 68 455Q68 589 122.5 695.5Q177 802 278.0 862.0Q379 922 514 922Q639 922 737 846V1243Q737 1281 697.0 1290.5Q657 1300 596 1300V1405L967 1421V162Q967 126 1007.0 115.0Q1047 104 1108 104V0L725 -12V70Q625 -12 492 -12ZM512 70Q579 70 634.0 104.5Q689 139 725 197V735Q692 781 641.0 810.5Q590 840 535 840Q446 840 402.0 779.5Q358 719 348.0 641.0Q338 563 338 459V453Q338 382 342.0 322.5Q346 263 362.0 205.0Q378 147 414.5 108.5Q451 70 512 70Z",
+            adv: 1137,
+            bounds: [68, -12, 1108, 1421],
+          },
+          o: {
+            d: "M512 -12Q375 -12 272.5 45.0Q170 102 113.5 207.0Q57 312 57 446Q57 548 87.5 637.0Q118 726 177.0 791.0Q236 856 322.0 892.0Q408 928 512 928Q617 928 702.5 892.0Q788 856 846.0 791.0Q904 726 934.5 639.0Q965 552 965 446Q965 312 909.0 207.0Q853 102 750.0 45.0Q647 -12 512 -12ZM512 78Q595 78 635.5 141.0Q676 204 685.0 285.0Q694 366 694 473Q694 550 690.0 608.5Q686 667 669.5 721.0Q653 775 615.0 810.5Q577 846 512 846Q428 846 387.0 787.0Q346 728 337.0 652.5Q328 577 328 473Q328 366 337.0 285.5Q346 205 387.0 141.5Q428 78 512 78Z",
+            adv: 1024,
+            bounds: [57, -12, 965, 928],
+          },
+          m: {
+            d: "M45 0V104H186V743Q186 801 45 801V905L406 922V723Q452 813 533.0 867.5Q614 922 713 922Q940 922 983 743Q1014 795 1060.0 836.0Q1106 877 1162.0 899.5Q1218 922 1280 922Q1427 922 1495.0 850.5Q1563 779 1563 629V104H1704V0H1196V104H1321V623V629Q1321 840 1255 840Q1178 840 1118.5 795.5Q1059 751 1027.0 680.0Q995 609 995 535V104H1137V0H629V104H754V623V629Q754 840 688 840Q630 840 581.5 814.5Q533 789 498.5 744.5Q464 700 446.0 646.5Q428 593 428 535V104H569V0Z",
+            adv: 1706,
+            bounds: [45, 0, 1704, 922],
+          },
+          i: {
+            d: "M49 0V104H190V743Q190 782 153.0 791.5Q116 801 55 801V905L420 922V104H549V0ZM113 1260Q113 1329 160.0 1376.0Q207 1423 276 1423Q346 1423 393.0 1376.0Q440 1329 440 1260Q440 1192 393.0 1144.0Q346 1096 276 1096Q207 1096 160.0 1144.0Q113 1192 113 1260Z",
+            adv: 567,
+            bounds: [49, 0, 549, 1423],
+          },
+          r: {
+            d: "M29 0V104H170V743Q170 801 29 801V905L377 922V754Q406 830 459.5 876.0Q513 922 588 922Q642 922 695.5 903.0Q749 884 784.0 845.0Q819 806 819 750Q819 697 782.0 659.0Q745 621 690 621Q635 621 598.0 659.0Q561 697 561 750Q561 804 594 840H588Q476 840 437.5 719.5Q399 599 399 453V104H578V0Z",
+            adv: 874,
+            bounds: [29, 0, 819, 922],
+          },
+          u: {
+            d: "M186 238V743Q186 801 45 801V905L428 922V246V238Q428 165 434.5 133.0Q441 101 468.5 85.5Q496 70 561 70Q652 70 703.0 149.5Q754 229 754 326V743Q754 801 612 801V905L995 922V162Q995 125 1035.5 114.5Q1076 104 1137 104V0L766 -12V123Q683 -12 543 -12Q438 -12 361.5 6.5Q285 25 235.5 80.0Q186 135 186 238Z",
+            adv: 1137,
+            bounds: [45, -12, 1137, 922],
+          },
+          n: {
+            d: "M45 0V104H186V743Q186 801 45 801V905L406 922V723Q452 813 533.0 867.5Q614 922 713 922Q813 922 874.5 890.5Q936 859 965.5 794.5Q995 730 995 629V104H1137V0H629V104H754V623V629Q754 840 688 840Q630 840 581.5 814.5Q533 789 498.5 744.5Q464 700 446.0 646.5Q428 593 428 535V104H569V0Z",
+            adv: 1137,
+            bounds: [45, 0, 1137, 922],
+          },
+          " ": { d: "", adv: 682, bounds: null },
+          ",": {
+            d: "M190 -352Q190 -343 197 -332Q277 -267 332.0 -165.0Q387 -63 387 33Q345 0 285 0Q240 0 202.0 21.5Q164 43 142.5 81.0Q121 119 121 164Q121 233 168.5 280.5Q216 328 285 328Q377 328 424.0 248.5Q471 169 471 72Q471 -62 415.0 -183.0Q359 -304 258 -389Q246 -397 236 -397Q220 -397 205.0 -383.0Q190 -369 190 -352Z",
+            adv: 567,
+            bounds: [121, -397, 471, 328],
+          },
+          ".": {
+            d: "M121 164Q121 230 169.0 279.0Q217 328 285 328Q353 328 401.0 280.0Q449 232 449 164Q449 96 400.0 48.0Q351 0 285 0Q219 0 170.0 49.0Q121 98 121 164Z",
+            adv: 567,
+            bounds: [121, 0, 449, 328],
+          },
+          P: {
+            d: "M70 0V104H262V1300H70V1405H801Q931 1405 1040.5 1360.5Q1150 1316 1216.0 1225.0Q1282 1134 1282 1001Q1282 871 1215.0 783.0Q1148 695 1038.0 652.5Q928 610 801 610H561V104H754V0ZM549 702H721Q804 702 854.0 720.5Q904 739 927.0 776.0Q950 813 955.5 861.5Q961 910 961 1001Q961 1116 948.0 1176.0Q935 1236 884.5 1268.0Q834 1300 721 1300H549Z",
+            adv: 1399,
+            bounds: [70, 0, 1282, 1405],
+          },
+          p: {
+            d: "M29 -397V-293H170V766Q170 801 29 801V905L399 922V838Q512 922 655 922Q757 922 834.5 885.0Q912 848 963.5 785.0Q1015 722 1042.0 636.0Q1069 550 1069 455Q1069 320 1014.5 213.5Q960 107 857.5 47.5Q755 -12 621 -12Q501 -12 412 59V-293H553V-397ZM412 186Q486 70 602 70Q710 70 754.5 195.0Q799 320 799 455Q799 584 760.5 707.5Q722 831 625 831Q564 831 508.0 802.5Q452 774 412 723Z",
+            adv: 1137,
+            bounds: [29, -397, 1069, 922],
+          },
+          S: {
+            d: "M115 4V442Q120 462 141 467H195Q214 462 219 442Q219 327 271.5 244.5Q324 162 416.5 122.0Q509 82 625 82Q719 82 767.0 150.5Q815 219 815 317Q815 366 798.0 414.0Q781 462 746.0 498.0Q711 534 662 547L416 608Q281 642 198.0 757.5Q115 873 115 1012Q115 1131 163.5 1226.0Q212 1321 301.5 1374.0Q391 1427 512 1427Q689 1427 805 1325L899 1419Q907 1425 918 1427H942Q962 1421 967 1403V965Q962 944 942 938H889Q867 943 862 965Q862 1030 828.0 1114.0Q794 1198 748 1241Q702 1288 642.5 1309.5Q583 1331 512 1331Q452 1331 409.5 1303.5Q367 1276 344.5 1228.5Q322 1181 322 1120Q322 1049 362.5 990.5Q403 932 471 913L717 854Q809 831 878.0 765.5Q947 700 984.5 608.5Q1022 517 1022 422Q1022 299 976.0 197.5Q930 96 840.0 36.5Q750 -23 625 -23Q415 -23 279 80L182 -14Q174 -19 164 -23H141Q120 -16 115 4Z",
+            adv: 1137,
+            bounds: [115, -23, 1022, 1427],
+          },
+          g: {
+            d: "M49 -150Q49 -91 90.0 -44.5Q131 2 190 23Q111 91 111 213Q111 318 178 401Q133 440 107.5 498.0Q82 556 82 618Q82 716 134.5 785.5Q187 855 271.5 888.5Q356 922 455 922Q601 922 698 858Q777 932 883 932Q931 932 962.0 894.5Q993 857 993 809Q993 770 966.5 743.5Q940 717 901 717Q864 717 836.5 743.5Q809 770 809 809Q809 823 811 829Q812 833 812.5 836.0Q813 839 813 840Q779 830 754 813Q827 731 827 618Q827 540 796.0 483.0Q765 426 713.5 389.0Q662 352 594.0 332.5Q526 313 455 313Q324 313 236 362Q217 333 217 295Q217 245 250.5 209.5Q284 174 334 174H514Q726 174 849.5 110.0Q973 46 973 -150Q973 -227 927.5 -278.0Q882 -329 812.0 -358.0Q742 -387 662.5 -399.5Q583 -412 512 -412Q410 -412 305.0 -389.0Q200 -366 124.5 -307.0Q49 -248 49 -150ZM233 -150Q233 -215 276.0 -255.5Q319 -296 382.5 -313.0Q446 -330 512 -330Q617 -330 702.5 -287.0Q788 -244 788 -150Q788 -73 707.0 -52.0Q626 -31 514 -31H334Q285 -31 259.0 -64.5Q233 -98 233 -150ZM455 395Q519 395 549.0 426.0Q579 457 585.5 501.0Q592 545 592 614V621Q592 690 585.5 734.0Q579 778 549.0 809.0Q519 840 455 840Q393 840 361.5 809.5Q330 779 323.5 735.0Q317 691 317 621V614Q317 545 323.5 501.0Q330 457 361.0 426.0Q392 395 455 395Z",
+            adv: 1024,
+            bounds: [49, -412, 993, 932],
+          },
+          "'": {
+            d: "M190 741Q190 756 203 766Q285 833 339.0 933.5Q393 1034 393 1133Q348 1094 285 1094Q216 1094 168.5 1140.5Q121 1187 121 1257Q121 1328 168.5 1374.5Q216 1421 285 1421Q346 1421 390.5 1382.5Q435 1344 456.0 1284.0Q477 1224 477 1165Q477 1079 451.0 993.5Q425 908 376.5 836.0Q328 764 258 707Q249 696 236 696Q220 696 205.0 711.0Q190 726 190 741Z",
+            adv: 567,
+            bounds: [121, 696, 477, 1421],
+          },
+          c: {
+            d: "M510 -12Q375 -12 274.5 48.0Q174 108 121.0 213.5Q68 319 68 455Q68 556 98.5 642.5Q129 729 185.5 793.0Q242 857 325.5 892.5Q409 928 510 928Q630 928 728.5 884.0Q827 840 827 735Q827 678 790.0 640.0Q753 602 696 602Q639 602 601.0 641.0Q563 680 563 735Q563 797 602 829Q565 838 512 838Q450 838 414.0 799.0Q378 760 362.5 702.0Q347 644 342.5 585.5Q338 527 338 457Q338 363 351.5 280.5Q365 198 412.0 138.0Q459 78 549 78Q624 78 676.0 127.5Q728 177 748 252Q756 265 772 268H825Q850 261 850 240Q850 238 848 229Q817 116 723.5 52.0Q630 -12 510 -12Z",
+            adv: 909,
+            bounds: [68, -12, 850, 928],
+          },
+        },
+      };
+
+      const COLORS = {
+        C: "#CC2027",
+        D: "#1C75BC",
+        U: "#57A639",
+        Millares: "#8EBADE",
+        Unidades: "#ABD39C",
+      };
+
+      const SCALE = {
+        normal: 1,
+        grande: 1.22,
+        extra: 1.45,
+      };
+
+      function decideDisplay(pow, digit, shift, numDigits) {
+        if (digit === 0) {
+          if (shift > pow) return null;
+          if (numDigits + shift > pow) return 0;
+          return null;
+        }
+        return digit;
+      }
+
+      // numeroDeColumnas = maxPow - minPow + 1 (todas las potencias de minPow a maxPow)
+      // minPow es 0 normalmente, o -3 cuando se muestran los milésimos.
+      // puntoForzado: true cuando el usuario escribió un punto sin dígitos después
+      // (ej. "36.") y activó la casilla que permite esta excepción.
+      function computeColumns(numStr, jerarquia, maxPow, minPow, puntoForzado) {
+        const nivel = NIVEL[jerarquia];
+        let parteEntera = numStr,
+          parteDecimal = "";
+        if (numStr.includes(".")) {
+          [parteEntera, parteDecimal] = numStr.split(".");
+        }
+        if (parteEntera === "") parteEntera = "0";
+        const NDec = parteDecimal.length;
+        // Los ceros a la izquierda NO se recortan: si el usuario los escribe
+        // (ej. "04.8" o "0950"), es porque quiere verlos en su columna (útil para
+        // mostrar a los alumnos que esa posición vale cero). Por eso cada dígito
+        // escrito ocupa su columna y cuenta para numDigits (y, por tanto, para la
+        // agrupación de comas: "0950" → "0,950").
+        const digitsStr = parteEntera + parteDecimal;
+        const numDigits = digitsStr.length;
+        const shift = nivel - NDec;
+        if (shift < minPow) {
+          throw new Error(
+            minPow < 0
+              ? "Demasiados decimales: no caben ni siquiera mostrando milésimos."
+              : 'Demasiados decimales para la jerarquía elegida (elige un orden decimal mayor, o "Milésimos", en el selector "…y hasta el orden decimal de…").',
+          );
+        }
+        // El punto decimal se coloca siempre justo a la derecha de la columna de
+        // la jerarquía elegida (por ejemplo, a la derecha de "decenas" si el
+        // número se interpreta en decenas), sin importar si hay cifras decimales
+        // visibles más allá o si se muestran los órdenes de milésimos. También se
+        // puede forzar sin dígitos decimales reales (ej. "36.") si el usuario lo
+        // pidió explícitamente.
+        const hayDecimal = NDec > 0 || puntoForzado;
+        const numColumnas = maxPow - minPow + 1;
+
+        // Aritmética con BigInt para evitar errores de precisión con números
+        // grandes (hasta 10^11 y más). internalShift alinea el valor para que la
+        // columna menos significativa visible (minPow) corresponda a exponente 0.
+        const internalShift = shift - minPow;
+        const value = BigInt(digitsStr) * 10n ** BigInt(internalShift);
+        // Se valida por la POSICIÓN del dígito escrito más a la izquierda, no por
+        // el valor numérico: un cero a la izquierda no aumenta el valor, pero sí
+        // necesita su propia columna. Validar por valor dejaría pasar "0950" con
+        // solo 3 columnas y ese cero se perdería en silencio.
+        const leadPow = shift + numDigits - 1;
+        if (leadPow > maxPow) {
+          throw new Error(
+            `El número no cabe en las ${numColumnas} columnas visibles para la jerarquía y el rango de órdenes elegidos.`,
+          );
+        }
+
+        const cols = [];
+        for (let pow = maxPow; pow >= minPow; pow--) {
+          const ipow = pow - minPow;
+          const digit = Number((value / 10n ** BigInt(ipow)) % 10n);
+          cols.push(decideDisplay(pow, digit, shift, numDigits));
+        }
+
+        return { cols, hayDecimal, nivel, shift, numDigits };
+      }
+
+      function buildSVG(state) {
+        const {
+          numerosState,
+          maxPow,
+          minPow,
+          showComma,
+          showPunto,
+          showClase,
+          showPeriodos: showPeriodosFlag,
+          digitColor,
+        } = state;
+        const s = SCALE.grande;
+        const numColumnas = maxPow - minPow + 1;
+
+        // Una fila por cada número de la lista. Cada número tiene su propia
+        // jerarquía. Un punto decimal sin dígitos después (ej. "36.") siempre
+        // se acepta.
+        const rows = [];
+        for (let i = 0; i < numerosState.length; i++) {
+          const jerarquia = numerosState[i].jerarquia;
+          const numero = numerosState[i].numero.trim();
+          const etiqueta = numerosState.length > 1 ? `Número ${i + 1}: ` : "";
+          if (!/^\d+(\.\d*)?$/.test(numero)) {
+            return {
+              error: {
+                message:
+                  etiqueta +
+                  "Escribe un número válido (solo dígitos y, opcionalmente, un punto decimal).",
+                rowIndex: i,
+              },
+            };
+          }
+          const puntoSinDigitos = numero.endsWith(".");
+          try {
+            const r = computeColumns(
+              numero,
+              jerarquia,
+              maxPow,
+              minPow,
+              puntoSinDigitos,
+            );
+            rows.push(r);
+          } catch (e) {
+            return { error: { message: etiqueta + e.message, rowIndex: i } };
+          }
+        }
+        const numRows = rows.length;
+
+        // Todas las medidas de la cuadrícula (ancho de columna, altos de fila,
+        // grosor de línea) se redondean a números ENTEROS exactos. Si quedaran
+        // en decimales (ej. 80*1.22=97.6), cada celda caería en una posición de
+        // sub-píxel distinta y, al convertir a PowerPoint, cada borde se
+        // redondearía de forma independiente y ligeramente distinta —causando
+        // el grosor inconsistente entre bordes que se veía en la vista previa.
+        // Con enteros, toda celda cae exactamente en la misma cuadrícula de
+        // píxeles y el grosor resulta idéntico en todos los bordes.
+        const colW = Math.round(80 * s);
+        const numPeriods = Math.ceil((maxPow + 1) / 6); // los órdenes decimales no forman periodos
+        const showPeriods = showPeriodosFlag && numPeriods > 1;
+        const periodH = showPeriods ? Math.round(38 * s) : 0;
+        const headerH = showClase ? Math.round(38 * s) : 0;
+        const letterH = Math.round(46 * s);
+        const digitH = Math.round(80 * s);
+        let stroke = Math.round(2 * s);
+        if (stroke < 2) stroke = 2;
+        if (stroke % 2 !== 0) stroke += 1; // par, para que stroke/2 sea entero
+        const lineColor = "#111111";
+        const fPeriod = 17 * s;
+        const fHeader = 15 * s;
+        const fLetter = 25 * s;
+        const fDigit = 40 * s;
+        const fComma = 46 * s;
+        const fPoint = 34 * s;
+
+        const totalW = colW * numColumnas;
+        const totalH = periodH + headerH + letterH + digitH * numRows;
+
+        // ---- Glifos vectoriales reales de Computer Modern (cmr10 / cmb10) ----
+        // Se dibujan como <path>, no como <text>: así el resultado se ve idéntico
+        // en cualquier programa que abra el SVG, sin depender de que la fuente
+        // esté instalada o de cómo cada visor centre el texto verticalmente.
+        const UPM = GLYPH_DATA.upm;
+
+        function unionBounds(fontData, chars) {
+          let ymin = Infinity,
+            ymax = -Infinity;
+          for (const ch of chars) {
+            const g = fontData[ch];
+            if (!g || !g.bounds) continue;
+            const [, gy0, , gy1] = g.bounds;
+            if (gy0 < ymin) ymin = gy0;
+            if (gy1 > ymax) ymax = gy1;
+          }
+          return { ymin, ymax };
+        }
+
+        const DIGIT_REF = unionBounds(GLYPH_DATA.regular, "0123456789");
+        const LETTERROW_REF = unionBounds(GLYPH_DATA.bold, "CDUdecnmil");
+        const HEADER_REF = unionBounds(GLYPH_DATA.bold, "Clasedomirun");
+        const PERIOD_REF = unionBounds(GLYPH_DATA.bold, "PSrimepodgun");
+
+        function centerFontY(ref) {
+          return (ref.ymin + ref.ymax) / 2;
+        }
+
+        function stringWidth(str, fontData, scale) {
+          let w = 0;
+          for (const ch of str) {
+            const g = fontData[ch];
+            w += (g ? g.adv : UPM * 0.5) * scale;
+          }
+          return w;
+        }
+
+        // Devuelve un tamaño de fuente reducido (nunca mayor al pedido) para que
+        // `str` quepa dentro de `maxWidth`. Necesario para encabezados de clase
+        // que a veces abarcan una sola columna (ej. "Clase de las milesimas"
+        // mostrando solo "Décimos").
+        function fittedFontSize(str, fontData, desiredSize, maxWidth) {
+          const w = stringWidth(str, fontData, desiredSize / UPM);
+          if (w <= maxWidth) return desiredSize;
+          return desiredSize * (maxWidth / w);
+        }
+
+        // Dibuja las 4 franjas del borde de una celda (arriba, abajo, izquierda,
+        // derecha), cada trazo centrado exactamente sobre el borde de la celda
+        // (igual que antes con la cuadrícula compartida). Al incluir el borde
+        // DENTRO del grupo de cada celda, mover o quitar una celda en PowerPoint
+        // no dañaR el borde de las celdas vecinas: cada una lleva el suyo propio.
+        // Redondea a una precisión fija (3 decimales). Dos celdas vecinas calculan
+        // la coordenada de su frontera compartida con multiplicaciones distintas
+        // (ej. columna_i*colW+colW vs columna_(i+1)*colW), que en punto flotante
+        // pueden diferir por una fracción mínima (1 unidad en el último bit). Esa
+        // diferencia basta para que el antialiasing dibuje esa línea con un grosor
+        // ligeramente distinto al resto. Redondear ambas al mismo valor antes de
+        // usarlas elimina el desajuste por completo.
+        function R(n) {
+          return Math.round(n * 1000) / 1000;
+        }
+
+        // Línea punteada y de baja opacidad que separa visualmente el número de
+        // una fila del de la siguiente (igual que en el generador de operaciones).
+        function dashedSeparator(x1, x2, y, strokeW) {
+          const dash = Math.max(1.5, strokeW * 1.6).toFixed(2);
+          const gap = Math.max(1.5, strokeW * 1.4).toFixed(2);
+          return `<line x1="${x1.toFixed(2)}" y1="${y.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y.toFixed(2)}" stroke="#000000" stroke-opacity="0.22" stroke-width="${strokeW.toFixed(2)}" stroke-dasharray="${dash},${gap}"/>`;
+        }
+
+        // Dibuja una celda con su borde como UNA sola figura de fondo negro (no
+        // 4 franjas independientes): primero un rectángulo negro que define el
+        // contorno completo de la celda, y encima el relleno de color, recortado
+        // hacia adentro exactamente `stroke` en cada lado, dejando ver el negro
+        // de abajo como marco. Al ser una sola figura por color, el grosor del
+        // borde queda garantizado idéntico en los 4 lados de una misma celda; y
+        // en una frontera compartida con la celda vecina, ambas dibujan
+        // exactamente el mismo rectángulo negro superpuesto (nunca la unión de
+        // dos franjas separadas), así que el grosor tampoco cambia si se separan.
+        // Si la frontera coincide con el perímetro exterior del SVG (x=0, x=totalW
+        // o y=0), el negro no se extiende más allá (se recortaría) y en su lugar
+        // el relleno se recorta el doble de ese lado, para mantener el mismo
+        // grosor visible de borde.
+        function borderedCell(x0, y0, w, h, fillColor) {
+          x0 = R(x0);
+          y0 = R(y0);
+          w = R(w);
+          h = R(h);
+          const esBordeIzq = x0 === 0;
+          const esBordeDer = R(x0 + w) === R(totalW);
+          const esBordeSup = y0 === 0;
+
+          const blackLeft = esBordeIzq ? 0 : R(x0 - stroke / 2);
+          const blackRight = esBordeDer ? R(totalW) : R(x0 + w + stroke / 2);
+          const blackTop = esBordeSup ? 0 : R(y0 - stroke / 2);
+          const blackBottom = R(y0 + h + stroke / 2); // nunca es borde exterior
+
+          const insetLeft = esBordeIzq ? stroke : stroke / 2;
+          const insetRight = esBordeDer ? stroke : stroke / 2;
+          const insetTop = esBordeSup ? stroke : stroke / 2;
+          const insetBottom = stroke / 2;
+
+          const fx = R(x0 + insetLeft);
+          const fy = R(y0 + insetTop);
+          const fw = R(w - insetLeft - insetRight);
+          const fh = R(h - insetTop - insetBottom);
+
+          return (
+            `<rect x="${blackLeft}" y="${blackTop}" width="${R(blackRight - blackLeft)}" height="${R(blackBottom - blackTop)}" fill="${lineColor}"/>` +
+            `<rect x="${fx}" y="${fy}" width="${fw}" height="${fh}" fill="${fillColor}"/>`
+          );
+        }
+
+        // Dibuja `str` centrado horizontalmente en cx, con la línea base calculada
+        // a partir de `ref` (bbox de referencia) para que quede centrado en rowCenterY.
+        function glyphRun(
+          str,
+          fontData,
+          cx,
+          rowCenterY,
+          fontSizePx,
+          ref,
+          fill,
+        ) {
+          const scale = fontSizePx / UPM;
+          const totalWidth = stringWidth(str, fontData, scale);
+          const baselineY = rowCenterY + centerFontY(ref) * scale;
+          let x = cx - totalWidth / 2;
+          let out = "";
+          for (const ch of str) {
+            const g = fontData[ch];
+            const adv = g ? g.adv : UPM * 0.5;
+            if (g && g.d) {
+              out += `<g transform="translate(${x} ${baselineY}) scale(${scale} ${-scale})"><path d="${g.d}" fill="${fill}"/></g>`;
+            }
+            x += adv * scale;
+          }
+          return out;
+        }
+
+        // Dos acumuladores: "svgTable" (encabezados, letras, cuadrícula y
+        // borde) se agrupará en un solo <g> para que, al convertir el SVG a
+        // formas editables en PowerPoint y desagrupar una vez, la tabla quede
+        // como UNA sola figura. "svgNumbers" (dígitos, comas, apóstrofes y
+        // punto decimal) queda fuera del grupo, como figuras sueltas, para
+        // poder manipular cada número por separado.
+        let svgTable = "";
+        let svgNumbers = "";
+
+        // Dibuja un carácter suelto (coma, apóstrofe o punto) centrado en cx, pero
+        // recortando (clamp) su posición si eso lo haría salirse por la izquierda
+        // o la derecha del lienzo — así nunca queda cortado por el borde del SVG
+        // y, a la vez, la tabla sigue ocupando exactamente todo el ancho del
+        // archivo (sin márgenes extra).
+        function glyphRunClamped(
+          str,
+          fontData,
+          cx,
+          rowCenterY,
+          fontSizePx,
+          ref,
+          fill,
+        ) {
+          const scale = fontSizePx / UPM;
+          const w = stringWidth(str, fontData, scale);
+          let x = cx;
+          if (x - w / 2 < 0) x = w / 2;
+          if (x + w / 2 > totalW) x = totalW - w / 2;
+          return glyphRun(str, fontData, x, rowCenterY, fontSizePx, ref, fill);
+        }
+
+        // Columnas de izquierda a derecha: de maxPow hasta minPow.
+        const colPows = [];
+        for (let p = maxPow; p >= minPow; p--) colPows.push(p);
+
+        // Agrupar columnas consecutivas por clase (unidades, millares, millones, ...)
+        const classGroups = []; // {classIndex, startCol, span}
+        colPows.forEach((pow, i) => {
+          const ci = ORDER_BY_POW[pow].classIndex;
+          const last = classGroups[classGroups.length - 1];
+          if (last && last.classIndex === ci) {
+            last.span++;
+          } else {
+            classGroups.push({ classIndex: ci, startCol: i, span: 1 });
+          }
+        });
+
+        // Agrupar columnas consecutivas por periodo (cada periodo = 2 clases = 6
+        // órdenes). Los órdenes decimales (pow negativo) no forman periodos.
+        const periodGroups = []; // {periodIndex, startCol, span}
+        colPows.forEach((pow, i) => {
+          if (pow < 0) return;
+          const pi = Math.floor(pow / 6);
+          const last = periodGroups[periodGroups.length - 1];
+          if (last && last.periodIndex === pi) {
+            last.span++;
+          } else {
+            periodGroups.push({ periodIndex: pi, startCol: i, span: 1 });
+          }
+        });
+
+        const headerTop = periodH;
+        const letterTop = periodH + headerH;
+        const digitTop = periodH + headerH + letterH;
+
+        // ---- Fila 0: encabezados de periodo (opcional, solo si hay 2+ periodos) ----
+        // Cada celda de periodo se agrupa (fondo+borde unido + etiqueta).
+        if (showPeriods) {
+          periodGroups.forEach((g) => {
+            const x0 = g.startCol * colW;
+            const w = g.span * colW;
+            const fill = PERIOD_COLORS[g.periodIndex % PERIOD_COLORS.length];
+            const label =
+              PERIOD_LABELS[g.periodIndex] || `Periodo ${g.periodIndex + 1}`;
+            const fSize = fittedFontSize(
+              label,
+              GLYPH_DATA.bold,
+              fPeriod,
+              w * 0.92,
+            );
+            svgTable += "<g>";
+            svgTable += borderedCell(x0, 0, w, periodH, fill);
+            svgTable += glyphRun(
+              label,
+              GLYPH_DATA.bold,
+              x0 + w / 2,
+              periodH / 2,
+              fSize,
+              PERIOD_REF,
+              "#1a1a1a",
+            );
+            svgTable += "</g>";
+          });
+        }
+
+        // ---- Fila 1: encabezados de clase (opcional) ----
+        // Cada celda de clase se agrupa (fondo+borde unido + etiqueta); todas
+        // comparten el mismo alto (headerH), y el mismo ancho entre sí cuando
+        // abarcan el mismo número de columnas (el caso normal).
+        if (showClase) {
+          classGroups.forEach((g) => {
+            const x0 = g.startCol * colW;
+            const w = g.span * colW;
+            const esDecimal = g.classIndex === DECIMAL_CLASS;
+            const fill = esDecimal
+              ? COLORS.Millares
+              : g.classIndex % 2 === 0
+                ? COLORS.Unidades
+                : COLORS.Millares;
+            const label = esDecimal
+              ? DECIMAL_CLASS_LABEL
+              : CLASS_LABELS[g.classIndex];
+            const fSize = fittedFontSize(
+              label,
+              GLYPH_DATA.bold,
+              fHeader,
+              w * 0.92,
+            );
+            svgTable += "<g>";
+            svgTable += borderedCell(x0, headerTop, w, headerH, fill);
+            svgTable += glyphRun(
+              label,
+              GLYPH_DATA.bold,
+              x0 + w / 2,
+              headerTop + headerH / 2,
+              fSize,
+              HEADER_REF,
+              "#1a1a1a",
+            );
+            svgTable += "</g>";
+          });
+        }
+
+        // ---- Fila 2: letras/etiquetas de los órdenes ----
+        // Cada celda de orden se agrupa (fondo+borde unido + etiqueta); todas
+        // comparten exactamente el mismo alto (letterH) y ancho (colW).
+        colPows.forEach((pow, i) => {
+          const order = ORDER_BY_POW[pow];
+          const cellLabel = order.cellLabel || order.code[0]; // 'dec'/'cen'/'mil' o C/D/U
+          const colorKey = order.colorKey || order.code[0];
+          const x0 = i * colW;
+          const fSize = fittedFontSize(
+            cellLabel,
+            GLYPH_DATA.bold,
+            fLetter,
+            colW * 0.9,
+          );
+          svgTable += "<g>";
+          svgTable += borderedCell(
+            x0,
+            letterTop,
+            colW,
+            letterH,
+            COLORS[colorKey],
+          );
+          svgTable += glyphRun(
+            cellLabel,
+            GLYPH_DATA.bold,
+            x0 + colW / 2,
+            letterTop + letterH / 2,
+            fSize,
+            LETTERROW_REF,
+            "#ffffff",
+          );
+          svgTable += "</g>";
+        });
+
+        // ---- Filas de números (sin fondo: quedan transparentes) ----
+        // Cada número de la lista ocupa su propia fila, separada de la anterior
+        // por una línea punteada de baja opacidad (igual que en el generador de
+        // operaciones). La primera fila no lleva línea arriba.
+        rows.forEach((row, ri) => {
+          const { cols, hayDecimal, nivel, shift, numDigits } = row;
+          const rowTop = digitTop + ri * digitH;
+          const digitCY = rowTop + digitH / 2;
+
+          if (ri > 0) {
+            svgNumbers += dashedSeparator(0, totalW, rowTop, stroke * 0.6);
+          }
+
+          cols.forEach((val, i) => {
+            if (val !== null) {
+              const cx = i * colW + colW / 2;
+              svgNumbers += glyphRun(
+                String(val),
+                GLYPH_DATA.regular,
+                cx,
+                digitCY,
+                fDigit,
+                DIGIT_REF,
+                digitColor,
+              );
+            }
+          });
+
+          // ---- Comas de millares y apóstrofes de periodo (sujetas a su casilla) ----
+          // Relativas a los dígitos ENTEROS realmente visibles del número (nunca
+          // invaden la parte decimal): se agrupan de 3 en 3 a partir de la unidad.
+          // Cada frontera de agrupación lleva coma, salvo que además caiga en un
+          // múltiplo de 6 (frontera de periodo), en cuyo caso lleva apóstrofe. Si
+          // el número no alcanza cierta frontera, esa coma/apóstrofe no se dibuja.
+          if (showComma) {
+            // Solo se agrupan los dígitos a la izquierda del punto decimal (la
+            // columna "nivel"); los dígitos a su derecha —sean columnas d/c/m o
+            // columnas enteras usadas como decimales, como en "9.5 decenas"—
+            // nunca llevan coma. La agrupación tampoco debe cruzar nunca la
+            // columna de unidades (pow 0): si la jerarquía elegida es ella misma
+            // decimal (ej. milésimos, nivel=-3), no hay parte entera que agrupar
+            // más allá de esa columna.
+            const leadPow = shift + numDigits - 1; // potencia del dígito visible más significativo
+            // Si NO hay punto decimal real (hayDecimal=false), las columnas de
+            // potencia negativa no son "parte decimal" de nada: son dígitos
+            // enteros que la jerarquía elegida desplazó hacia la derecha (ej.
+            // "2498" en jerarquía Milésimos, sin punto escrito, se lee tal
+            // cual "2498" y debe llevar su coma de millar). En ese caso el
+            // ancla de la agrupación es el dígito menos significativo
+            // realmente escrito (columna `shift`), no la columna U. Con punto
+            // decimal real, se mantiene la regla de siempre: nunca agrupar
+            // más allá de la columna U (Math.max(nivel, 0)).
+            const intShift = hayDecimal ? Math.max(nivel, 0) : shift;
+            const intNumDigits = leadPow - intShift + 1;
+            if (intNumDigits > 0) {
+              for (let k = 1; 3 * k <= intNumDigits - 1; k++) {
+                const boundaryPow = intShift + 3 * k; // potencia de la columna a la izquierda de la frontera
+                const x = colW * (maxPow - boundaryPow + 1);
+                // Con punto real, la frontera de periodo es absoluta (columna
+                // múltiplo de 6). Sin punto, la secuencia se trata como un
+                // entero llano anclado en su propio dígito menos
+                // significativo, así que la alternancia coma/apóstrofe se
+                // cuenta en relativo (k-ésima frontera desde la derecha) —
+                // para un entero normal (shift=0) ambos criterios coinciden,
+                // así que esto no cambia nada de lo ya existente.
+                const esFronteraDePeriodo = hayDecimal
+                  ? boundaryPow % 6 === 0
+                  : k % 2 === 0;
+                const simbolo = esFronteraDePeriodo ? "'" : ",";
+                svgNumbers += glyphRunClamped(
+                  simbolo,
+                  GLYPH_DATA.bold,
+                  x,
+                  digitCY,
+                  fComma,
+                  DIGIT_REF,
+                  COLORS.C,
+                );
+              }
+            }
+          }
+
+          // ---- Punto decimal ----
+          // Se coloca siempre justo a la derecha de la columna de la jerarquía
+          // elegida (por ejemplo, a la derecha de "decenas" si el número se
+          // interpreta en decenas), sin importar si se muestran los órdenes de
+          // milésimos. Solo si la casilla "Mostrar punto decimal" está activada.
+          if (showPunto && hayDecimal) {
+            const px = colW * (maxPow - nivel + 1);
+            svgNumbers += glyphRunClamped(
+              ".",
+              GLYPH_DATA.bold,
+              px,
+              digitCY,
+              fPoint,
+              DIGIT_REF,
+              COLORS.C,
+            );
+          }
+        });
+
+        // La cuadrícula y el borde ya no se dibujan aparte: cada celda de
+        // periodo/clase/orden incluye su borde completo como UNA sola figura de
+        // fondo negro (ver borderedCell más arriba), con el relleno de color
+        // recortado hacia adentro encima. En una frontera compartida, las dos
+        // celdas vecinas dibujan el mismo rectángulo negro superpuesto —nunca la
+        // unión de piezas separadas—, así que el grosor no cambia sin importar si
+        // esas celdas están juntas o si en PowerPoint se separan o se mueven.
+
+        // Estructura final de agrupación (pensada para "Convertir en forma" de
+        // PowerPoint):
+        //   svg
+        //    └─ g (LA TABLA COMPLETA — una sola figura al desagrupar el dibujo)
+        //        ├─ g (celda de periodo, con su propio borde) × N  ← al desagrupar
+        //        ├─ g (celda de clase, con su propio borde)   × N     la tabla,
+        //        └─ g (celda de orden, con su propio borde)   × N     cada una
+        //                                                             queda suelta
+        //    └─ g (dígito / coma / apóstrofe / punto) × N   ← sueltos desde el inicio
+        const svg =
+          `<svg viewBox="0 0 ${totalW} ${totalH}" width="${totalW}" height="${totalH}" xmlns="http://www.w3.org/2000/svg">` +
+          `<g>${svgTable}</g>` +
+          svgNumbers +
+          `</svg>`;
+        return { svg, filename: buildFilename(numerosState) };
+      }
+      // Construye el nombre de archivo: [Orden]-[Numero].svg
+      // [Orden] = U, D, C, UM, DM o CM (igual que el valor de la jerarquía)
+      // [Numero] = el número mostrado, con los millares separados por "-"
+      function groupThousands(digitsStr) {
+        let out = "";
+        let count = 0;
+        for (let i = digitsStr.length - 1; i >= 0; i--) {
+          out = digitsStr[i] + out;
+          count++;
+          if (count % 3 === 0 && i !== 0) out = "-" + out;
+        }
+        return out;
+      }
+
+      function buildFilename(numerosState) {
+        // Para los órdenes decimales, el prefijo del archivo usa la misma
+        // abreviatura de 3 letras que se muestra en la celda (dec/cen/mil) en
+        // vez del código de una letra (d/c/m).
+        const FILENAME_PREFIX = { d: "dec", c: "cen", m: "mil" };
+
+        // Un número por fila, cada uno con su propia jerarquía; si hay varios,
+        // se unen con "+" en el nombre (ej. "U-950-000+D-1-234.svg").
+        const combined = numerosState
+          .map((row) => {
+            const ordenPart = FILENAME_PREFIX[row.jerarquia] || row.jerarquia;
+            const numero = row.numero.trim();
+            let numeroPart;
+            if (!/^\d+(\.\d*)?$/.test(numero)) {
+              numeroPart = "vacia";
+            } else {
+              const [entera, decimal] = numero.split(".");
+              numeroPart =
+                groupThousands(entera) +
+                (numero.includes(".") ? "." + decimal : "");
+            }
+            return `${ordenPart}-${numeroPart}`;
+          })
+          .join("+");
+
+        return `${combined}.svg`;
+      }
+
+      // ---- Estado y wiring de la interfaz (dirección "Barra segmentada") ----
+      let numerosState = [{ numero: "950000", jerarquia: "U" }];
+
+      function currentMaxMin() {
+        return {
+          maxPow: parseInt(document.getElementById("hastaOrden").value, 10),
+          minPow: parseInt(
+            document.getElementById("hastaOrdenDecimal").value,
+            10,
+          ),
+        };
+      }
+
+      function jerarquiaOptionsHTML(selectedCode, maxPow, minPow) {
+        const opts = ORDERS.filter(
+          (o) => o.pow <= maxPow && o.pow >= minPow,
+        ).sort((a, b) => a.pow - b.pow);
+        const valid = opts.some((o) => o.code === selectedCode);
+        const value = valid ? selectedCode : "U";
+        return {
+          html: opts
+            .map(
+              (o) =>
+                `<option value="${o.code}"${o.code === value ? " selected" : ""}>${o.label}</option>`,
+            )
+            .join(""),
+          value,
+        };
+      }
+
+      function clampJerarquias() {
+        const { maxPow, minPow } = currentMaxMin();
+        numerosState.forEach((row) => {
+          const pow = NIVEL[row.jerarquia];
+          if (pow === undefined || pow > maxPow || pow < minPow)
+            row.jerarquia = "U";
+        });
+      }
+
+      function renderNumerosList() {
+        const { maxPow, minPow } = currentMaxMin();
+        const container = document.getElementById("numerosList");
+        container.innerHTML = "";
+        numerosState.forEach((rowState, idx) => {
+          const row = document.createElement("div");
+          row.className = "numeroRow";
+          const { html: optHtml } = jerarquiaOptionsHTML(
+            rowState.jerarquia,
+            maxPow,
+            minPow,
+          );
+          row.innerHTML =
+            '<span class="tag">Número ' +
+            (idx + 1) +
+            "</span>" +
+            '<input type="text" class="textInput numero-input" placeholder="Ej. 4500 o 63.21">' +
+            '<select class="jerarquia-select">' +
+            optHtml +
+            "</select>" +
+            '<button type="button" class="btn btn-ghost removeBtn"' +
+            (numerosState.length <= 1 ? " disabled" : "") +
+            ">Quitar</button>";
+          const input = row.querySelector(".numero-input");
+          input.value = rowState.numero;
+          input.addEventListener("input", () => {
+            rowState.numero = input.value;
+            render();
+          });
+          input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              download();
+            }
+          });
+          const select = row.querySelector(".jerarquia-select");
+          select.addEventListener("change", () => {
+            rowState.jerarquia = select.value;
+            render();
+          });
+          row.querySelector(".removeBtn").addEventListener("click", () => {
+            if (numerosState.length <= 1) return;
+            numerosState.splice(idx, 1);
+            renderNumerosList();
+            render();
+          });
+          container.appendChild(row);
+        });
+      }
+
+      function render() {
+        const { maxPow, minPow } = currentMaxMin();
+        const result = buildSVG({
+          numerosState,
+          maxPow,
+          minPow,
+          showComma: document.getElementById("coma").checked,
+          showPunto: document.getElementById("mostrarPunto").checked,
+          showClase: document.getElementById("mostrarClase").checked,
+          showPeriodos: document.getElementById("mostrarPeriodos").checked,
+          digitColor: document.getElementById("colorDigitos").value,
+        });
+        const errorBox = document.getElementById("errorCallout");
+        const errorMsg = document.getElementById("errorMessage");
+        const holder = document.getElementById("svgHolder");
+        if (result.error) {
+          errorMsg.textContent = result.error.message;
+          errorBox.style.display = "flex";
+          document
+            .querySelectorAll(".numero-input")
+            .forEach((el, i) =>
+              el.classList.toggle("hasError", i === result.error.rowIndex),
+            );
+          return;
+        }
+        errorBox.style.display = "none";
+        document
+          .querySelectorAll(".numero-input")
+          .forEach((el) => el.classList.remove("hasError"));
+        holder.innerHTML = result.svg;
+        lastFilename = result.filename;
+      }
+
+      let lastSaveHandle = null;
+      let lastFilename = "tabla.svg";
+
+      async function download() {
+        const { maxPow, minPow } = currentMaxMin();
+        const result = buildSVG({
+          numerosState,
+          maxPow,
+          minPow,
+          showComma: document.getElementById("coma").checked,
+          showPunto: document.getElementById("mostrarPunto").checked,
+          showClase: document.getElementById("mostrarClase").checked,
+          showPeriodos: document.getElementById("mostrarPeriodos").checked,
+          digitColor: document.getElementById("colorDigitos").value,
+        });
+        if (result.error || !result.svg) return;
+        const filename = result.filename;
+        if (window.showSaveFilePicker) {
+          try {
+            const options = {
+              suggestedName: filename,
+              types: [
+                {
+                  description: "Imagen SVG",
+                  accept: { "image/svg+xml": [".svg"] },
+                },
+              ],
+            };
+            if (lastSaveHandle) options.startIn = lastSaveHandle;
+            const handle = await window.showSaveFilePicker(options);
+            const writable = await handle.createWritable();
+            await writable.write(result.svg);
+            await writable.close();
+            lastSaveHandle = handle;
+            return;
+          } catch (err) {
+            if (err && err.name === "AbortError") return;
+          }
+        }
+        const blob = new Blob([result.svg], { type: "image/svg+xml" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      [
+        "colorDigitos",
+        "coma",
+        "mostrarPunto",
+        "mostrarClase",
+        "mostrarPeriodos",
+      ].forEach((id) => {
+        document.getElementById(id).addEventListener("input", render);
+        document.getElementById(id).addEventListener("change", render);
+      });
+      document.getElementById("hastaOrden").addEventListener("change", () => {
+        clampJerarquias();
+        renderNumerosList();
+        render();
+      });
+      document
+        .getElementById("hastaOrdenDecimal")
+        .addEventListener("change", () => {
+          clampJerarquias();
+          renderNumerosList();
+          render();
+        });
+      document.getElementById("addNumero").addEventListener("click", () => {
+        numerosState.push({ numero: "0", jerarquia: "U" });
+        renderNumerosList();
+        render();
+      });
+      document
+        .getElementById("downloadBtn")
+        .addEventListener("click", download);
+
+      renderNumerosList();
+      render();
+    </script>
+  </body>
+</html>
