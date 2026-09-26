@@ -121,31 +121,6 @@
                 <div class="piezasInner">
                   <div class="piezasGrid">
                     <div class="field">
-                      <span class="fieldLabel" id="modoCentenaLabel">Las centenas se acomodan como</span>
-                      <!-- En una fila o en dos (la de abajo primero), reducidas para
-                           medir lo mismo que una decena. Con una sola centena no
-                           cambia nada. -->
-                      <div class="seg segFill" role="group" aria-label="Filas de centenas" data-for="filasCentenas" data-animate>
-                        <button type="button" data-value="1">1 fila</button>
-                        <button type="button" data-value="2">2 filas</button>
-                      </div>
-                      <select id="filasCentenas" class="visuallyHidden" tabindex="-1" aria-hidden="true">
-                        <option value="1" selected>1 fila</option>
-                        <option value="2">2 filas</option>
-                      </select>
-                      <div class="seg segFill" role="group" aria-labelledby="modoCentenaLabel" data-for="modoCentena" data-animate>
-                        <button type="button" data-value="bloque">Bloque</button>
-                        <button type="button" data-value="decenas">10 decenas</button>
-                        <button type="button" data-value="unidades">100 unidades</button>
-                      </div>
-                      <select id="modoCentena" class="visuallyHidden" tabindex="-1" aria-hidden="true">
-                        <option value="bloque" selected>Bloque</option>
-                        <option value="decenas">10 decenas</option>
-                        <option value="unidades">100 unidades</option>
-                      </select>
-                    </div>
-
-                    <div class="field">
                       <span class="fieldLabel" id="modoDecenaLabel">Las decenas se acomodan como</span>
                       <div class="seg segFill" role="group" aria-labelledby="modoDecenaLabel" data-for="modoDecena" data-animate>
                         <button type="button" data-value="bloque">Barra</button>
@@ -169,6 +144,31 @@
                         </select>
                         <span class="tipText" role="tooltip">Disponible cuando las decenas se acomodan como 10 unidades.</span>
                       </div>
+                    </div>
+
+                    <div class="field">
+                      <span class="fieldLabel" id="modoCentenaLabel">Las centenas se acomodan como</span>
+                      <div class="seg segFill" role="group" aria-labelledby="modoCentenaLabel" data-for="modoCentena" data-animate>
+                        <button type="button" data-value="bloque">Bloque</button>
+                        <button type="button" data-value="decenas">10 decenas</button>
+                        <button type="button" data-value="unidades">100 unidades</button>
+                      </div>
+                      <select id="modoCentena" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+                        <option value="bloque" selected>Bloque</option>
+                        <option value="decenas">10 decenas</option>
+                        <option value="unidades">100 unidades</option>
+                      </select>
+                      <!-- En una fila o en dos (la de abajo primero), reducidas para
+                           medir lo mismo que una decena. Con una sola centena no
+                           cambia nada. -->
+                      <div class="seg segFill" role="group" aria-label="Filas de centenas" data-for="filasCentenas" data-animate>
+                        <button type="button" data-value="1">1 fila</button>
+                        <button type="button" data-value="2">2 filas</button>
+                      </div>
+                      <select id="filasCentenas" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+                        <option value="1" selected>1 fila</option>
+                        <option value="2">2 filas</option>
+                      </select>
                     </div>
 
                     <!-- Color de cada pieza (ver script.js, «Color de los bloques»).

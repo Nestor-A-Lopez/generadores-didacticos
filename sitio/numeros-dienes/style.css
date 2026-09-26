@@ -284,9 +284,9 @@ body {
   position: absolute;
   z-index: 40;
   bottom: calc(100% + 8px);
-  /* Alineado a la derecha del campo: en 1a es el último de la fila y,
-     centrado, se saldría de la página. */
-  right: 0;
+  /* Alineado a la izquierda del campo: en 1a las decenas son la primera
+     columna y, centrado o a la derecha, se saldría de la página. */
+  left: 0;
   max-width: calc(100vw - 32px);
   padding: 7px 11px;
   border-radius: var(--radius-sm);
@@ -783,7 +783,6 @@ body {
   }
   /* Aquí el campo ocupa todo el panel: el tooltip va centrado. */
   .tipText {
-    right: auto;
     left: 50%;
     transform: translateX(-50%);
   }
