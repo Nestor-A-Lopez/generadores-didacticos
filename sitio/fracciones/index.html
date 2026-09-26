@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Generador de fracciones (círculo / triángulo / rectángulo)</title>
+    <!-- Ícono de la pestaña: el de este generador en la portada (Lucide
+         «chart-pie», con el fondo --blue-50 y el trazo --blue-800 de su
+         tarjeta), incrustado para que funcione también con doble clic. -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23e3f2fd'/%3E%3Cg transform='translate(4 4)' fill='none' stroke='%230d47a1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12c.552 0 1.005-.449.95-.998a10 10 0 0 0-8.953-8.951c-.55-.055-.998.398-.998.95v8a1 1 0 0 0 1 1z'/%3E%3Cpath d='M21.21 15.89A10 10 0 1 1 8 2.83'/%3E%3C/g%3E%3C/svg%3E" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- Fuentes del sistema de diseño "Vesta" (Fraunces = títulos,
@@ -21,14 +25,20 @@
     <div class="page">
       <!-- Cabecera + acción principal -->
       <div class="section header">
-        <div>
-          <h1>Generador de fracciones</h1>
-          <p>
-            Elige la forma, define la fracción y descarga el resultado como
-            SVG.
-          </p>
+        <div class="headerMarca">
+          <!-- El mismo ícono que en la tarjeta de la portada. -->
+          <span class="icono" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12c.552 0 1.005-.449.95-.998a10 10 0 0 0-8.953-8.951c-.55-.055-.998.398-.998.95v8a1 1 0 0 0 1 1z"/><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/></svg>
+          </span>
+          <div>
+            <h1>Generador de fracciones</h1>
+            <p>
+              Elige la forma, define la fracción y descarga el resultado como
+              SVG.
+            </p>
+          </div>
         </div>
-        <!-- Icono de descargar de Lucide/Feather, licencia ISC/MIT: ver
+        <!-- Iconos (gráfica de pastel, descargar) de Lucide/Feather, licencia ISC/MIT: ver
              AVISOS-DE-TERCEROS.md en la raíz del repositorio. -->
         <button class="btn btn-primary downloadBtn" id="downloadBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
