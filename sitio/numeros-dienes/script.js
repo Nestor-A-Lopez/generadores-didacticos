@@ -5,6 +5,12 @@ const COL_U = "#57A639"; // unidades -> verde
 const COL_D = "#1C75BC"; // decenas  -> azul
 const COL_C = "#CC2027"; // centenas -> rojo
 
+// Colores por defecto de cada pieza. El usuario puede elegir otro en
+// «Color de los bloques»; los que se usan al dibujar están en colorPieza,
+// que buildSVG toma de las opciones. Con los de defecto el SVG no cambia.
+const COLORES_DEFECTO = { u: COL_U, d: COL_D, c: COL_C };
+let colorPieza = COLORES_DEFECTO;
+
 // Lado del cuadrito, fijo. Antes se elegía (14 / 20 / 28); se dejó el de
 // «Mediano» porque el tamaño se ajusta al escalar la figura en PowerPoint.
 const L_CUADRITO = 20;
@@ -33,6 +39,11 @@ function getOptions() {
     document.getElementById("mostrarDesglose").checked;
   const modoDescomposicion =
     document.getElementById("modoDescomposicion").value; // unidades | jerarquia
+  const colores = {
+    u: colorElegido("u"),
+    d: colorElegido("d"),
+    c: colorElegido("c"),
+  };
   return {
     numeroRaw,
     L,
@@ -43,7 +54,18 @@ function getOptions() {
     mostrarValor,
     mostrarDesglose,
     modoDescomposicion,
+    colores,
   };
+}
+
+// Color de una pieza (u | d | c): el propio si está elegido, si no el de
+// defecto. El estado vive en .colorPieza[data-pieza] (data-activo) y el
+// color propio en su <input type="color">.
+function colorElegido(p) {
+  const celda = document.querySelector(`.colorPieza[data-pieza="${p}"]`);
+  if (celda.dataset.activo === "propio")
+    return celda.querySelector('input[type="color"]').value;
+  return COLORES_DEFECTO[p];
 }
 
 // Con error: aviso visible, campo marcado y botón de guardar desactivado.
@@ -74,7 +96,7 @@ function updateDisabledStates() {
 
 // ---- Ladrillo básico: un cuadrito "unidad" ----
 function drawUnit(x, y, L) {
-  return `<rect x="${x}" y="${y}" width="${L}" height="${L}" fill="${COL_U}" stroke="#ffffff" stroke-width="1"/>`;
+  return `<rect x="${x}" y="${y}" width="${L}" height="${L}" fill="${colorPieza.u}" stroke="#ffffff" stroke-width="1"/>`;
 }
 
 // ---- Una decena, respetando el modo elegido ----
@@ -101,7 +123,7 @@ function drawTen(x, y, L, G, modoDecena, formatoDiez) {
     return { svg, width: L, height: 10 * L };
   }
   // bloque sólido (barra azul)
-  const svg = `<rect x="${x}" y="${y}" width="${L}" height="${10 * L}" fill="${COL_D}" stroke="#ffffff" stroke-width="1.4"/>`;
+  const svg = `<rect x="${x}" y="${y}" width="${L}" height="${10 * L}" fill="${colorPieza.d}" stroke="#ffffff" stroke-width="1.4"/>`;
   return { svg, width: L, height: 10 * L };
 }
 
@@ -132,7 +154,7 @@ function drawHundred(x, y, L, G, modoCentena, modoDecena, formatoDiez) {
     return { svg, width: xx - x, height: maxH };
   }
   // bloque sólido (cuadrado rojo)
-  const svg = `<rect x="${x}" y="${y}" width="${10 * L}" height="${10 * L}" fill="${COL_C}" stroke="#ffffff" stroke-width="1.4"/>`;
+  const svg = `<rect x="${x}" y="${y}" width="${10 * L}" height="${10 * L}" fill="${colorPieza.c}" stroke="#ffffff" stroke-width="1.4"/>`;
   return { svg, width: 10 * L, height: 10 * L };
 }
 
@@ -160,6 +182,7 @@ function drawLooseUnits(x, L, G, unidades) {
 // ---- Construye el SVG completo para el número dado ----
 function buildSVG(n, opts) {
   const { L, modoCentena, modoDecena, formatoDiez, filasCentenas } = opts;
+  colorPieza = opts.colores || COLORES_DEFECTO; // lo leen drawUnit/Ten/Hundred
   const G = L * 0.22;
   const margin = L * 0.9;
 
@@ -280,7 +303,7 @@ function buildLectura(n, centenas, decenas, unidades, opts) {
 
   if (opts.mostrarValor) {
     // De derecha a izquierda: unidades, decenas, centenas
-    const colores = [COL_U, COL_D, COL_C];
+    const colores = [opts.colores.u, opts.colores.d, opts.colores.c];
     const cifras = String(n);
     [...cifras].forEach((ch, i) => poner(ch, colores[cifras.length - 1 - i]));
   }
@@ -290,10 +313,10 @@ function buildLectura(n, centenas, decenas, unidades, opts) {
   }
   if (opts.mostrarDesglose) {
     const partes = [];
-    if (centenas > 0) partes.push([centenas, 100, "C", COL_C]);
-    if (decenas > 0) partes.push([decenas, 10, "D", COL_D]);
+    if (centenas > 0) partes.push([centenas, 100, "C", opts.colores.c]);
+    if (decenas > 0) partes.push([decenas, 10, "D", opts.colores.d]);
     if (unidades > 0 || partes.length === 0)
-      partes.push([unidades, 1, "U", COL_U]);
+      partes.push([unidades, 1, "U", opts.colores.u]);
     partes.forEach(([cifra, valor, letra, color], i) => {
       if (i > 0) {
         poner("+", NEGRO, 4);
@@ -479,6 +502,78 @@ document.querySelectorAll(".seg[data-for]").forEach((seg) => {
     toggle.setAttribute("aria-expanded", String(open));
     body.setAttribute("aria-hidden", String(!open));
     if (open) timer = setTimeout(() => piezas.classList.add("is-settled"), 400);
+  });
+})();
+
+// ============================================================
+//  "Color de los bloques": un color por pieza
+// ============================================================
+// Cada pieza tiene dos bloques: el de su color por defecto y otro que abre
+// el selector de color (gris con «+» mientras no hay color propio; después,
+// del color elegido). Elegir el mismo color que el de defecto no cuenta
+// como propio: el segundo bloque vuelve a ser gris.
+(function () {
+  const NOMBRE = { u: "las unidades", d: "las decenas", c: "las centenas" };
+
+  // Pone al día los dos bloques de una pieza y su aviso.
+  function syncColor(celda) {
+    const p = celda.dataset.pieza;
+    const input = celda.querySelector('input[type="color"]');
+    const propio = celda.querySelector('[data-opcion="propio"]');
+    const tieneColor = celda.dataset.propio === "si";
+    const activo = celda.dataset.activo;
+    celda.querySelector('[data-opcion="defecto"]').setAttribute("aria-pressed", String(activo !== "propio"));
+    propio.setAttribute("aria-pressed", String(activo === "propio"));
+    propio.classList.toggle("tieneColor", tieneColor);
+    propio.style.background = tieneColor ? input.value : "";
+    propio.setAttribute(
+      "aria-label",
+      tieneColor ? `Cambiar el color propio de ${NOMBRE[p]}` : `Elegir otro color para ${NOMBRE[p]}`,
+    );
+    celda.querySelector(".swatchTip").textContent = tieneColor
+      ? "Haz clic para cambiar este color. Para volver al original, elige el primer bloque."
+      : `Elige otro color para ${NOMBRE[p]}. Se usa en la figura, el valor y la descomposición.`;
+  }
+
+  document.querySelectorAll(".colorPieza").forEach((celda) => {
+    const p = celda.dataset.pieza;
+    const input = celda.querySelector('input[type="color"]');
+    celda.dataset.activo = "defecto";
+    celda.dataset.propio = "no";
+
+    celda.querySelector('[data-opcion="defecto"]').addEventListener("click", () => {
+      celda.dataset.activo = "defecto";
+      syncColor(celda);
+      render();
+    });
+
+    celda.querySelector('[data-opcion="propio"]').addEventListener("click", () => {
+      // Si ya hay color propio, se usa de inmediato; el selector permite cambiarlo.
+      if (celda.dataset.propio === "si") {
+        celda.dataset.activo = "propio";
+        syncColor(celda);
+        render();
+      }
+      try {
+        if (input.showPicker) input.showPicker();
+        else input.click();
+      } catch (e) {
+        input.click();
+      }
+    });
+
+    // "input" llega mientras se mueve el selector; "change", al cerrarlo.
+    const elegir = () => {
+      const igual = input.value.toLowerCase() === COLORES_DEFECTO[p].toLowerCase();
+      celda.dataset.propio = igual ? "no" : "si";
+      celda.dataset.activo = igual ? "defecto" : "propio";
+      syncColor(celda);
+      render();
+    };
+    input.addEventListener("input", elegir);
+    input.addEventListener("change", elegir);
+
+    syncColor(celda);
   });
 })();
 

@@ -20,7 +20,7 @@
          ancho (ver style.css): panel lateral (1b) en pantallas anchas y filas
          (1a) en las angostas. El DOM es el mismo; solo cambia el CSS. -->
     <div class="page">
-      <!-- Iconos (descargar, flecha, alerta) de Lucide/Feather, licencia
+      <!-- Iconos (descargar, flecha, alerta, más) de Lucide/Feather, licencia
            ISC/MIT: ver AVISOS-DE-TERCEROS.md en la raíz del repositorio. -->
       <header class="header">
         <div class="headerText">
@@ -138,6 +138,47 @@
                           <option value="columnas">2 columnas</option>
                         </select>
                         <span class="tipText" role="tooltip">Disponible cuando las decenas se muestran como 10 unidades.</span>
+                      </div>
+                    </div>
+
+                    <!-- Color de cada pieza (ver script.js, «Color de los bloques»).
+                         El <input type="color"> de cada una guarda el color propio. -->
+                    <div class="field">
+                      <span class="fieldLabel" id="coloresLabel">Color de los bloques</span>
+                      <div class="colores" role="group" aria-labelledby="coloresLabel">
+                        <div class="colorPieza" data-pieza="u" role="group" aria-label="Color de la unidad">
+                          <span class="colorNombre">Unidad</span>
+                          <div class="colorOpciones">
+                            <button type="button" class="swatch swatchDefecto" data-opcion="defecto" aria-label="Verde original de la unidad"></button>
+                            <span class="swatchWrap">
+                              <button type="button" class="swatch swatchPropio" data-opcion="propio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+                              <input type="color" class="visuallyHidden" tabindex="-1" aria-hidden="true" id="colorUnidad" value="#57a639" />
+                              <span class="swatchTip" role="tooltip"></span>
+                            </span>
+                          </div>
+                        </div>
+                        <div class="colorPieza" data-pieza="d" role="group" aria-label="Color de la decena">
+                          <span class="colorNombre">Decena</span>
+                          <div class="colorOpciones">
+                            <button type="button" class="swatch swatchDefecto" data-opcion="defecto" aria-label="Azul original de la decena"></button>
+                            <span class="swatchWrap">
+                              <button type="button" class="swatch swatchPropio" data-opcion="propio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+                              <input type="color" class="visuallyHidden" tabindex="-1" aria-hidden="true" id="colorDecena" value="#1c75bc" />
+                              <span class="swatchTip" role="tooltip"></span>
+                            </span>
+                          </div>
+                        </div>
+                        <div class="colorPieza" data-pieza="c" role="group" aria-label="Color de la centena">
+                          <span class="colorNombre">Centena</span>
+                          <div class="colorOpciones">
+                            <button type="button" class="swatch swatchDefecto" data-opcion="defecto" aria-label="Rojo original de la centena"></button>
+                            <span class="swatchWrap">
+                              <button type="button" class="swatch swatchPropio" data-opcion="propio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+                              <input type="color" class="visuallyHidden" tabindex="-1" aria-hidden="true" id="colorCentena" value="#cc2027" />
+                              <span class="swatchTip" role="tooltip"></span>
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
