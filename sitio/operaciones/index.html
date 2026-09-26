@@ -3,21 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <title>Generador de operaciones con valor posicional</title>
+    <!-- Ícono de la pestaña: el de este generador en la portada (Lucide
+         «calculator», con el fondo --blue-50 y el trazo --blue-800 de su
+         tarjeta), incrustado para que funcione también con doble clic. -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23e3f2fd'/%3E%3Cg transform='translate(4 4)' fill='none' stroke='%230d47a1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='16' height='20' x='4' y='2' rx='2'/%3E%3Cline x1='8' x2='16' y1='6' y2='6'/%3E%3Cline x1='16' x2='16' y1='14' y2='18'/%3E%3Cpath d='M16 10h.01'/%3E%3Cpath d='M12 10h.01'/%3E%3Cpath d='M8 10h.01'/%3E%3Cpath d='M12 14h.01'/%3E%3Cpath d='M8 14h.01'/%3E%3Cpath d='M12 18h.01'/%3E%3Cpath d='M8 18h.01'/%3E%3C/g%3E%3C/svg%3E" />
     <link rel="stylesheet" href="../compartido/vesta.css" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="app">
       <div class="topbar">
-        <h1>
-          <span class="c">C</span> <span class="d">D</span>
-          <span class="u">U</span> — Generador de operaciones con valor
-          posicional
-        </h1>
-        <p>
-          Suma, resta, multiplicación y división mostrando a qué orden
-          pertenece cada dígito. Descarga el resultado como SVG.
-        </p>
+        <div class="headerMarca">
+          <!-- El mismo ícono que en la tarjeta de la portada (Lucide «calculator»,
+               licencia ISC: ver AVISOS-DE-TERCEROS.md en la raíz del repositorio). -->
+          <span class="icono" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
+          </span>
+          <div>
+            <h1>
+              <span class="c">C</span> <span class="d">D</span>
+              <span class="u">U</span> — Generador de operaciones con valor
+              posicional
+            </h1>
+            <p>
+              Suma, resta, multiplicación y división mostrando a qué orden
+              pertenece cada dígito. Descarga el resultado como SVG.
+            </p>
+          </div>
+        </div>
       </div>
 
       <div class="toolbar">
