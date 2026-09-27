@@ -2,7 +2,7 @@
 
 Generador unificado (2026-09-26, rama `unificar-tabla-operaciones`): une los generadores «Tabla de valor posicional» (`tabla-valor-posicional/`) y «Operaciones en la tabla» (`operaciones/`), que eran casi la misma herramienta. Los dos se retiraron el 2026-09-27 (rama `retirar-tabla-operaciones`): su código y sus `CLAUDE.md` siguen en el historial de git, y lo que explicaban sobre el SVG está en «Por qué el SVG es así», abajo. Sus URL publicadas dejaron de existir, sin redirección (decisión del usuario). Las convenciones generales están en el `CLAUDE.md` de la raíz.
 
-En la portada tiene su propia tarjeta (ícono Lucide `sheet`, también en la cabecera y la pestaña). **Sus SVG se guardan en `_recursos/figuras/tabla-valor-posicional/`**, con o sin operación (decisión del usuario, 2026-09-26): no tiene carpeta propia en `figuras/`.
+En la portada tiene su propia tarjeta (ícono Lucide `sheet`, también en la cabecera y la pestaña). **Sus SVG se guardan en `_recursos/figuras/valor-posicional/`**, con o sin operación (decisión del usuario, 2026-09-27; antes iban en `figuras/tabla-valor-posicional/`, que se retiró junto con `figuras/operaciones/`).
 
 ## Qué hace
 

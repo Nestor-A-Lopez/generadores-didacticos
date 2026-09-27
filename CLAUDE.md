@@ -112,17 +112,16 @@ _recursos/
 └── figuras/
     ├── fracciones/circulo/  fracciones/rectangulo/  fracciones/triangulo/
     ├── numeros-dienes/  estrategias/  recta-numerica/
-    ├── tabla-valor-posicional/
-    └── operaciones/          ← SVG de antes del 2026-09-27; los nuevos van en tabla-valor-posicional/
+    └── valor-posicional/
 ```
 
-Se movieron ahí el 2026-09-26 (439 archivos); ese mismo día `numeros-material/` pasó a `numeros-dienes/`, como el generador. Las carpetas que todavía no tienen SVG (`fracciones/triangulo/`, `recta-numerica/`) no existen: se crean al guardar el primero. Al guardar, el diálogo del navegador recuerda la última carpeta de la sesión, así que la primera vez hay que elegir la de `figuras/`. El nombre describe el contenido, sin prefijo de carpeta ni de tipo de figura.
+Se movieron ahí el 2026-09-26 (439 archivos); ese mismo día `numeros-material/` pasó a `numeros-dienes/`, como el generador. Las carpetas que todavía no tienen SVG (`fracciones/triangulo/`, `recta-numerica/`) no existen: se crean al guardar el primero. El 2026-09-27, al retirar los generadores viejos, el usuario mandó a la papelera `figuras/tabla-valor-posicional/` y `figuras/operaciones/` (379 SVG) y creó `figuras/valor-posicional/`, vacía, para los nuevos. Al guardar, el diálogo del navegador recuerda la última carpeta de la sesión, así que la primera vez hay que elegir la de `figuras/`. El nombre describe el contenido, sin prefijo de carpeta ni de tipo de figura.
 
 | Generador | Formato | Ejemplos |
 | --- | --- | --- |
 | Fracciones | `[numerador]-[denominador]-[color].svg`, en la subcarpeta de la forma (`circulo/`, `rectangulo/`, `triangulo/`) | `3-4-verde.svg`, `0-6-azul.svg` |
-| Tabla de valor posicional y operaciones (`valor-posicional`), sin operación | `[Orden]-[Número].svg`; millares separados con `-`, punto decimal tal cual; varios números unidos con `+`; tabla en blanco → `vacia.svg` (en `figuras/tabla-valor-posicional/` hay un `U-vacia.svg`) | `U-950-000.svg`, `mil-9-673.svg`, `U-0.37+U-0.370.svg`, `U-427..svg` (punto sin dígitos después) |
-| Tabla de valor posicional y operaciones (`valor-posicional`), con operación | `[A\|S\|M\|D]-[operando]-[operando]….SVG` (extensión en **mayúsculas**, así la genera `buildFilename()`); cada operando en unidades reales. Con o sin operación, todos se guardan en `figuras/tabla-valor-posicional/`; en `figuras/operaciones/` quedan los que hizo el generador retirado | `A-0.15-0.028.SVG`, `S-8750-2300.SVG`, `M-2.31-24.SVG` |
+| Tabla de valor posicional y operaciones (`valor-posicional`), sin operación | `[Orden]-[Número].svg`; millares separados con `-`, punto decimal tal cual; varios números unidos con `+`; tabla en blanco → `vacia.svg` | `U-950-000.svg`, `mil-9-673.svg`, `U-0.37+U-0.370.svg`, `U-427..svg` (punto sin dígitos después) |
+| Tabla de valor posicional y operaciones (`valor-posicional`), con operación | `[A\|S\|M\|D]-[operando]-[operando]….SVG` (extensión en **mayúsculas**, así la genera `buildFilename()`); cada operando en unidades reales. Con o sin operación, todos se guardan en `figuras/valor-posicional/` | `A-0.15-0.028.SVG`, `S-8750-2300.SVG`, `M-2.31-24.SVG` |
 | Números con bloques Dienes | `[número].svg`, sin ceros a la izquierda (`007` → `7.svg`), como lo genera `buildFilename()` desde el 2026-09-26 (antes, `numero-N.svg`). Los archivos guardados antes llevan un prefijo con los órdenes, puesto a mano: `U-` (todo en unidades), `DU-`, `CDU-` | `236.svg`; antiguos: `U-36.svg`, `DU-36.svg`, `CDU-427.svg` |
 | Completar decena (`estrategias`) | `[A]+[b].svg` (suma) / `[A]-[b].svg` (resta) | `28+5.svg`, `51-7.svg` |
 | Distancia entre números (`estrategias`) | `[A]-[b].svg`; sufijo `-sin-material` cuando el interruptor «Material sobre la recta» está apagado | `100-19.svg`, `10-3-sin-material.svg` |
