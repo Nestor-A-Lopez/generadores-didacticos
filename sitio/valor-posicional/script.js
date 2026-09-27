@@ -1385,11 +1385,18 @@ function armarSegmentado(seg) {
 // Texto con los glifos de Computer Modern (compartido/glifos.js), como en
 // LaTeX, en un <svg> que toma el color del botón. Todos comparten el mismo
 // alto (el de «123+−×÷»), así los signos quedan a la altura de siempre.
+// En negritas: los juegos de glifos del repo no traen dígitos ni signos en
+// negritas (glifos.js es cmr10/cmmi10; la negrita de glifos-tabla.js solo
+// tiene letras), así que se simula con un contorno del mismo color
+// (GROSOR_NEGRITA, en unidades de F). El viewBox crece medio contorno por
+// lado para que no se recorte. Solo es la interfaz: no llega al SVG.
 const GLIFOS_OP = "123+−×÷";
+const GROSOR_NEGRITA = 36;
 function glifosCM(texto) {
   const G = Banco.GLYPH_DATA;
   const F = 1000; // tamaño de trabajo; el alto real lo pone el CSS
   const s = F / G.upm;
+  const m = GROSOR_NEGRITA / 2;
   let arriba = -Infinity;
   let abajo = Infinity;
   for (const ch of GLIFOS_OP) {
@@ -1400,9 +1407,10 @@ function glifosCM(texto) {
   for (const ch of texto) ancho += G.r[ch][0] * s;
   const alto = arriba - abajo;
   return (
-    `<svg viewBox="0 0 ${Math.round(ancho)} ${Math.round(alto)}" aria-hidden="true">` +
+    `<svg viewBox="${-m} ${-m} ${Math.round(ancho + 2 * m)} ${Math.round(alto + 2 * m)}" aria-hidden="true">` +
+    `<g stroke="currentColor" stroke-width="${GROSOR_NEGRITA}" stroke-linejoin="round">` +
     Banco.glyphRunSvg(texto, 0, arriba, F, "currentColor") +
-    `</svg>`
+    `</g></svg>`
   );
 }
 

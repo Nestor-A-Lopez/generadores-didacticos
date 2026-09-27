@@ -326,9 +326,13 @@ body {
   align-items: center;
   justify-content: center;
 }
+/* El <svg> abarca la caja común de «123+−×÷» (749 unidades de glifosCM)
+   más el contorno de la negrita (36): con 15.7px de alto, los dígitos miden
+   unos 13.3px, algo más que las mayúsculas de «Parte entera» (Poppins
+   14px: 9.84px), para que los signos se lean bien. */
 .segOp button svg {
   display: block;
-  height: 20px;
+  height: 15.7px;
   width: auto;
 }
 /* Tooltip de Vesta con el nombre completo de la opción. Con display (no
