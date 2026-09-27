@@ -1150,7 +1150,7 @@ function buildSVG() {
   if (forma === "triangulo" && !esCuadradoPerfecto(nTotal)) {
     const nFilas = Math.round(Math.sqrt(nTotal));
     warnings.push(
-      `El denominador (${nTotal}) no es un cuadrado perfecto. Se usará ${nFilas * nFilas} partes (${nFilas}×${nFilas}).`,
+      `El denominador (${nTotal}) no es un cuadrado perfecto. Se usarán ${nFilas * nFilas} partes (${nFilas}×${nFilas}).`,
     );
   }
 
