@@ -596,11 +596,12 @@ body {
   right: 0;
   transform: none;
 }
-/* Más específico que «.seg button», para que el bloque conserve su aspecto. */
+/* Más específico que «.seg button», para que el bloque conserve su aspecto.
+   Mide 28px, como las celdas de la cuadrícula (ver abajo). */
 .seg .swatch.swatchSeg {
-  width: 40px;
+  width: 28px;
   min-height: 0;
-  height: 40px;
+  height: 28px;
   padding: 0;
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: var(--radius-sm);
@@ -610,8 +611,18 @@ body {
 .seg .swatch.swatchSeg:hover {
   background: var(--neutral-200);
 }
+/* Celdas de 28px: la cuadrícula (dos celdas, tres huecos de 4px y el
+   borde) mide 70px, lo mismo que el contenido de «Agrupaciones» (de la
+   pista del primer interruptor a la del último) y de «Color de las
+   jerarquías» (del nombre a los bloques), así la fila aparenta una sola
+   altura. */
 .seg.segGrid button[data-value] {
-  padding: 8px 10px;
+  min-height: 28px;
+  padding: 4px 10px;
+}
+.seg .swatch.swatchSeg svg {
+  width: 16px;
+  height: 16px;
 }
 /* «Personalizado» elegido: el bloque lleva el mismo anillo que los de
    «Color de las jerarquías». */
