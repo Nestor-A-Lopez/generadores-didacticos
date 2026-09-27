@@ -188,6 +188,19 @@ En este orden, y preguntando antes de mover o borrar:
    - valor-posicional: «Agrupaciones» por debajo de 640 px y los interruptores de «¿Cómo se ve el resultado?» (hoy van pegados, sin solapar: 18 px entre pistas). Lo natural es mover la regla a `.switches` (o `.switch + .switch`) para todo el generador.
    - numeros-dienes («¿Cuál es la cantidad?») y estrategias: revisar qué interruptores quedan seguidos (en numeros-dienes, «Mostrar valor» y «Mostrar descomposición» solo lo son cuando la opción de en medio está oculta) y medir su separación actual; en estrategias el interruptor es otro componente (`.switch input` con `::after`), así que la cuenta de los 9 px se rehace con su pista.
    - Si se vuelve regla de Vesta, pedirla en el proyecto de Vesta en claude.ai (ver «Coordinación entre diseño y código») y no dejarla solo en el CSS de cada generador. Ya va incluida en el pedido de `SwitchMenu` de fracciones (ver su `CLAUDE.md`, sección 9).
+3. **Componentes nuevos en Vesta** (grupo `forms`; ver «Coordinación entre diseño y código»):
+   - **Pedidos** (2026-09-27), los cinco de fracciones: `SegmentedControl`, `ColorSwatchGroup`, `TextColorPicker`, `InputWithPrefix` y `SwitchMenu`.
+   - **Redactados, falta enviarlos** (2026-09-27), los de valor-posicional, en este orden porque cada uno usa lo del anterior:
+     1. `Switch` con `size="sm"`: el interruptor pequeño de fracciones (`.switchSmall`: la pista normal de 46 × 26 px, texto `--text-sm`, separación `--space-2` y margen vertical de −8 px), elegido por el usuario frente al de valor-posicional. Es el único pedido que cambia un componente existente: agrega la prop opcional `size`, y sin ella el `Switch` debe quedar idéntico.
+     2. `NumberRow`: la fila de número con jerarquía (etiqueta, «Coma y punto», «Quitar» o su hueco, número, jerarquía y ayuda).
+     3. `OrderColorPicker`: «Color de las jerarquías» / «Color de los bloques», con las muestras de 40 px de `TextColorPicker`.
+     4. `ColorModeGrid`: los segmentados de 2 × 2 de «Color de los números» y «Color de las comas y punto», sobre `SegmentedControl` y el «+» de `TextColorPicker` a 28 px.
+
+     El segmentado con tooltip de valor-posicional no lleva pedido propio: lo cubre `SegmentedControl`.
+   - **Cuando lleguen**: bajarlos a la copia local (`.claude/skills/vesta/`), comparar sus medidas con el CSS de cada generador y ajustar los generadores:
+     - valor-posicional: «Coma y punto» (`.switchSm`, pista de 40 × 24 px) pasa al `Switch` `sm` de fracciones.
+     - numeros-dienes: las muestras de «Color de los bloques» pasan de 32 px a 40 px, como `OrderColorPicker`.
+     - valor-posicional: el «+» de los segmentados de 2 × 2 toma el borde y el color del de `TextColorPicker` (hoy, borde `rgba(0, 0, 0, 0.08)` y color `--text-body`), y los segmentados, el hover `--action-secondary` de fracciones.
 
 ## Cómo trabajar aquí
 
