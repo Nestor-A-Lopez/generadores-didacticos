@@ -328,8 +328,8 @@ body {
 }
 /* El <svg> abarca la caja común de «123+−×÷» (749 unidades de glifosCM)
    más el contorno de la negrita (36): con 15.7px de alto, los dígitos miden
-   unos 13.3px, algo más que las mayúsculas de «Parte entera» (Poppins
-   14px: 9.84px), para que los signos se lean bien. */
+   unos 13.3px, algo más que las mayúsculas de las opciones de «¿Hasta qué
+   orden?» (Poppins 14px: 9.84px), para que los signos se lean bien. */
 .segOp button svg {
   display: block;
   height: 15.7px;
@@ -551,14 +551,6 @@ body {
   flex-direction: column;
   gap: var(--space-2);
   min-width: 0;
-}
-.ordenCampos {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-}
-.ordenCampos .field {
-  flex: 1 1 auto;
 }
 .barra .plegable {
   padding-top: var(--space-5);
@@ -953,8 +945,7 @@ body {
   .barra {
     padding: var(--space-4);
   }
-  .barraGrupo,
-  .ordenCampos .field {
+  .barraGrupo {
     flex: 1 1 100%;
   }
   .stage {
@@ -980,9 +971,10 @@ body {
   }
 }
 
-/* Con ancho de sobra, una línea separa los dos grupos de la barra. */
+/* Con ancho de sobra, una línea separa los grupos de la barra
+   (operación | orden | parte decimal). */
 @media (min-width: 1240px) {
-  .barraOrden {
+  .barraGrupo + .barraGrupo {
     padding-left: var(--space-5);
     border-left: 1px solid var(--border-subtle);
   }

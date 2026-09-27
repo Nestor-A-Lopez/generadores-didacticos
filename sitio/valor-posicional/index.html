@@ -58,10 +58,9 @@
           <div class="barraGrupo">
             <span class="eyebrow" id="opEyebrow">¿Qué quieres mostrar?</span>
             <div class="field">
-              <span class="fieldLabel" id="opLabel">La tabla muestra</span>
               <!-- Los signos se dibujan con los glifos de Computer Modern
                    (como en LaTeX): los pone el script. -->
-              <div class="seg segFill segOp" role="group" aria-labelledby="opLabel" data-for="operacion" data-animate></div>
+              <div class="seg segFill segOp" role="group" aria-labelledby="opEyebrow" data-for="operacion" data-animate></div>
               <select id="operacion" class="visuallyHidden" tabindex="-1" aria-hidden="true">
                 <option value="ninguna" data-glifos="123" selected>Solo números</option>
                 <option value="suma" data-glifos="+">Suma</option>
@@ -73,30 +72,30 @@
           </div>
 
           <div class="barraGrupo barraOrden">
-            <span class="eyebrow">¿Hasta qué orden?</span>
-            <div class="ordenCampos">
-              <div class="field">
-                <span class="fieldLabel" id="ordLabel">Parte entera</span>
-                <div class="seg segFill" role="group" aria-labelledby="ordLabel" data-for="hastaOrden" data-animate></div>
-                <select id="hastaOrden" class="visuallyHidden" tabindex="-1" aria-hidden="true">
-                  <option value="0" data-corto="U">Unidades</option>
-                  <option value="1" data-corto="DU">Decenas de unidad</option>
-                  <option value="2" data-corto="CU">Centenas de unidad</option>
-                  <option value="5" data-corto="CM" selected>Centenas de millar</option>
-                  <option value="8" data-corto="CMM">Centenas de millón</option>
-                  <option value="11" data-corto="CMMM">Centenas de millar de millón</option>
-                </select>
-              </div>
-              <div class="field">
-                <span class="fieldLabel" id="decLabel">Parte decimal</span>
-                <div class="seg segFill" role="group" aria-labelledby="decLabel" data-for="hastaOrdenDecimal" data-animate></div>
-                <select id="hastaOrdenDecimal" class="visuallyHidden" tabindex="-1" aria-hidden="true">
-                  <option value="0" selected>Sin decimales</option>
-                  <option value="-1" data-corto="Déc">Décimos</option>
-                  <option value="-2" data-corto="Cen">Centésimos</option>
-                  <option value="-3" data-corto="Mil">Milésimos</option>
-                </select>
-              </div>
+            <span class="eyebrow" id="ordEyebrow">¿Hasta qué orden?</span>
+            <div class="field">
+              <div class="seg segFill" role="group" aria-labelledby="ordEyebrow" data-for="hastaOrden" data-animate></div>
+              <select id="hastaOrden" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+                <option value="0" data-corto="U">Unidades</option>
+                <option value="1" data-corto="DU">Decenas de unidad</option>
+                <option value="2" data-corto="CU">Centenas de unidad</option>
+                <option value="5" data-corto="CM" selected>Centenas de millar</option>
+                <option value="8" data-corto="CMM">Centenas de millón</option>
+                <option value="11" data-corto="CMMM">Centenas de millar de millón</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="barraGrupo barraDecimal">
+            <span class="eyebrow" id="decEyebrow">¿Con parte decimal?</span>
+            <div class="field">
+              <div class="seg segFill" role="group" aria-labelledby="decEyebrow" data-for="hastaOrdenDecimal" data-animate></div>
+              <select id="hastaOrdenDecimal" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+                <option value="0" selected>Sin decimales</option>
+                <option value="-1" data-corto="Déc">Décimos</option>
+                <option value="-2" data-corto="Cen">Centésimos</option>
+                <option value="-3" data-corto="Mil">Milésimos</option>
+              </select>
             </div>
           </div>
         </div>
