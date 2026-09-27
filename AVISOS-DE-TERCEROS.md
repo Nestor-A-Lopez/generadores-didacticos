@@ -62,7 +62,7 @@ E-Mail: bakoma@mail.ru
 - **De dónde viene:** [Lucide](https://lucide.dev/) 0.544.0. Algunos vienen de [Feather](https://feathericons.com/), del que deriva Lucide.
 - **Dónde está:** incrustados como `<svg>` en el HTML, para que funcionen sin red:
   - `sitio/index.html` (portada): los iconos de las tarjetas y la flecha de «Abrir generador».
-  - `sitio/fracciones/index.html`: gráfica de pastel (`chart-pie`, en la cabecera y como ícono de la pestaña) y descargar.
+  - `sitio/fracciones/index.html`: gráfica de pastel (`chart-pie`, en la cabecera y como ícono de la pestaña), descargar, rectángulo (`rectangle-horizontal`, en el selector de forma), palomita (`check`), más (`plus`), flecha hacia abajo (`chevron-down`), alerta (`circle-alert`) y triángulo de alerta (`triangle-alert`). El círculo y el triángulo del selector de forma son trazos propios.
   - `sitio/recta-numerica/index.html`: flechas a los lados (`move-horizontal`, en la cabecera y como ícono de la pestaña) y descargar.
   - `sitio/estrategias/index.html`: foco (`lightbulb`, en la cabecera y como ícono de la pestaña), descargar, más y menos.
   - `sitio/tabla-valor-posicional/index.html`: tabla (`table-2`, en la cabecera y como ícono de la pestaña).

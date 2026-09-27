@@ -1336,46 +1336,220 @@ document
   });
 });
 
-// ---------------------------------------------------------------
-// Controles visuales del diseño (botones de forma, muestras de color,
-// panel plegable de etiquetas). Son solo una "fachada": el estado real
-// sigue viviendo en los <select> ocultos #forma y #color, que es lo
-// que lee todo el script. Al hacer clic se cambia el valor del select
-// y se dispara "change", así que el flujo de render() no cambia.
-// ---------------------------------------------------------------
+// ============================================================
+//  Interfaz (diseño «Generador fracciones» de Vesta)
+// ============================================================
+// Los segmentados, las muestras y los menús son solo una "fachada": el
+// estado real sigue viviendo en los controles que lee todo el script
+// (#forma, #color, #labelMode, #colorValorParte, #colorValorTotal…). Al
+// hacer clic se cambia su valor y se dispara "change", así que el flujo
+// de render() no cambia. syncDesignControls() —llamada desde
+// updateVisibility() en cada render— pone la fachada al día.
 function syncDesignControls(forma, colorSel) {
-  document.querySelectorAll(".formaBtn").forEach((b) => {
-    b.setAttribute("aria-pressed", String(b.dataset.forma === forma));
+  // Los avisos de «Denominador» y «Ancho total» solo valen con su forma
+  // (style.css los muestra según data-forma).
+  document.querySelector(".page").dataset.forma = forma;
+  setDescribedBy("denominador", "denominadorTip", forma === "triangulo");
+  setDescribedBy("ancho", "anchoTip", forma === "rectangulo");
+  // «Ancho total» se queda en pantalla, sin ancho, mientras sale (ver
+  // style.css): fuera del orden de tabulación con inert.
+  document.getElementById("anchoField").inert = forma !== "rectangulo";
+
+  syncSegmented("forma");
+  syncSegmented("labelMode");
+  syncSwatches(colorSel);
+  document.getElementById("colorPersonalizadoHex").textContent = document
+    .getElementById("colorPersonalizado")
+    .value.toUpperCase();
+  document.querySelectorAll(".colorPick[data-for]").forEach(syncColorPick);
+  syncManual();
+}
+
+function setDescribedBy(inputId, tipId, activo) {
+  const input = document.getElementById(inputId);
+  if (activo) input.setAttribute("aria-describedby", tipId);
+  else input.removeAttribute("aria-describedby");
+}
+
+// ---- Segmentados: fachada de los <select> ocultos (como numeros-dienes) ----
+// Cada .seg[data-for=id] maneja el <select id=id>. Si el select cambia por
+// otro lado, syncSegmented pone los botones al día.
+function syncSegmented(id) {
+  const select = document.getElementById(id);
+  const seg = document.querySelector(`.seg[data-for="${id}"]`);
+  if (!seg) return;
+  seg.querySelectorAll("button").forEach((b) => {
+    b.setAttribute("aria-pressed", String(b.dataset.value === select.value));
   });
+  placeIndicator(seg);
+}
+
+// Con data-animate, la píldora se mueve a la opción elegida. Se mide con
+// offsetLeft/Top porque .seg es su offsetParent (position: relative).
+function placeIndicator(seg) {
+  const ind = seg.querySelector(".segInd");
+  if (!ind) return;
+  const b = seg.querySelector('button[aria-pressed="true"]');
+  if (!b) return;
+  ind.style.left = b.offsetLeft + "px";
+  ind.style.top = b.offsetTop + "px";
+  ind.style.width = b.offsetWidth + "px";
+  ind.style.height = b.offsetHeight + "px";
+}
+
+document.querySelectorAll(".seg[data-for]").forEach((seg) => {
+  const select = document.getElementById(seg.dataset.for);
+  if (seg.hasAttribute("data-animate")) {
+    const ind = document.createElement("span");
+    ind.className = "segInd";
+    ind.setAttribute("aria-hidden", "true");
+    seg.prepend(ind);
+    // Al cambiar de distribución, o al abrirse su menú, los botones
+    // cambian de tamaño.
+    if (window.ResizeObserver) new ResizeObserver(() => placeIndicator(seg)).observe(seg);
+    // Sin transición en la primera colocación, para que no entre deslizándose.
+    requestAnimationFrame(() => {
+      placeIndicator(seg);
+      requestAnimationFrame(() => ind.classList.add("is-ready"));
+    });
+  }
+  seg.querySelectorAll("button").forEach((b) => {
+    b.addEventListener("click", () => {
+      if (select.value === b.dataset.value) return;
+      select.value = b.dataset.value;
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+  });
+});
+
+// ---- Color de las partes: muestras que manejan el <select id="color"> ----
+// Un solo anillo (.swatchRing) se desliza a la muestra elegida. «＋» toma
+// el color personalizado mientras está elegido.
+function syncSwatches(colorSel) {
   document.querySelectorAll(".swatch").forEach((b) => {
     b.setAttribute("aria-pressed", String(b.dataset.color === colorSel));
   });
+  const custom = document.querySelector('.swatch[data-color="personalizado"]');
+  custom.style.background =
+    colorSel === "personalizado"
+      ? document.getElementById("colorPersonalizado").value
+      : "";
+  placeRing();
 }
 
-function setSelectValue(id, value) {
-  const sel = document.getElementById(id);
-  if (sel.value === value) return;
-  sel.value = value;
-  sel.dispatchEvent(new Event("change"));
+function placeRing() {
+  const ring = document.querySelector(".swatchRing");
+  const b = document.querySelector('.swatch[aria-pressed="true"]');
+  if (!b) return;
+  ring.style.transform = `translate(${b.offsetLeft}px, ${b.offsetTop}px)`;
 }
 
-document.querySelectorAll(".formaBtn").forEach((b) => {
-  b.addEventListener("click", () => setSelectValue("forma", b.dataset.forma));
-});
 document.querySelectorAll(".swatch").forEach((b) => {
-  b.addEventListener("click", () => setSelectValue("color", b.dataset.color));
+  b.addEventListener("click", () => {
+    const select = document.getElementById("color");
+    if (select.value === b.dataset.color) return;
+    select.value = b.dataset.color;
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+});
+(function () {
+  const swatches = document.querySelector(".swatches");
+  // Las muestras pasan a otra fila según el ancho: el anillo las sigue.
+  if (window.ResizeObserver) new ResizeObserver(placeRing).observe(swatches);
+  requestAnimationFrame(() => {
+    placeRing();
+    requestAnimationFrame(() =>
+      document.querySelector(".swatchRing").classList.add("is-ready"),
+    );
+  });
+})();
+
+// ---- Color del número de cada parte y de la llave ----
+// Las dos muestras fijas copian su color en el <input type="color"> (el que
+// lee el script) y avisan con "input" y "change". «+» es ese mismo input:
+// con un color que no es de las muestras, lo muestra y lleva el anillo.
+function syncColorPick(grupo) {
+  const input = document.getElementById(grupo.dataset.for);
+  const valor = input.value.toLowerCase();
+  let esFijo = false;
+  grupo.querySelectorAll(".colorPickSwatch").forEach((b) => {
+    const elegido = b.dataset.valor === valor;
+    if (elegido) esFijo = true;
+    b.setAttribute("aria-pressed", String(elegido));
+  });
+  const mas = grupo.querySelector(".colorPickMas");
+  mas.classList.toggle("is-selected", !esFijo);
+  mas.style.background = esFijo ? "" : valor;
+}
+
+document.querySelectorAll(".colorPick[data-for]").forEach((grupo) => {
+  const input = document.getElementById(grupo.dataset.for);
+  grupo.querySelectorAll(".colorPickSwatch").forEach((b) => {
+    b.addEventListener("click", () => {
+      if (input.value.toLowerCase() === b.dataset.valor) return;
+      input.value = b.dataset.valor;
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+  });
 });
 
-// Panel plegable: cerrado, sus controles quedan "inert" (fuera del
-// orden de tabulación) pero siguen en el DOM, porque el script los lee
-// siempre. Las etiquetas activas se siguen dibujando con el panel
-// cerrado; la insignia "Activas" lo indica.
+// ---- «Personalizado» y «Mismo valor» ----
+// El panel de campos por parte se despliega con «Personalizado» (y la
+// etiqueta de cada parte activa). «Mismo valor» es solo de la interfaz:
+// escribe #valorTodasPartes en customLabels para todas las partes, así el
+// SVG es el mismo que si se escribiera parte por parte. Se hace aquí, antes
+// de que rebuildManualPanel recorte customLabels al numerador, y con el
+// tope de 300 campos que usa rebuildManualPanel.
+function syncManual() {
+  const abierto =
+    document.getElementById("showPartLabels").checked &&
+    document.getElementById("labelMode").value === "manual";
+  const menu = document.getElementById("manualMenu");
+  menu.classList.toggle("is-open", abierto);
+  menu.inert = !abierto;
+
+  const mismo = document.getElementById("mismoValorTodas").checked;
+  document.getElementById("manualBox").classList.toggle("is-same", mismo);
+  const n = Math.max(
+    0,
+    Math.min(parseInt(document.getElementById("numerador").value, 10) || 0, 300),
+  );
+  document.getElementById("valorTodasPartesPrefijo").textContent =
+    n === 1 ? "La parte" : `Las ${n} partes`;
+  if (mismo) {
+    const v = document.getElementById("valorTodasPartes").value;
+    customLabels.length = 0;
+    for (let i = 0; i < 300; i++) customLabels.push(v);
+  }
+}
+
+document.getElementById("mismoValorTodas").addEventListener("change", (e) => {
+  const todas = document.getElementById("valorTodasPartes");
+  // Al activarlo, arranca con lo que ya tenía la primera parte.
+  if (e.target.checked && todas.value === "") todas.value = customLabels[0] || "";
+  render();
+});
+document.getElementById("valorTodasPartes").addEventListener("input", render);
+
+// ---- Sección plegable «Etiquetas numéricas» (como numeros-dienes) ----
+// .is-settled llega cuando termina de abrirse: hasta entonces el contenido
+// se recorta (para la animación); después se dejan ver los tooltips.
+// Cerrada, sus controles quedan inert (fuera del orden de tabulación) pero
+// siguen en el DOM, porque el script los lee siempre. Las etiquetas activas
+// se siguen dibujando con el panel cerrado.
+let etiquetasTimer = null;
 function setEtiquetasExpanded(open) {
-  document.getElementById("etiquetasBody").classList.toggle("open", open);
+  const seccion = document.getElementById("etiquetas");
+  clearTimeout(etiquetasTimer);
+  seccion.classList.toggle("is-open", open);
+  seccion.classList.remove("is-settled");
   document.getElementById("etiquetasInner").inert = !open;
+  document.getElementById("etiquetasBody").setAttribute("aria-hidden", String(!open));
   document
     .getElementById("etiquetasToggle")
     .setAttribute("aria-expanded", String(open));
+  if (open) etiquetasTimer = setTimeout(() => seccion.classList.add("is-settled"), 400);
 }
 document.getElementById("etiquetasToggle").addEventListener("click", () => {
   const open =
