@@ -14,5 +14,8 @@ temp/
 .claude/skills/vesta/uploads/
 .claude/skills/vesta/assets/reference-landing-mood.jpg
 
-# Configuración local de Claude Code
-.claude/settings.local.json
+# Configuración local de Claude Code (settings.local.json, launch.json…).
+# Se exceptúa skills/: ahí vive la copia local de Vesta, que sí va en el
+# repositorio, y los archivos nuevos que se bajen de claude.ai deben entrar.
+.claude/*
+!.claude/skills/
