@@ -195,6 +195,12 @@ En este orden, y preguntando antes de mover o borrar:
    - valor-posicional: «Agrupaciones» por debajo de 640 px y los interruptores de «¿Cómo se ve el resultado?» (hoy van pegados, sin solapar: 18 px entre pistas). Lo natural es mover la regla a `.switches` (o `.switch + .switch`) para todo el generador.
    - numeros-dienes («¿Cuál es la cantidad?») y estrategias: revisar qué interruptores quedan seguidos (en numeros-dienes, «Mostrar valor» y «Mostrar descomposición» solo lo son cuando la opción de en medio está oculta) y medir su separación actual; en estrategias el interruptor es otro componente (`.switch input` con `::after`), así que la cuenta de los 9 px se rehace con su pista.
    - Si se vuelve regla de Vesta, subirla al sistema de diseño (con `/design-sync`) y no solo al CSS de cada generador.
+3. **Retirar «Tabla de valor posicional» (`sitio/tabla-valor-posicional/`) y «Operaciones en la tabla» (`sitio/operaciones/`)** (decisión del usuario, 2026-09-27): los dos roles ya los cumple «Tabla de valor posicional y operaciones» (`sitio/valor-posicional/`). Al hacerlo, preguntando antes de borrar:
+   - Pasar al `CLAUDE.md` de valor-posicional lo que hoy explican los `CLAUDE.md` de los dos viejos y que remite a ellos (el porqué de los bordes, el agrupamiento y la tipografía), antes de borrarlos.
+   - Quitar sus dos tarjetas de la portada (`sitio/index.html`) y actualizar el «Mapa de carpetas», «Quién carga qué» y «Nombres de archivo de los SVG» de este archivo.
+   - `herramientas/verificar-svg.js`: quitar las rutas y los casos `tabla/…` y `operaciones/…`, y sus líneas de `verificar-svg-referencia.txt` (los de `valor-posicional` siguen; los 7 primeros garantizan que la salida es la de la tabla). Actualizar el número de casos donde se menciona.
+   - Revisar las menciones en `sitio/compartido/glifos-tabla.js` (cabecera), `AVISOS-DE-TERCEROS.md` (iconos `table-2` y `calculator` de los dos `index.html`) y los comentarios de `sitio/valor-posicional/script.js`. La página de licencia no enumera iconos por archivo, así que no cambia.
+   - Los SVG ya generados en `_recursos/figuras/tabla-valor-posicional/` y `figuras/operaciones/` no se tocan sin preguntar. Las URL publicadas `…/tabla-valor-posicional/` y `…/operaciones/` dejarán de existir: decidir si se deja una página que redirija a `…/valor-posicional/`.
 
 ## Cómo trabajar aquí
 
