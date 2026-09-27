@@ -1223,9 +1223,9 @@ function buildSVG() {
 function renderShapeOnly() {
   const svg = buildSVG();
   const holder = document.getElementById("svgHolder");
-  if (svg) {
-    holder.innerHTML = svg;
-  }
+  // Con error (svg null) se vacía la vista previa: dejar la figura anterior
+  // hacía pensar que era la de los valores con error.
+  holder.innerHTML = svg || "";
 }
 
 // Genera los campos de texto para las etiquetas manuales (uno por

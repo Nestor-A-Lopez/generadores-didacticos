@@ -34,7 +34,7 @@ Todo el código vive en `script.js`; de `../compartido/` toma los glifos (`glifo
 
 ## 2. Numerador, denominador y validaciones
 
-- `#numerador` (≥0) y `#denominador` (≥1), enteros; `#ancho` (rectángulo) debe ser > 0. Errores bloqueantes se muestran en `#err`. `#err`/`#warn` son el aviso completo (contenedor con título fijo, que el script muestra/oculta con `style.display`); el texto del mensaje se escribe en su `<span>` interno `#errMsg`/`#warnMsg` — nunca asignar `textContent` directamente a `#err`/`#warn`, porque borraría el título.
+- `#numerador` (≥0) y `#denominador` (≥1), enteros; `#ancho` (rectángulo) debe ser > 0. Errores bloqueantes se muestran en `#err`. `#err`/`#warn` son el aviso completo (contenedor con título fijo, que el script muestra/oculta con `style.display`); el texto del mensaje se escribe en su `<span>` interno `#errMsg`/`#warnMsg` — nunca asignar `textContent` directamente a `#err`/`#warn`, porque borraría el título. Con error, `renderShapeOnly` vacía `#svgHolder` (desde el 2026-09-27; antes se quedaba la figura anterior y parecía la de los valores con error).
 - Warnings no bloqueantes (`#warn`): numerador > denominador (se colorean todas las partes), o denominador de triángulo no es cuadrado perfecto.
 
 ## 3. Color de las partes y de los márgenes
