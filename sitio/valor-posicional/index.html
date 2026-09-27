@@ -167,14 +167,45 @@
                     </div>
                   </div>
                 </div>
-                <!-- Cifras en negro o con el color de la celda de su orden. -->
-                <div class="field colorNumeros">
-                  <span class="fieldLabel" id="colorNumerosLabel">Color de los números</span>
-                  <div class="seg segFill" role="group" aria-labelledby="colorNumerosLabel" data-for="colorNumeros" data-animate></div>
-                  <select id="colorNumeros" class="visuallyHidden" tabindex="-1" aria-hidden="true">
-                    <option value="negro" selected>Negro</option>
-                    <option value="color">Color</option>
-                  </select>
+                <!-- Los dos colores de las cifras, uno al lado del otro. -->
+                <div class="colorCifras">
+                  <!-- Segmentados en cuadrícula de 2×2: arriba, la 1.ª opción y
+                       «Personalizado»; abajo, la 2.ª opción y el bloque «+»
+                       (.segExtra) que abre el selector del color propio. -->
+                  <!-- Cifras en negro, con el color de la celda de su orden o
+                       en un color propio. -->
+                  <div class="field">
+                    <span class="fieldLabel" id="colorNumerosLabel">Color de los números</span>
+                    <div class="seg segGrid" role="group" aria-labelledby="colorNumerosLabel" data-for="colorNumeros" data-animate>
+                      <span class="segExtra swatchWrap">
+                        <button type="button" class="swatch swatchPropio swatchSeg" data-propio-de="colorNumeros"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+                        <input type="color" class="visuallyHidden" tabindex="-1" aria-hidden="true" id="colorNumerosPropio" value="#000000" />
+                        <span class="swatchTip" role="tooltip"></span>
+                      </span>
+                    </div>
+                    <select id="colorNumeros" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+                      <option value="negro" selected>Negro</option>
+                      <option value="color">Color</option>
+                      <option value="personalizado">Personalizado</option>
+                    </select>
+                  </div>
+                  <!-- Comas, apóstrofes y punto decimal: rojos (como siempre),
+                       negros o en un color propio. -->
+                  <div class="field">
+                    <span class="fieldLabel" id="colorSeparadoresLabel">Color de las comas y punto</span>
+                    <div class="seg segGrid" role="group" aria-labelledby="colorSeparadoresLabel" data-for="colorSeparadores" data-animate>
+                      <span class="segExtra swatchWrap">
+                        <button type="button" class="swatch swatchPropio swatchSeg" data-propio-de="colorSeparadores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+                        <input type="color" class="visuallyHidden" tabindex="-1" aria-hidden="true" id="colorSeparadoresPropio" value="#cc2027" />
+                        <span class="swatchTip" role="tooltip"></span>
+                      </span>
+                    </div>
+                    <select id="colorSeparadores" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+                      <option value="rojo" selected>Rojo</option>
+                      <option value="negro">Negro</option>
+                      <option value="personalizado">Personalizado</option>
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>

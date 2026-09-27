@@ -675,7 +675,19 @@ function dibujarTabla(filas, cfg, opts) {
   // de la celda de su orden. Sin cfg.colorCeldas, los del material.
   const colorCelda = (key) => (cfg.colorCeldas || COLORS)[key];
   const colorCifra = (pow) =>
-    cfg.colorNumeros === "color" ? colorCelda(ORDER_BY_POW[pow].colorKey) : digitColor;
+    cfg.colorNumeros === "color"
+      ? colorCelda(ORDER_BY_POW[pow].colorKey)
+      : cfg.colorNumeros === "personalizado"
+        ? cfg.colorNumerosPropio
+        : digitColor;
+  // Comas, apóstrofes y punto: rojos (COLORS.C, como siempre), negros o
+  // en un color propio.
+  const colorSeparador =
+    cfg.colorSeparadores === "negro"
+      ? digitColor
+      : cfg.colorSeparadores === "personalizado"
+        ? cfg.colorSeparadoresPropio
+        : COLORS.C;
   const s = SCALE;
   const leftPad = opts.leftPad || 0;
   const separadorDesde = opts.separadorDesde || 1;
@@ -828,14 +840,14 @@ function dibujarTabla(filas, cfg, opts) {
         const x = leftPad + colW * (maxPow - boundaryPow + 1);
         const esFronteraDePeriodo = hayDecimal ? boundaryPow % 6 === 0 : k % 2 === 0;
         const simbolo = esFronteraDePeriodo ? "'" : ",";
-        svgNumbers += glyphRunClamped(simbolo, GLYPH_DATA.bold, x, digitCY, fComma, DIGIT_REF, COLORS.C, leftPad, totalW);
+        svgNumbers += glyphRunClamped(simbolo, GLYPH_DATA.bold, x, digitCY, fComma, DIGIT_REF, colorSeparador, leftPad, totalW);
       }
     }
 
     // ---- Punto decimal: justo a la derecha de la columna `nivel` ----
     if (row.showPunto && hayDecimal) {
       const px = leftPad + colW * (maxPow - nivel + 1);
-      svgNumbers += glyphRunClamped(".", GLYPH_DATA.bold, px, digitCY, fPoint, DIGIT_REF, COLORS.C, leftPad, totalW);
+      svgNumbers += glyphRunClamped(".", GLYPH_DATA.bold, px, digitCY, fPoint, DIGIT_REF, colorSeparador, leftPad, totalW);
     }
 
     if (row.sign) {
@@ -865,7 +877,9 @@ function dibujarTabla(filas, cfg, opts) {
 // buildSVG (pura) y nombre de archivo
 // =====================================================================
 // cfg = { op, datos, maxPow, minPow, showClase, showPeriodos, digitColor,
-//         colorCeldas: { U, D, C }, colorNumeros: "negro" | "color",
+//         colorCeldas: { U, D, C },
+//         colorNumeros: "negro" | "color" | "personalizado", colorNumerosPropio,
+//         colorSeparadores: "rojo" | "negro" | "personalizado", colorSeparadoresPropio,
 //         resultado: { mostrar, comas, punto, jerarquia, puntoProductos },
 //         division: { divisor, decimales } }
 function buildSVG(cfg) {
@@ -1208,6 +1222,9 @@ function leerConfig() {
     // tabla, según «Color de los números».
     digitColor: "#000000",
     colorNumeros: $("colorNumeros").value,
+    colorNumerosPropio: $("colorNumerosPropio").value,
+    colorSeparadores: $("colorSeparadores").value,
+    colorSeparadoresPropio: $("colorSeparadoresPropio").value,
     colorCeldas: { U: colorCeldaDe("U"), D: colorCeldaDe("D"), C: colorCeldaDe("C") },
     resultado: {
       mostrar: $("mostrarResultado").checked,
@@ -1264,6 +1281,7 @@ async function download() {
 // ---- Eventos ----
 [
   "colorNumeros",
+  "colorSeparadores",
   "mostrarClase",
   "mostrarPeriodos",
   "mostrarResultado",
@@ -1319,7 +1337,7 @@ function syncSegmented(id) {
   const seg = document.querySelector(`.seg[data-for="${id}"]`);
   if (!seg) return;
   seg.classList.toggle("is-disabled", select.disabled);
-  seg.querySelectorAll("button").forEach((b) => {
+  seg.querySelectorAll("button[data-value]").forEach((b) => {
     b.setAttribute("aria-pressed", String(b.dataset.value === select.value));
     b.disabled = select.disabled;
   });
@@ -1330,7 +1348,7 @@ function syncSegmented(id) {
 // porque .seg es su offsetParent (position: relative).
 function placeIndicator(seg) {
   const ind = seg.querySelector(".segInd");
-  const b = seg.querySelector('button[aria-pressed="true"]');
+  const b = seg.querySelector('button[data-value][aria-pressed="true"]');
   if (!ind || !b) return;
   ind.style.left = b.offsetLeft + "px";
   ind.style.top = b.offsetTop + "px";
@@ -1340,7 +1358,9 @@ function placeIndicator(seg) {
 
 function armarSegmentado(seg) {
   const select = $(seg.dataset.for);
-  seg.querySelectorAll("button").forEach((b) => b.remove());
+  seg.querySelectorAll("button[data-value]").forEach((b) => b.remove());
+  // En los de cuadrícula, el bloque «+» (.segExtra) queda al final.
+  const extra = seg.querySelector(".segExtra");
   for (const opt of select.options) {
     const b = document.createElement("button");
     b.type = "button";
@@ -1357,7 +1377,7 @@ function armarSegmentado(seg) {
       select.value = b.dataset.value;
       select.dispatchEvent(new Event("change", { bubbles: true }));
     });
-    seg.appendChild(b);
+    seg.insertBefore(b, extra);
   }
   syncSegmented(seg.dataset.for);
 }
@@ -1492,6 +1512,54 @@ document.querySelectorAll(".plegable").forEach((seccion) => {
     syncColor(celda);
   });
 })();
+
+// ---- «Personalizado» de «Color de los números» y «… de las comas y punto» ----
+// Bajo «Personalizado», un bloque «+» abre el selector de color; al elegir
+// uno, se selecciona «Personalizado» y el bloque toma ese color. Si se pulsa
+// «Personalizado» sin haber elegido color, también se abre el selector.
+document.querySelectorAll(".swatchSeg").forEach((boton) => {
+  const id = boton.dataset.propioDe;
+  const select = $(id);
+  const input = $(id + "Propio");
+  const tip = boton.parentElement.querySelector(".swatchTip");
+  let elegido = false;
+
+  const abrir = () => {
+    try {
+      if (input.showPicker) input.showPicker();
+      else input.click();
+    } catch (e) {
+      input.click();
+    }
+  };
+  const sync = () => {
+    boton.classList.toggle("tieneColor", elegido);
+    boton.classList.toggle("is-activo", select.value === "personalizado");
+    boton.style.background = elegido ? input.value : "";
+    const texto = elegido ? "Cambiar el color personalizado" : "Elegir un color personalizado";
+    boton.setAttribute("aria-label", texto);
+    tip.textContent = texto;
+  };
+  const elegir = () => {
+    elegido = true;
+    if (select.value !== "personalizado") {
+      select.value = "personalizado";
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    sync();
+    render();
+  };
+
+  boton.addEventListener("click", abrir);
+  // "input" llega mientras se mueve el selector; "change", al cerrarlo.
+  input.addEventListener("input", elegir);
+  input.addEventListener("change", elegir);
+  select.addEventListener("change", () => {
+    sync();
+    if (select.value === "personalizado" && !elegido) abrir();
+  });
+  sync();
+});
 
 renderForms();
 updateOpPanels();

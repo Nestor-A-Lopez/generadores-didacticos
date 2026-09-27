@@ -1,4 +1,4 @@
-// Verificación de la salida de los generadores: exporta 60 casos fijos
+// Verificación de la salida de los generadores: exporta 63 casos fijos
 // (de 6 a 14 por generador) y da, para cada uno, el nombre de archivo, el
 // tamaño y un hash SHA-256 del SVG. Sirve para comprobar que un cambio
 // que no debía tocar las figuras (mover archivos, reorganizar compartido/,
@@ -107,6 +107,9 @@ const CASOS = {
     "celdas-propias": [["set", "#celdaU", "#ffcc00"], ["set", "#celdaC", "#663399"], ["set", "#numerosList .numero-input@0", "9673"]],
     "numeros-color": [["set", "#colorNumeros", "color"], ["set", "#hastaOrdenDecimal", "-3"], ["set", "#numerosList .numero-input@0", "4521.378"]],
     "suma-color-celda": [["set", "#operacion", "suma"], ["set", "#hastaOrden", "2"], ["set", "#colorNumeros", "color"], ["set", "#celdaD", "#00aa88"]],
+    "separadores-negro": [["set", "#colorSeparadores", "negro"], ["set", "#hastaOrden", "8"], ["set", "#hastaOrdenDecimal", "-2"], ["set", "#numerosList .numero-input@0", "12345678.25"]],
+    "numeros-personalizado": [["set", "#colorNumerosPropio", "#336699"], ["set", "#hastaOrdenDecimal", "-2"], ["set", "#numerosList .numero-input@0", "4521.37"]],
+    "separadores-personalizado": [["set", "#colorSeparadoresPropio", "#7a3db8"], ["set", "#hastaOrden", "8"], ["set", "#hastaOrdenDecimal", "-2"], ["set", "#numerosList .numero-input@0", "12345678.25"]],
   },
 };
 

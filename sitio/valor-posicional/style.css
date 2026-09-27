@@ -558,13 +558,67 @@ body {
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
-  gap: var(--space-6) var(--space-10);
+  gap: var(--space-6);
 }
 .tablaOpciones .field {
   flex: 0 1 auto;
 }
-.tablaOpciones .colorNumeros {
-  flex: 0 1 320px;
+/* «Color de los números» y, a su lado, «Color de las comas y punto»: juntos
+   son la tercera columna de la fila. Si no caben lado a lado, el segundo
+   baja debajo del primero. */
+.colorCifras {
+  flex: 1 1 536px;
+  max-width: 600px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.tablaOpciones .colorCifras .field {
+  flex: 1 1 260px;
+}
+/* Segmentado en cuadrícula de 2×2 («Color de los números», «… de las comas
+   y punto»): se llena por columnas, así queda la 1.ª opción arriba y la 2.ª
+   debajo; «Personalizado» arriba a la derecha y, debajo, el bloque «+». */
+.seg.segGrid {
+  display: grid;
+  grid-template-rows: auto auto;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+}
+.segExtra {
+  justify-self: center;
+  align-self: center;
+}
+/* El aviso del bloque «+» se alinea a su derecha para no salirse. */
+.segExtra .swatchTip {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+/* Más específico que «.seg button», para que el bloque conserve su aspecto. */
+.seg .swatch.swatchSeg {
+  width: 40px;
+  min-height: 0;
+  height: 40px;
+  padding: 0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius-sm);
+  background: var(--neutral-100);
+  color: var(--text-body);
+}
+.seg .swatch.swatchSeg:hover {
+  background: var(--neutral-200);
+}
+.seg.segGrid button[data-value] {
+  padding: 8px 10px;
+}
+/* «Personalizado» elegido: el bloque lleva el mismo anillo que los de
+   «Color de las jerarquías». */
+.swatch.is-activo {
+  box-shadow:
+    0 0 0 2px var(--neutral-0),
+    0 0 0 4px var(--action-primary);
 }
 
 /* ---- «Color de las jerarquías» (como «Color de los bloques» de
@@ -581,7 +635,7 @@ body {
   flex-direction: column;
   align-items: center;
   gap: var(--space-2);
-  padding: 0 var(--space-5);
+  padding: 0 var(--space-3);
   border-left: 1px solid var(--border-subtle);
 }
 .colorPieza:first-child {
@@ -600,8 +654,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   padding: 0;
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: var(--radius-sm);
@@ -636,8 +690,8 @@ body {
   background: var(--neutral-200);
 }
 .swatchPropio svg {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
 }
 /* Con color propio, el bloque toma ese color (lo pone el script) y
    pierde el «+». */
@@ -675,7 +729,7 @@ body {
   pointer-events: none;
 }
 .colorPieza:first-child .swatchTip {
-  left: -56px;
+  left: -48px;
   transform: none;
 }
 .colorPieza:last-child .swatchTip {
@@ -887,9 +941,10 @@ body {
   .seg button {
     padding: 8px 10px;
   }
-  .tablaOpciones .field,
-  .tablaOpciones .colorNumeros {
+  .tablaOpciones > .field,
+  .colorCifras {
     flex: 1 1 100%;
+    max-width: none;
   }
   /* Las tres celdas de color ocupan el ancho por partes iguales. */
   .colores {
@@ -899,10 +954,6 @@ body {
   .colorPieza,
   .colorPieza:first-child {
     padding: 0 var(--space-2);
-  }
-  .swatch {
-    width: 40px;
-    height: 40px;
   }
 }
 

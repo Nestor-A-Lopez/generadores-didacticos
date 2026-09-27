@@ -58,3 +58,6 @@ valor-posicional/resta-dec-cero: S-5.4-2.35.SVG 36469 53286d41f6039ad8
 valor-posicional/celdas-propias: U-9-673.svg 29527 d108242866a95076
 valor-posicional/numeros-color: U-4-521.378.svg 47080 5aa024f8a51c79a2
 valor-posicional/suma-color-celda: A-436-523.SVG 21578 7b755350d267f13e
+valor-posicional/separadores-negro: U-12-345-678.25.svg 76955 75c0bcdf6463a233
+valor-posicional/numeros-personalizado: U-4-521.37.svg 44863 7e95941f72e7fbb0
+valor-posicional/separadores-personalizado: U-12-345-678.25.svg 76955 2525cb80f1e268b3
