@@ -711,6 +711,14 @@ body {
 .subOpcion.is-hidden {
   display: none;
 }
+/* Interruptores contiguos (regla del repo): «Mostrar valor» y «Mostrar
+   descomposición» solo quedan seguidos cuando la opción de en medio está
+   oculta; entonces el segundo sube 9px para que entre pista y pista (26px,
+   centrada en su fila de 44px) queden 9px. */
+.switch + .switch,
+.subOpcion.is-hidden + .switch {
+  margin-top: -9px;
+}
 .plegable {
   flex: 1 1 100%;
 }
