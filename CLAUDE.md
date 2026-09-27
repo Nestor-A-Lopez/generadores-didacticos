@@ -16,14 +16,15 @@ AVISOS-DE-TERCEROS.md           ← material de terceros: qué es, de dónde vie
 .claude/skills/vesta/           ← sistema de diseño Vesta (copia local, como skill)
 herramientas/                   ← no se publican
 ├── extraer_glifos.py           ← regenera sitio/compartido/glifos.js
-└── verificar-svg.html/.js      ← comprueba que el SVG exportado no cambió (43 casos)
+└── verificar-svg.html/.js      ← comprueba que el SVG exportado no cambió (57 casos)
 sitio/                          ← lo único que se publica
 ├── index.html  style.css       ← portada
 ├── licencia/index.html         ← «Licencia y avisos» (usa ../style.css)
 ├── compartido/
 ├── fracciones/  numeros-dienes/  estrategias/  recta-numerica/
 ├── tabla-valor-posicional/
-└── operaciones/
+├── operaciones/
+└── valor-posicional/          ← une los dos anteriores (en desarrollo)
 ```
 
 Los SVG generados **no** viven en el repositorio: se guardan en `_recursos/figuras/`, al lado de él (ver «Nombres de archivo de los SVG»).
@@ -60,7 +61,7 @@ compartido/
 ├── cabecera.css     ← .headerMarca + .icono: el ícono de la tarjeta de la portada a la izquierda del título
 ├── glifos.js        ← Banco.GLYPH_DATA: juego completo de Computer Modern (lo escribe herramientas/extraer_glifos.py)
 ├── texto-svg.js     ← Banco.glyphRunSvg(text, x, y, fontSize, fill, glyphFor?): texto como un <path> por carácter, con glifos.js
-├── glifos-tabla.js  ← Banco.GLYPH_DATA_TABLA: glifos de las tablas, en su propio formato {upm, regular, bold}
+├── glifos-tabla.js  ← Banco.GLYPH_DATA_TABLA: glifos de las tablas, en su propio formato {upm, regular, bold} (R, t y «:» solo los usa valor-posicional)
 └── guardar-svg.js   ← Banco.guardarSVG(svg, filename): showSaveFilePicker (recuerda la carpeta) + respaldo <a download>
 ```
 
@@ -69,7 +70,7 @@ Quién carga qué:
 | Generador | `vesta.css` + `cabecera.css` | `glifos.js` + `texto-svg.js` | `glifos-tabla.js` | `guardar-svg.js` |
 | --- | --- | --- | --- | --- |
 | fracciones, estrategias, recta-numerica | sí | sí | — | sí |
-| tabla de valor posicional, operaciones | sí | — | sí | sí |
+| tabla de valor posicional, operaciones, valor-posicional | sí | — | sí | sí |
 | numeros-dienes | sí | sí (solo para el valor y la descomposición de la vista previa) | — | sí |
 
 - Cada `index.html` los carga **antes** que los suyos, con rutas relativas: `<link rel="stylesheet" href="../compartido/vesta.css" />` y `cabecera.css` (en ese orden, porque usa sus tokens) antes de `style.css`, y los `<script src="../compartido/…" defer></script>` antes de `script.js`. Todos los generadores están al mismo nivel dentro de `sitio/`, así que la ruta es siempre `../compartido/` (la portada, que está en `sitio/`, usa `compartido/`).
@@ -95,11 +96,12 @@ Todo lo publicable está en `sitio/`. Cada carpeta de generador tiene `index.htm
 | `sitio/fracciones/` | Fracciones: círculo, rectángulo, triángulo | su `CLAUDE.md` |
 | `sitio/tabla-valor-posicional/` | Tabla de valor posicional | su `CLAUDE.md` |
 | `sitio/operaciones/` | Operaciones en la tabla: suma, resta, multiplicación, división | su `CLAUDE.md` |
+| `sitio/valor-posicional/` | Tabla de valor posicional y operaciones: une los dos anteriores (rama `unificar-tabla-operaciones`, 2026-09-26). Con «Ninguna» da el mismo SVG que la tabla; con una operación, el de operaciones con las medidas de la tabla. Ya tiene tarjeta en la portada (ícono Lucide `sheet`); los dos generadores viejos siguen publicados hasta que se decida retirarlos | su `CLAUDE.md` |
 | `sitio/numeros-dienes/` | Números con bloques Dienes (material base 10): unidades, decenas, centenas. Se llamó «Números con material» y estaba en `numeros-material/` hasta el 2026-09-26. Interfaz responsiva (diseño «Pantalla base 10» de Vesta, 2026-09-26): panel lateral (propuesta 1b) desde 1024 px y filas (1a) por debajo; los segmentados son fachada de `<select>` ocultos. El cuadrito mide siempre 20 (`L_CUADRITO`; el tamaño se ajusta en PowerPoint) y el número va de 1 a 999 (`NUM_MIN`, `NUM_MAX`): con 0 no hay material y con 999 cada cifra es una pieza. Con «2 filas» (`#filasCentenas`, bajo «Las centenas se acomodan como»; por defecto «1 fila») y 2 o más centenas, las centenas van en dos filas (la de abajo se llena primero), reducidas para que las dos filas, con su separación, midan lo mismo que una decena. Bajo la figura, solo en la vista previa y con glifos de Computer Modern (sección plegable «¿Cuál es la cantidad?», después de «¿Cómo se ve cada pieza?»): «Mostrar valor» y «Mostrar descomposición» (`#mostrarDesglose`, en valor en unidades o en jerarquía C D U), cada uno en «Negro» (por defecto) o «Color» (el de cada pieza); con los dos, la descomposición y luego el valor: «200 + 30 + 6 = 236». «Color de los bloques» cambia el relleno de cada pieza | — |
 | `sitio/estrategias/` | Completar la decena en suma y resta; en la resta, pestaña «Distancia entre dos números» (recta numérica + material + ecuación) | — |
 | `sitio/recta-numerica/` | Recta numérica: extremos, paso y separación entre marcas | — |
 | `sitio/compartido/` | Tokens, glifos y guardado que usan varios generadores; ver «Carpeta compartida» | — |
-| `herramientas/` | `extraer_glifos.py` (regenera `sitio/compartido/glifos.js`) y `verificar-svg.html` (43 casos de exportación con su hash; `verificar-svg-referencia.txt` es la corrida del 2026-09-26) | — |
+| `herramientas/` | `extraer_glifos.py` (regenera `sitio/compartido/glifos.js`) y `verificar-svg.html` (57 casos de exportación con su hash; `verificar-svg-referencia.txt` es la corrida del 2026-09-26) | — |
 | `.claude/skills/vesta/` | Sistema de diseño **Vesta** (no es un generador; ver abajo) | `SKILL.md`, `readme.md` |
 
 Antes, cada generador era un solo `.html` con prefijo `_` (para que quedara arriba de la lista de SVG en el explorador); ahora todos se llaman `index.html`. Hasta el 2026-09-26 los generadores estaban en la raíz (las tablas, en `tabla-valor-posicional/tabla-valor-posicional/` y `tabla-valor-posicional/operaciones/`), el script de glifos en `fracciones/_extraer_glifos.py` y Vesta en `fracciones/_desing-system-vesta/`. Los nombres viejos siguen en el historial de git (`git log --follow`).
@@ -125,6 +127,7 @@ Se movieron ahí el 2026-09-26 (439 archivos); ese mismo día `numeros-material/
 | Fracciones | `[numerador]-[denominador]-[color].svg`, en la subcarpeta de la forma (`circulo/`, `rectangulo/`, `triangulo/`) | `3-4-verde.svg`, `0-6-azul.svg` |
 | Tabla de valor posicional | `[Orden]-[Número].svg`; millares separados con `-`, punto decimal tal cual; varios números unidos con `+`; tabla en blanco → `vacia.svg` (en `figuras/tabla-valor-posicional/` hay un `U-vacia.svg`) | `U-950-000.svg`, `mil-9-673.svg`, `U-0.37+U-0.370.svg`, `U-427..svg` (punto sin dígitos después) |
 | Operaciones | `[A\|S\|M\|D]-[operando]-[operando]….SVG` (extensión en **mayúsculas**, así la genera `buildFilename()`); cada operando en unidades reales | `A-0.15-0.028.SVG`, `S-8750-2300.SVG` |
+| Valor posicional (unificado) | Sin operación, el de la tabla de valor posicional; con operación, el de operaciones. Se guardan en `figuras/tabla-valor-posicional/` (no tiene carpeta propia) | `U-950-000.svg`, `M-2.31-24.SVG` |
 | Números con bloques Dienes | `[número].svg`, sin ceros a la izquierda (`007` → `7.svg`), como lo genera `buildFilename()` desde el 2026-09-26 (antes, `numero-N.svg`). Los archivos guardados antes llevan un prefijo con los órdenes, puesto a mano: `U-` (todo en unidades), `DU-`, `CDU-` | `236.svg`; antiguos: `U-36.svg`, `DU-36.svg`, `CDU-427.svg` |
 | Completar decena (`estrategias`) | `[A]+[b].svg` (suma) / `[A]-[b].svg` (resta) | `28+5.svg`, `51-7.svg` |
 | Distancia entre números (`estrategias`) | `[A]-[b].svg`; sufijo `-sin-material` cuando el interruptor «Material sobre la recta» está apagado | `100-19.svg`, `10-3-sin-material.svg` |

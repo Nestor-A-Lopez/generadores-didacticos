@@ -1,0 +1,1228 @@
+// Generador unificado de tablas de valor posicional: une el de la tabla
+// (../tabla-valor-posicional/) y el de operaciones (../operaciones/).
+// Con la operación «Ninguna» dibuja uno o varios números en la tabla, igual
+// que la tabla de valor posicional (mismo SVG byte a byte); con suma, resta,
+// multiplicación o división dibuja además signos, la línea del resultado,
+// los productos parciales o la galera.
+//
+// Qué viene de cada uno:
+// - De la tabla: las medidas y tamaños de letra del dibujo, la lectura de
+//   los números (ceros a la izquierda, «36.», validación por posición), las
+//   comas relativas al punto, el ajuste de etiquetas que no caben
+//   (fittedFontSize) y de signos en el borde (glyphRunClamped), el selector
+//   fino de decimales y el aviso de error que marca la fila.
+// - De operaciones: las cuatro operaciones, la casilla «Coma y punto» de
+//   cada número, el resultado con su jerarquía y sus casillas, y el nombre
+//   de archivo A/S/M/D.
+// - «Resto: N» ya no es <text>: se dibuja con glifos (R, t y «:» se
+//   agregaron a compartido/glifos-tabla.js).
+//
+// buildSVG(cfg) es pura: recibe la configuración ya leída del DOM y devuelve
+// { svg, filename } o { error: { message, campo } }.
+
+const GLYPH_DATA = Banco.GLYPH_DATA_TABLA; // compartido/glifos-tabla.js
+const UPM = GLYPH_DATA.upm;
+
+// =====================================================================
+// Constantes y metadatos
+// =====================================================================
+const DECIMAL_CLASS = "decimal";
+// pow: potencia de diez. code: valor de la jerarquía (y prefijo del nombre
+// de archivo). label: texto del <option>. cellLabel: lo que se dibuja en la
+// celda del orden. colorKey: color de esa celda en COLORS (los decimales
+// reutilizan el de su «reflejo»: dec↔D, cen↔C, mil↔U). classIndex: agrupa
+// cada 3 órdenes enteros en una clase; los decimales forman la suya.
+const ORDERS = [
+  { pow: -3, code: "m", label: "Milésimos (mil)", cellLabel: "mil", colorKey: "U", classIndex: DECIMAL_CLASS },
+  { pow: -2, code: "c", label: "Centésimos (cen)", cellLabel: "cen", colorKey: "C", classIndex: DECIMAL_CLASS },
+  { pow: -1, code: "d", label: "Décimos (dec)", cellLabel: "dec", colorKey: "D", classIndex: DECIMAL_CLASS },
+  { pow: 0, code: "U", label: "Unidades (U)", cellLabel: "U", colorKey: "U", classIndex: 0 },
+  { pow: 1, code: "D", label: "Decenas (D)", cellLabel: "D", colorKey: "D", classIndex: 0 },
+  { pow: 2, code: "C", label: "Centenas (C)", cellLabel: "C", colorKey: "C", classIndex: 0 },
+  { pow: 3, code: "UM", label: "Unidades de millar (UM)", cellLabel: "U", colorKey: "U", classIndex: 1 },
+  { pow: 4, code: "DM", label: "Decenas de millar (DM)", cellLabel: "D", colorKey: "D", classIndex: 1 },
+  { pow: 5, code: "CM", label: "Centenas de millar (CM)", cellLabel: "C", colorKey: "C", classIndex: 1 },
+  { pow: 6, code: "UMM", label: "Unidades de millón (UMM)", cellLabel: "U", colorKey: "U", classIndex: 2 },
+  { pow: 7, code: "DMM", label: "Decenas de millón (DMM)", cellLabel: "D", colorKey: "D", classIndex: 2 },
+  { pow: 8, code: "CMM", label: "Centenas de millón (CMM)", cellLabel: "C", colorKey: "C", classIndex: 2 },
+  { pow: 9, code: "UMMM", label: "Unidades de millar de millón (UMMM)", cellLabel: "U", colorKey: "U", classIndex: 3 },
+  { pow: 10, code: "DMMM", label: "Decenas de millar de millón (DMMM)", cellLabel: "D", colorKey: "D", classIndex: 3 },
+  { pow: 11, code: "CMMM", label: "Centenas de millar de millón (CMMM)", cellLabel: "C", colorKey: "C", classIndex: 3 },
+];
+const ORDER_BY_POW = Object.fromEntries(ORDERS.map((o) => [o.pow, o])); // admite claves negativas
+const NIVEL = Object.fromEntries(ORDERS.map((o) => [o.code, o.pow]));
+
+const CLASS_LABELS = [
+  "Clase de las unidades",
+  "Clase de los millares",
+  "Clase de los millones",
+  "Clase de los millares de millones",
+];
+const DECIMAL_CLASS_LABEL = "Clase de los milesimos"; // sin acento: glifo no disponible
+
+// Un «periodo» agrupa 2 clases (6 órdenes). Los órdenes decimales no forman
+// parte de ningún periodo. Con maxPow <= 11 solo aparecen los dos primeros.
+const PERIOD_LABELS = [
+  "Primer periodo",
+  "Segundo periodo",
+  "Tercer periodo",
+  "Cuarto periodo",
+];
+const PERIOD_COLORS = ["#FFF200", "#FFA500"];
+
+// Colores de la figura: los del material base 10 y los tintes de clase.
+const COLORS = {
+  C: "#CC2027",
+  D: "#1C75BC",
+  U: "#57A639",
+  Millares: "#8EBADE",
+  Unidades: "#ABD39C",
+};
+const LINE_COLOR = "#111111";
+
+// Tamaño fijo del dibujo (el antiguo «Grande»); no hay selector.
+const SCALE = 1.22;
+
+// ---- Referencias verticales de los glifos (para centrar cada fila) ----
+function unionBounds(fontData, chars) {
+  let ymin = Infinity,
+    ymax = -Infinity;
+  for (const ch of chars) {
+    const g = fontData[ch];
+    if (!g || !g.bounds) continue;
+    const [, gy0, , gy1] = g.bounds;
+    if (gy0 < ymin) ymin = gy0;
+    if (gy1 > ymax) ymax = gy1;
+  }
+  return { ymin, ymax };
+}
+const DIGIT_REF = unionBounds(GLYPH_DATA.regular, "0123456789");
+const LETTERROW_REF = unionBounds(GLYPH_DATA.bold, "CDUdecnmil");
+const HEADER_REF = unionBounds(GLYPH_DATA.bold, "Clasedomirun");
+const PERIOD_REF = unionBounds(GLYPH_DATA.bold, "PSrimepodgun");
+
+// ---- Glifos de los signos de operación (+, −, ×) ----
+// El juego de glifos de la tabla no trae símbolos matemáticos, así que se
+// definen aquí en el mismo espacio de diseño (UPM = 2048), para dibujarlos
+// con <path> y centrarlos igual que los dígitos (glyphRun + DIGIT_REF).
+function rectPts(x0, y0, x1, y1) {
+  return `${x0} ${y0} L ${x1} ${y0} L ${x1} ${y1} L ${x0} ${y1} Z`;
+}
+const SIGN_GLYPHS = {
+  "-": {
+    d: `M ${rectPts(-500, 505, 500, 595)}`,
+    adv: 1200,
+    bounds: [-500, 505, 500, 595],
+  },
+  "+": {
+    d: `M ${rectPts(-500, 505, 500, 595)} M ${rectPts(-45, 50, 45, 1050)}`,
+    adv: 1200,
+    bounds: [-500, 50, 500, 1050],
+  },
+  "×": {
+    d:
+      "M 350.1 977.9 L 427.9 900.1 L -350.1 122.1 L -427.9 199.9 Z " +
+      "M 427.9 199.9 L 350.1 122.1 L -427.9 900.1 L -350.1 977.9 Z",
+    adv: 1100,
+    bounds: [-427.9, 122.1, 427.9, 977.9],
+  },
+};
+
+// Error de validación que sabe qué campo lo causó, para marcarlo en la
+// interfaz: un índice en la lista de números de la operación, "divisor",
+// o null si no es de un campo concreto (p. ej. el resultado no cabe).
+class ErrorCampo extends Error {
+  constructor(message, campo) {
+    super(message);
+    this.campo = campo;
+  }
+}
+
+// =====================================================================
+// Cálculo puro: lectura de los números
+// =====================================================================
+function decideDisplay(pow, digit, shift, numDigits) {
+  if (digit === 0) {
+    if (shift > pow) return null;
+    if (numDigits + shift > pow) return 0;
+    return null;
+  }
+  return digit;
+}
+
+// Reparte un número escrito (con su jerarquía) en las columnas visibles
+// [minPow..maxPow]. Devuelve cols como objeto {pow: dígito o null}, y
+// además value (BigInt = valor real × 10^(-minPow)) para poder sumar,
+// restar y multiplicar sin errores de precisión.
+// puntoForzado: true cuando se escribió un punto sin dígitos después
+// (ej. "36."), que dibuja el punto aunque no haya cifras decimales.
+function computeColumns(numStr, jerarquia, maxPow, minPow, puntoForzado) {
+  const nivel = NIVEL[jerarquia];
+  let parteEntera = numStr,
+    parteDecimal = "";
+  if (numStr.includes(".")) {
+    [parteEntera, parteDecimal] = numStr.split(".");
+  }
+  if (parteEntera === "") parteEntera = "0";
+  const NDec = parteDecimal.length;
+  // Los ceros a la izquierda NO se recortan: si el usuario los escribe
+  // (ej. "04.8" o "0950"), es porque quiere verlos en su columna (útil para
+  // mostrar a los alumnos que esa posición vale cero). Por eso cada dígito
+  // escrito ocupa su columna y cuenta para numDigits (y, por tanto, para la
+  // agrupación de comas: "0950" → "0,950").
+  const digitsStr = parteEntera + parteDecimal;
+  const numDigits = digitsStr.length;
+  const shift = nivel - NDec;
+  if (shift < minPow) {
+    throw new Error(
+      minPow <= -3
+        ? "Demasiados decimales: no caben ni siquiera mostrando milésimos."
+        : 'Demasiados decimales para la jerarquía elegida (elige una jerarquía mayor, o más órdenes decimales en «Trabajar hasta el orden de…»).',
+    );
+  }
+  // El punto decimal se coloca siempre justo a la derecha de la columna de
+  // la jerarquía elegida (por ejemplo, a la derecha de "decenas" si el
+  // número se interpreta en decenas).
+  const hayDecimal = NDec > 0 || puntoForzado;
+  const numColumnas = maxPow - minPow + 1;
+
+  // Aritmética con BigInt para evitar errores de precisión con números
+  // grandes. internalShift alinea el valor para que la columna menos
+  // significativa visible (minPow) corresponda a exponente 0.
+  const internalShift = shift - minPow;
+  const value = BigInt(digitsStr) * 10n ** BigInt(internalShift);
+  // Se valida por la POSICIÓN del dígito escrito más a la izquierda, no por
+  // el valor numérico: un cero a la izquierda no aumenta el valor, pero sí
+  // necesita su propia columna. Validar por valor dejaría pasar "0950" con
+  // solo 3 columnas y ese cero se perdería en silencio.
+  const leadPow = shift + numDigits - 1;
+  if (leadPow > maxPow) {
+    throw new Error(
+      `El número no cabe en las ${numColumnas} columnas visibles para la jerarquía y el rango de órdenes elegidos.`,
+    );
+  }
+
+  const cols = {};
+  for (let pow = maxPow; pow >= minPow; pow--) {
+    const ipow = pow - minPow;
+    const digit = Number((value / 10n ** BigInt(ipow)) % 10n);
+    cols[pow] = decideDisplay(pow, digit, shift, numDigits);
+  }
+
+  return { cols, hayDecimal, nivel, shift, numDigits, value };
+}
+
+// BigInt escalado a minPow → cadena decimal normal (para volver a pasarla
+// por computeColumns tras sumar/restar/multiplicar). decimalPlaces indica
+// cuántos decimales son «reales» para ESTE número: sin ese dato, un entero
+// como 959 quedaría escrito "959.000" al escalar a minPow = -3, y esos
+// ceros se dibujarían como cifras.
+function scaledToNumStr(scaled, minPow, decimalPlaces) {
+  decimalPlaces = decimalPlaces || 0;
+  const neg = scaled < 0n;
+  let s = (neg ? -scaled : scaled).toString();
+  const decLenFull = minPow < 0 ? -minPow : 0;
+  while (s.length <= decLenFull) s = "0" + s;
+  const entera = s.slice(0, s.length - decLenFull) || "0";
+  const fullDecimal = s.slice(s.length - decLenFull);
+  const decimal = fullDecimal.slice(0, decimalPlaces);
+  const out = decimal.length ? entera + "." + decimal : entera;
+  return (neg ? "-" : "") + out;
+}
+
+// Lista ordenada de los números que se escriben en cada operación, con su
+// etiqueta (para los mensajes de error) y si solo admiten enteros. El orden
+// es el mismo en que aparecen los campos en la interfaz, así un error puede
+// marcar su campo por índice.
+function terminosDe(op, datos) {
+  switch (op) {
+    case "suma":
+      return datos.sumandos.map((t, i) => ({ t, etiqueta: `Sumando ${i + 1}` }));
+    case "resta":
+      return [
+        { t: datos.minuendo, etiqueta: "Minuendo" },
+        ...datos.sustraendos.map((t, i) => ({ t, etiqueta: `Sustraendo ${i + 1}` })),
+      ];
+    case "multiplicacion":
+      return [
+        { t: datos.multiplicando, etiqueta: "Multiplicando" },
+        { t: datos.multiplicador, etiqueta: "Multiplicador", soloEnteros: true },
+      ];
+    case "division":
+      return [{ t: datos.dividendo, etiqueta: "Dividendo", soloEnteros: true }];
+    default:
+      return datos.numeros.map((t, i) => ({ t, etiqueta: `Número ${i + 1}` }));
+  }
+}
+
+// Valida y reparte en columnas cada número de la operación. El prefijo
+// «Etiqueta: » se omite solo cuando hay un único número sin operación
+// (igual que en la tabla de valor posicional).
+function leerTerminos(cfg) {
+  const lista = terminosDe(cfg.op, cfg.datos);
+  const conPrefijo = cfg.op !== "ninguna" || lista.length > 1;
+  return lista.map(({ t, etiqueta, soloEnteros }, i) => {
+    const pref = conPrefijo ? etiqueta + ": " : "";
+    const numero = t.numero.trim();
+    const valido = soloEnteros ? /^\d+\.?$/ : /^\d+(\.\d*)?$/;
+    if (!valido.test(numero)) {
+      throw new ErrorCampo(
+        pref +
+          (soloEnteros
+            ? 'Escribe un número entero, sin cifras decimales. Usa su jerarquía para escalarlo (ej. "24" en Decenas).'
+            : "Escribe un número válido (solo dígitos y, opcionalmente, un punto decimal)."),
+        i,
+      );
+    }
+    try {
+      return computeColumns(numero, t.jerarquia, cfg.maxPow, cfg.minPow, numero.endsWith("."));
+    } catch (e) {
+      throw new ErrorCampo(pref + e.message, i);
+    }
+  });
+}
+
+// Reparte un resultado calculado (siempre en unidades reales) en columnas.
+function columnasResultado(numStr, cfg, que) {
+  try {
+    return computeColumns(numStr, "U", cfg.maxPow, cfg.minPow, false);
+  } catch (e) {
+    throw new ErrorCampo(
+      `${que} no cabe en las columnas visibles: elige un orden mayor en «Trabajar hasta el orden de…».`,
+      null,
+    );
+  }
+}
+
+// Fila de la figura a partir de un número ya repartido en columnas.
+// nivel = columna a cuya derecha va el punto (la de su jerarquía, o la
+// elegida para el resultado).
+function filaDe(r, formato, extra) {
+  return Object.assign(
+    {
+      cols: r.cols,
+      hayDecimal: r.hayDecimal,
+      nivel: r.nivel,
+      shift: r.shift,
+      numDigits: r.numDigits,
+      showComma: formato,
+      showPunto: formato,
+    },
+    extra,
+  );
+}
+
+// =====================================================================
+// Cálculo puro: filas de cada operación
+// =====================================================================
+function filasSumaResta(leidos, terms, esResta, cfg) {
+  const res = cfg.resultado;
+  let total = leidos[0].value;
+  for (let i = 1; i < leidos.length; i++) {
+    total = esResta ? total - leidos[i].value : total + leidos[i].value;
+  }
+  if (esResta && total < 0n) {
+    throw new ErrorCampo(
+      "El minuendo debe ser mayor o igual que la suma de los sustraendos.",
+      0,
+    );
+  }
+  const decimalPlaces = Math.max(0, ...leidos.map((p) => -p.shift));
+  const totalR = columnasResultado(
+    scaledToNumStr(total, cfg.minPow, decimalPlaces),
+    cfg,
+    "El resultado",
+  );
+  const ultimo = leidos.length - 1;
+  const filas = leidos.map((p, i) =>
+    filaDe(p, terms[i].formato !== false, {
+      sign: i === ultimo ? (esResta ? "-" : "+") : null,
+    }),
+  );
+  // Si el resultado está oculto, la fila queda en blanco pero conserva
+  // sus comas y su punto (si están activados) como guía para escribirlo.
+  filas.push(
+    filaDe(totalR, false, {
+      cols: res.mostrar ? totalR.cols : {},
+      lineAbove: true,
+      nivel: NIVEL[res.jerarquia],
+      showComma: res.comas,
+      showPunto: res.punto,
+    }),
+  );
+  return filas;
+}
+
+function filasMultiplicacion(leidos, cfg) {
+  const res = cfg.resultado;
+  const [mcando, mcador] = leidos;
+  const { multiplicando: mcandoTerm, multiplicador: mcadorTerm } = cfg.datos;
+  const nivelMcador = NIVEL[mcadorTerm.jerarquia];
+  if (nivelMcador < 0) {
+    throw new ErrorCampo(
+      "Multiplicador: no admite una jerarquía decimal (dec/cen/mil); usa Unidades o superior.",
+      1,
+    );
+  }
+  // Las cifras del multiplicador, sin ceros a la izquierda ni punto final:
+  // cada una da un producto parcial.
+  const mcadorDigits =
+    mcadorTerm.numero.trim().replace(/\.$/, "").replace(/^0+(?=\d)/, "") || "0";
+  const mcadorTrue = BigInt(mcadorDigits) * 10n ** BigInt(nivelMcador);
+  const dp = Math.max(0, -mcando.shift);
+
+  const filas = [
+    filaDe(mcando, mcandoTerm.formato !== false),
+    filaDe(mcador, mcadorTerm.formato !== false, { sign: "×" }),
+  ];
+
+  const nDig = mcadorDigits.length;
+  const parciales = [];
+  for (let k = 0; k < nDig; k++) {
+    const digit = BigInt(mcadorDigits[nDig - 1 - k]);
+    if (digit === 0n) continue;
+    const p = nivelMcador + k;
+    const parcialR = columnasResultado(
+      scaledToNumStr(mcando.value * digit * 10n ** BigInt(p), cfg.minPow, dp),
+      cfg,
+      "Un producto parcial",
+    );
+    parciales.push(
+      filaDe(parcialR, true, {
+        lineAbove: parciales.length === 0,
+        nivel: NIVEL[res.jerarquia],
+        showPunto: res.puntoProductos,
+      }),
+    );
+  }
+
+  const totalR = columnasResultado(
+    scaledToNumStr(mcando.value * mcadorTrue, cfg.minPow, dp),
+    cfg,
+    "El producto",
+  );
+  const resultMeta = {
+    hayDecimal: totalR.hayDecimal,
+    shift: totalR.shift,
+    numDigits: totalR.numDigits,
+    nivel: NIVEL[res.jerarquia],
+    showComma: res.comas,
+    showPunto: res.punto,
+  };
+
+  if (parciales.length === 1) {
+    // Un solo producto parcial ya es el resultado: no se repite.
+    Object.assign(parciales[0], resultMeta, {
+      cols: res.mostrar ? parciales[0].cols : {},
+    });
+    filas.push(...parciales);
+  } else {
+    filas.push(...parciales);
+    filas.push(
+      Object.assign(
+        { cols: res.mostrar ? totalR.cols : {}, lineAbove: true },
+        resultMeta,
+      ),
+    );
+  }
+  return filas;
+}
+
+// División en galera: devuelve las filas (cociente, dividendo y, si se
+// muestra el procedimiento, las restas parciales) y el residuo.
+function filasDivision(leidos, cfg) {
+  const res = cfg.resultado;
+  const [dividendoR] = leidos;
+  const dividendoTerm = cfg.datos.dividendo;
+  const nivelDividendo = NIVEL[dividendoTerm.jerarquia];
+  if (nivelDividendo < 0) {
+    throw new ErrorCampo(
+      "Dividendo: no admite una jerarquía decimal (dec/cen/mil); usa Unidades o superior.",
+      0,
+    );
+  }
+  const divisorStr = cfg.division.divisor.trim();
+  if (!/^[1-9]$/.test(divisorStr)) {
+    throw new ErrorCampo("El divisor debe ser un dígito del 1 al 9.", "divisor");
+  }
+  const divisor = Number(divisorStr);
+  const decimales = Math.min(cfg.division.decimales || 0, Math.max(0, -cfg.minPow));
+
+  const dividendoDigits =
+    dividendoTerm.numero.trim().replace(/\.$/, "").replace(/^0+(?=\d)/, "") || "0";
+  const dividendo = (
+    BigInt(dividendoDigits) * 10n ** BigInt(nivelDividendo)
+  ).toString();
+  const digits = dividendo.split("").map(Number);
+  const leadingPow = digits.length - 1;
+
+  const quotient = [];
+  const scratchRows = [];
+  let current = 0;
+  let started = false;
+  let firstQuotientDone = false;
+
+  digits.forEach((d, i) => {
+    current = current * 10 + d;
+    const pow = leadingPow - i;
+    if (!started && current < divisor) return;
+    started = true;
+    const qd = Math.floor(current / divisor);
+    quotient.push({ digit: qd, pow });
+    if (firstQuotientDone) scratchRows.push({ value: current, rightPow: pow });
+    firstQuotientDone = true;
+    current = current - qd * divisor;
+  });
+
+  if (quotient.length === 0) {
+    quotient.push({ digit: 0, pow: 0 });
+  }
+
+  for (let k = 0; k < decimales; k++) {
+    if (current === 0) break;
+    current = current * 10;
+    const pow = -(k + 1);
+    const qd = Math.floor(current / divisor);
+    quotient.push({ digit: qd, pow });
+    scratchRows.push({ value: current, rightPow: pow });
+    current = current - qd * divisor;
+  }
+  const residuo = current;
+
+  const quotientCols = {};
+  quotient.forEach((q) => (quotientCols[q.pow] = q.digit));
+  const ultimaPow = quotient[quotient.length - 1].pow;
+  const qShift = ultimaPow < 0 ? ultimaPow : 0;
+
+  const filas = [
+    {
+      cols: res.mostrar ? quotientCols : {},
+      // El punto del cociente solo se dibuja si de verdad tiene cifras
+      // decimales (8 ÷ 4 con «2 decimales» da 2, no «2.»).
+      hayDecimal: ultimaPow < 0,
+      nivel: NIVEL[res.jerarquia],
+      shift: qShift,
+      numDigits: quotient[0].pow - qShift + 1,
+      showComma: res.comas,
+      showPunto: res.punto,
+    },
+    filaDe(dividendoR, dividendoTerm.formato !== false),
+  ];
+  if (res.mostrar) {
+    scratchRows.forEach((r) => {
+      const s = String(r.value);
+      const cols = {};
+      for (let i = 0; i < s.length; i++) {
+        cols[r.rightPow + (s.length - 1 - i)] = Number(s[i]);
+      }
+      filas.push({
+        cols,
+        hayDecimal: false,
+        nivel: 0,
+        shift: r.rightPow,
+        numDigits: s.length,
+        showComma: true,
+        showPunto: false,
+      });
+    });
+  }
+  return { filas, residuo: res.mostrar && residuo > 0 ? residuo : null, divisorStr };
+}
+
+// =====================================================================
+// Dibujo
+// =====================================================================
+function centerFontY(ref) {
+  return (ref.ymin + ref.ymax) / 2;
+}
+
+function stringWidth(str, fontData, scale) {
+  let w = 0;
+  for (const ch of str) {
+    const g = fontData[ch];
+    w += (g ? g.adv : UPM * 0.5) * scale;
+  }
+  return w;
+}
+
+// Devuelve un tamaño de fuente reducido (nunca mayor al pedido) para que
+// `str` quepa dentro de `maxWidth`. Necesario para encabezados de clase
+// que a veces abarcan una sola columna.
+function fittedFontSize(str, fontData, desiredSize, maxWidth) {
+  const w = stringWidth(str, fontData, desiredSize / UPM);
+  if (w <= maxWidth) return desiredSize;
+  return desiredSize * (maxWidth / w);
+}
+
+// Redondea a una precisión fija (3 decimales). Dos celdas vecinas calculan
+// la coordenada de su frontera compartida con multiplicaciones distintas
+// (ej. columna_i*colW+colW vs columna_(i+1)*colW), que en punto flotante
+// pueden diferir por una fracción mínima. Esa diferencia basta para que el
+// antialiasing dibuje esa línea con un grosor ligeramente distinto al
+// resto. Redondear ambas al mismo valor elimina el desajuste.
+function R(n) {
+  return Math.round(n * 1000) / 1000;
+}
+
+// Dibuja `str` centrado horizontalmente en cx, con la línea base calculada
+// a partir de `ref` (bbox de referencia) para que quede centrado en rowCenterY.
+function glyphRun(str, fontData, cx, rowCenterY, fontSizePx, ref, fill) {
+  const scale = fontSizePx / UPM;
+  const totalWidth = stringWidth(str, fontData, scale);
+  const baselineY = rowCenterY + centerFontY(ref) * scale;
+  let x = cx - totalWidth / 2;
+  let out = "";
+  for (const ch of str) {
+    const g = fontData[ch];
+    const adv = g ? g.adv : UPM * 0.5;
+    if (g && g.d) {
+      out += `<g transform="translate(${x} ${baselineY}) scale(${scale} ${-scale})"><path d="${g.d}" fill="${fill}"/></g>`;
+    }
+    x += adv * scale;
+  }
+  return out;
+}
+
+// Como glyphRun, pero recorta (clamp) la posición horizontal si el glifo se
+// saldría de [xmin, xmax] (la cuadrícula): así una coma o un punto en el
+// borde nunca queda cortado, y la tabla sigue ocupando todo el ancho del
+// archivo sin márgenes extra.
+function glyphRunClamped(str, fontData, cx, rowCenterY, fontSizePx, ref, fill, xmin, xmax) {
+  const scale = fontSizePx / UPM;
+  const w = stringWidth(str, fontData, scale);
+  let x = cx;
+  if (x - w / 2 < xmin) x = xmin + w / 2;
+  if (x + w / 2 > xmax) x = xmax - w / 2;
+  return glyphRun(str, fontData, x, rowCenterY, fontSizePx, ref, fill);
+}
+
+// Texto con tramos en distintas fuentes (p. ej. «Resto:» en negritas y el
+// número en regular), centrado en cx como un solo renglón.
+function glyphRunMixto(partes, cx, rowCenterY, fontSizePx, ref, fill) {
+  const scale = fontSizePx / UPM;
+  const anchos = partes.map(([str, fd]) => stringWidth(str, fd, scale));
+  let x = cx - anchos.reduce((a, b) => a + b, 0) / 2;
+  let out = "";
+  partes.forEach(([str, fd], i) => {
+    out += glyphRun(str, fd, x + anchos[i] / 2, rowCenterY, fontSizePx, ref, fill);
+    x += anchos[i];
+  });
+  return out;
+}
+
+// Línea punteada y de baja opacidad que separa visualmente el número de
+// una fila del de la siguiente.
+function dashedSeparator(x1, x2, y, strokeW) {
+  const dash = Math.max(1.5, strokeW * 1.6).toFixed(2);
+  const gap = Math.max(1.5, strokeW * 1.4).toFixed(2);
+  return `<line x1="${x1.toFixed(2)}" y1="${y.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y.toFixed(2)}" stroke="#000000" stroke-opacity="0.22" stroke-width="${strokeW.toFixed(2)}" stroke-dasharray="${dash},${gap}"/>`;
+}
+
+// Fábrica de la función que dibuja una celda de encabezado con su borde
+// como UNA sola figura de fondo negro (no 4 franjas independientes):
+// primero un rectángulo negro que define el contorno completo de la celda,
+// y encima el relleno de color, recortado hacia adentro exactamente
+// `stroke` en cada lado, dejando ver el negro de abajo como marco. En una
+// frontera compartida, las dos celdas vecinas dibujan el mismo rectángulo
+// negro superpuesto, así que el grosor no cambia si se separan en
+// PowerPoint. gridLeft/gridRight son los límites de la cuadrícula (la
+// izquierda puede no ser 0 si hay espacio para el signo o el divisor):
+// ahí el negro no se extiende hacia afuera y el relleno se recorta el
+// grosor completo. El límite superior siempre es y = 0; el inferior nunca
+// es exterior porque debajo hay filas de números.
+function makeBorderedCell(gridLeft, gridRight, stroke) {
+  return function borderedCell(x0, y0, w, h, fillColor) {
+    x0 = R(x0);
+    y0 = R(y0);
+    w = R(w);
+    h = R(h);
+    const esBordeIzq = x0 === R(gridLeft);
+    const esBordeDer = R(x0 + w) === R(gridRight);
+    const esBordeSup = y0 === 0;
+
+    const blackLeft = esBordeIzq ? R(gridLeft) : R(x0 - stroke / 2);
+    const blackRight = esBordeDer ? R(gridRight) : R(x0 + w + stroke / 2);
+    const blackTop = esBordeSup ? 0 : R(y0 - stroke / 2);
+    const blackBottom = R(y0 + h + stroke / 2);
+
+    const insetLeft = esBordeIzq ? stroke : stroke / 2;
+    const insetRight = esBordeDer ? stroke : stroke / 2;
+    const insetTop = esBordeSup ? stroke : stroke / 2;
+    const insetBottom = stroke / 2;
+
+    const fx = R(x0 + insetLeft);
+    const fy = R(y0 + insetTop);
+    const fw = R(w - insetLeft - insetRight);
+    const fh = R(h - insetTop - insetBottom);
+
+    return (
+      `<rect x="${blackLeft}" y="${blackTop}" width="${R(blackRight - blackLeft)}" height="${R(blackBottom - blackTop)}" fill="${LINE_COLOR}"/>` +
+      `<rect x="${fx}" y="${fy}" width="${fw}" height="${fh}" fill="${fillColor}"/>`
+    );
+  };
+}
+
+// Dibuja la tabla completa: encabezado (periodos, clases, órdenes) y una
+// fila por cada elemento de `filas`. opts:
+//   leftPad        espacio a la izquierda de la cuadrícula (signo o divisor)
+//   separadorDesde primera fila que lleva línea punteada arriba (1 o 2)
+//   captionH       alto extra al final (renglón «Resto: N»)
+//   extra(geo)     devuelve más elementos sueltos (galera, divisor, resto)
+function dibujarTabla(filas, cfg, opts) {
+  const { maxPow, minPow, showClase, digitColor } = cfg;
+  const s = SCALE;
+  const leftPad = opts.leftPad || 0;
+  const separadorDesde = opts.separadorDesde || 1;
+  const captionH = opts.captionH || 0;
+  const numColumnas = maxPow - minPow + 1;
+
+  // Todas las medidas de la cuadrícula (ancho de columna, altos de fila,
+  // grosor de línea) se redondean a ENTEROS: con decimales, cada celda
+  // caería en una posición de sub-píxel distinta y, al convertir a
+  // PowerPoint, cada borde se redondearía de forma independiente —con
+  // grosores desiguales entre bordes—.
+  const colW = Math.round(80 * s);
+  const numPeriods = Math.ceil((maxPow + 1) / 6); // los decimales no forman periodos
+  const showPeriods = cfg.showPeriodos && numPeriods > 1;
+  const periodH = showPeriods ? Math.round(38 * s) : 0;
+  const headerH = showClase ? Math.round(38 * s) : 0;
+  const letterH = Math.round(46 * s);
+  const digitH = Math.round(80 * s);
+  let stroke = Math.round(2 * s);
+  if (stroke < 2) stroke = 2;
+  if (stroke % 2 !== 0) stroke += 1; // par, para que stroke/2 sea entero
+  const fPeriod = 17 * s;
+  const fHeader = 15 * s;
+  const fLetter = 25 * s;
+  const fDigit = 40 * s;
+  const fComma = 46 * s;
+  const fPoint = 34 * s;
+
+  const gridW = colW * numColumnas;
+  const totalW = leftPad + gridW;
+  const totalH = periodH + headerH + letterH + digitH * filas.length + captionH;
+  const borderedCell = makeBorderedCell(leftPad, totalW, stroke);
+
+  // Dos acumuladores: "svgTable" (celdas del encabezado) se agrupa en un
+  // solo <g> para que, al desagrupar una vez en PowerPoint, la tabla quede
+  // como UNA sola figura. "svgNumbers" (dígitos, signos, comas, puntos y
+  // líneas) queda fuera del grupo, como figuras sueltas.
+  let svgTable = "";
+  let svgNumbers = "";
+
+  // Columnas de izquierda a derecha: de maxPow hasta minPow.
+  const colPows = [];
+  for (let p = maxPow; p >= minPow; p--) colPows.push(p);
+
+  // Columnas consecutivas agrupadas por clase y por periodo (cada periodo
+  // = 2 clases = 6 órdenes; los órdenes decimales no forman periodos).
+  const classGroups = [];
+  const periodGroups = [];
+  colPows.forEach((pow, i) => {
+    const ci = ORDER_BY_POW[pow].classIndex;
+    const lastC = classGroups[classGroups.length - 1];
+    if (lastC && lastC.classIndex === ci) lastC.span++;
+    else classGroups.push({ classIndex: ci, startCol: i, span: 1 });
+    if (pow < 0) return;
+    const pi = Math.floor(pow / 6);
+    const lastP = periodGroups[periodGroups.length - 1];
+    if (lastP && lastP.periodIndex === pi) lastP.span++;
+    else periodGroups.push({ periodIndex: pi, startCol: i, span: 1 });
+  });
+
+  const headerTop = periodH;
+  const letterTop = periodH + headerH;
+  const digitTop = periodH + headerH + letterH;
+
+  // ---- Fila de periodos (opcional, solo si hay 2+ periodos) ----
+  // Cada celda se agrupa: fondo+borde unido + etiqueta.
+  if (showPeriods) {
+    periodGroups.forEach((g) => {
+      const x0 = leftPad + g.startCol * colW;
+      const w = g.span * colW;
+      const fill = PERIOD_COLORS[g.periodIndex % PERIOD_COLORS.length];
+      const label = PERIOD_LABELS[g.periodIndex] || `Periodo ${g.periodIndex + 1}`;
+      const fSize = fittedFontSize(label, GLYPH_DATA.bold, fPeriod, w * 0.92);
+      svgTable += "<g>";
+      svgTable += borderedCell(x0, 0, w, periodH, fill);
+      svgTable += glyphRun(label, GLYPH_DATA.bold, x0 + w / 2, periodH / 2, fSize, PERIOD_REF, "#1a1a1a");
+      svgTable += "</g>";
+    });
+  }
+
+  // ---- Fila de clases (opcional) ----
+  if (showClase) {
+    classGroups.forEach((g) => {
+      const x0 = leftPad + g.startCol * colW;
+      const w = g.span * colW;
+      const esDecimal = g.classIndex === DECIMAL_CLASS;
+      const fill = esDecimal
+        ? COLORS.Millares
+        : g.classIndex % 2 === 0
+          ? COLORS.Unidades
+          : COLORS.Millares;
+      const label = esDecimal ? DECIMAL_CLASS_LABEL : CLASS_LABELS[g.classIndex];
+      const fSize = fittedFontSize(label, GLYPH_DATA.bold, fHeader, w * 0.92);
+      svgTable += "<g>";
+      svgTable += borderedCell(x0, headerTop, w, headerH, fill);
+      svgTable += glyphRun(label, GLYPH_DATA.bold, x0 + w / 2, headerTop + headerH / 2, fSize, HEADER_REF, "#1a1a1a");
+      svgTable += "</g>";
+    });
+  }
+
+  // ---- Fila de órdenes (C/D/U/dec/cen/mil), siempre visible ----
+  colPows.forEach((pow, i) => {
+    const order = ORDER_BY_POW[pow];
+    const x0 = leftPad + i * colW;
+    const fSize = fittedFontSize(order.cellLabel, GLYPH_DATA.bold, fLetter, colW * 0.9);
+    svgTable += "<g>";
+    svgTable += borderedCell(x0, letterTop, colW, letterH, COLORS[order.colorKey]);
+    svgTable += glyphRun(order.cellLabel, GLYPH_DATA.bold, x0 + colW / 2, letterTop + letterH / 2, fSize, LETTERROW_REF, "#ffffff");
+    svgTable += "</g>";
+  });
+
+  // ---- Filas de números (sin fondo: quedan transparentes) ----
+  filas.forEach((row, ri) => {
+    const { cols, hayDecimal, nivel, shift, numDigits } = row;
+    const rowTop = digitTop + ri * digitH;
+    const digitCY = rowTop + digitH / 2;
+
+    // Línea sólida sobre el resultado; punteada entre los demás números.
+    if (row.lineAbove) {
+      svgNumbers += `<rect x="${leftPad}" y="${R(rowTop - stroke / 2)}" width="${gridW}" height="${stroke}" fill="${LINE_COLOR}"/>`;
+    } else if (ri >= separadorDesde) {
+      svgNumbers += dashedSeparator(leftPad, totalW, rowTop, stroke * 0.6);
+    }
+
+    colPows.forEach((pow, i) => {
+      const val = cols[pow];
+      if (val !== null && val !== undefined) {
+        const cx = leftPad + i * colW + colW / 2;
+        svgNumbers += glyphRun(String(val), GLYPH_DATA.regular, cx, digitCY, fDigit, DIGIT_REF, digitColor);
+      }
+    });
+
+    // ---- Comas de millares y apóstrofes de periodo ----
+    // Relativas a los dígitos ENTEROS realmente visibles del número: se
+    // agrupan de 3 en 3 a la izquierda del punto (columna `nivel`, nunca
+    // más allá de U) y no invaden la parte decimal. Cada frontera lleva
+    // coma, salvo que además sea frontera de periodo: entonces, apóstrofe.
+    if (row.showComma) {
+      const leadPow = shift + numDigits - 1; // potencia del dígito visible más significativo
+      // Sin punto decimal real, las columnas de potencia negativa no son
+      // «parte decimal» de nada: son dígitos enteros que la jerarquía
+      // desplazó (ej. "2498" en Milésimos se lee "2,498"). Entonces el ancla
+      // es el dígito menos significativo escrito (columna `shift`) y la
+      // alternancia coma/apóstrofe se cuenta en relativo. Con punto real,
+      // nunca se agrupa más allá de la columna U (Math.max(nivel, 0)).
+      const intShift = hayDecimal ? Math.max(nivel, 0) : shift;
+      const intNumDigits = leadPow - intShift + 1;
+      for (let k = 1; 3 * k <= intNumDigits - 1; k++) {
+        const boundaryPow = intShift + 3 * k; // columna a la izquierda de la frontera
+        const x = leftPad + colW * (maxPow - boundaryPow + 1);
+        const esFronteraDePeriodo = hayDecimal ? boundaryPow % 6 === 0 : k % 2 === 0;
+        const simbolo = esFronteraDePeriodo ? "'" : ",";
+        svgNumbers += glyphRunClamped(simbolo, GLYPH_DATA.bold, x, digitCY, fComma, DIGIT_REF, COLORS.C, leftPad, totalW);
+      }
+    }
+
+    // ---- Punto decimal: justo a la derecha de la columna `nivel` ----
+    if (row.showPunto && hayDecimal) {
+      const px = leftPad + colW * (maxPow - nivel + 1);
+      svgNumbers += glyphRunClamped(".", GLYPH_DATA.bold, px, digitCY, fPoint, DIGIT_REF, COLORS.C, leftPad, totalW);
+    }
+
+    if (row.sign) {
+      svgNumbers += glyphRun(row.sign, SIGN_GLYPHS, leftPad / 2, digitCY, fDigit, DIGIT_REF, digitColor);
+    }
+  });
+
+  if (opts.extra) {
+    svgNumbers += opts.extra({ digitTop, digitH, gridW, leftPad, totalW, totalH, captionH, stroke, fDigit, s });
+  }
+
+  // Estructura final (pensada para «Convertir en forma» de PowerPoint):
+  //   svg
+  //    ├─ g (LA TABLA COMPLETA — una figura al desagrupar la 1.ª vez)
+  //    │   └─ g (celda de periodo / clase / orden, con su borde) × N
+  //    └─ dígitos, signos, comas, puntos y líneas, sueltos desde el inicio
+  // Sin <g transform> envolvente ni rect de fondo (fondo transparente).
+  return (
+    `<svg viewBox="0 0 ${totalW} ${totalH}" width="${totalW}" height="${totalH}" xmlns="http://www.w3.org/2000/svg">` +
+    `<g>${svgTable}</g>` +
+    svgNumbers +
+    `</svg>`
+  );
+}
+
+// =====================================================================
+// buildSVG (pura) y nombre de archivo
+// =====================================================================
+// cfg = { op, datos, maxPow, minPow, showClase, showPeriodos, digitColor,
+//         resultado: { mostrar, comas, punto, jerarquia, puntoProductos },
+//         division: { divisor, decimales } }
+function buildSVG(cfg) {
+  try {
+    const leidos = leerTerminos(cfg);
+    const d = cfg.datos;
+    const signGap = Math.round(56 * SCALE);
+    let svg;
+    if (cfg.op === "suma" || cfg.op === "resta") {
+      const esResta = cfg.op === "resta";
+      const terms = esResta ? [d.minuendo, ...d.sustraendos] : d.sumandos;
+      svg = dibujarTabla(filasSumaResta(leidos, terms, esResta, cfg), cfg, { leftPad: signGap });
+    } else if (cfg.op === "multiplicacion") {
+      svg = dibujarTabla(filasMultiplicacion(leidos, cfg), cfg, { leftPad: signGap });
+    } else if (cfg.op === "division") {
+      const { filas, residuo, divisorStr } = filasDivision(leidos, cfg);
+      svg = dibujarTabla(filas, cfg, {
+        leftPad: Math.round(110 * SCALE),
+        separadorDesde: 2, // cociente y dividendo van separados por la galera
+        captionH: residuo !== null ? Math.round(40 * SCALE) : 0,
+        extra: (g) => {
+          // Fila 1 = dividendo: a su izquierda, el divisor; encima y a la
+          // izquierda, la galera (dos rectángulos sueltos que se tocan en
+          // la esquina).
+          const y0 = g.digitTop + g.digitH;
+          let out = glyphRun(divisorStr, GLYPH_DATA.regular, g.leftPad / 2, y0 + g.digitH / 2, g.fDigit, DIGIT_REF, cfg.digitColor);
+          const xBarra = R(g.leftPad - g.stroke / 2);
+          out += `<rect x="${xBarra}" y="${R(y0 - g.stroke / 2)}" width="${R(g.totalW - xBarra)}" height="${g.stroke}" fill="${LINE_COLOR}"/>`;
+          out += `<rect x="${xBarra}" y="${y0}" width="${g.stroke}" height="${g.digitH}" fill="${LINE_COLOR}"/>`;
+          if (residuo !== null) {
+            // Un solo <g> para que «Resto: N» sea una figura en PowerPoint.
+            out +=
+              "<g>" +
+              glyphRunMixto(
+                [["Resto: ", GLYPH_DATA.bold], [String(residuo), GLYPH_DATA.regular]],
+                g.totalW / 2,
+                g.totalH - g.captionH / 2,
+                20 * g.s,
+                DIGIT_REF,
+                cfg.digitColor,
+              ) +
+              "</g>";
+          }
+          return out;
+        },
+      });
+    } else {
+      // Sin operación: un número por fila, cada uno con su jerarquía.
+      svg = dibujarTabla(
+        leidos.map((r, i) => filaDe(r, d.numeros[i].formato !== false)),
+        cfg,
+        {},
+      );
+    }
+    return { svg, filename: buildFilename(cfg) };
+  } catch (e) {
+    if (e instanceof ErrorCampo) return { error: { message: e.message, campo: e.campo } };
+    throw e;
+  }
+}
+
+// ---- Nombre sin operación: [Orden]-[Numero].svg ----
+// [Orden] es el código de la jerarquía (dec/cen/mil para los decimales) y
+// [Numero] lleva los millares separados por "-"; varios números se unen
+// con "+" (ej. "U-950-000+D-1-234.svg").
+function groupThousands(digitsStr) {
+  let out = "";
+  let count = 0;
+  for (let i = digitsStr.length - 1; i >= 0; i--) {
+    out = digitsStr[i] + out;
+    count++;
+    if (count % 3 === 0 && i !== 0) out = "-" + out;
+  }
+  return out;
+}
+const FILENAME_PREFIX = { d: "dec", c: "cen", m: "mil" };
+
+// ---- Nombre con operación: [A|S|M|D]-[Numero]-[Numero]….SVG ----
+// Cada número en unidades reales (aplicando su jerarquía): "24" en
+// Decenas → "240".
+function shiftedDigitsToStr(digitsStr, shift) {
+  digitsStr = digitsStr.replace(/^0+(?=\d)/, "") || "0";
+  if (shift >= 0) {
+    return digitsStr + "0".repeat(shift);
+  }
+  const decLen = -shift;
+  let s = digitsStr;
+  while (s.length <= decLen) s = "0" + s;
+  const entera = s.slice(0, s.length - decLen) || "0";
+  const decimal = s.slice(s.length - decLen).replace(/0+$/, "");
+  return decimal.length ? `${entera}.${decimal}` : entera;
+}
+function termToUnitValueStr(digitsStr, jerarquiaCode) {
+  const nivel = NIVEL[jerarquiaCode] || 0;
+  const [parteEntera, parteDecimal = ""] = digitsStr.split(".");
+  const allDigits = (parteEntera || "0") + parteDecimal || "0";
+  return shiftedDigitsToStr(allDigits, nivel - parteDecimal.length);
+}
+
+function buildFilename(cfg) {
+  const d = cfg.datos;
+  if (cfg.op === "ninguna") {
+    const combined = d.numeros
+      .map((row) => {
+        const ordenPart = FILENAME_PREFIX[row.jerarquia] || row.jerarquia;
+        const numero = row.numero.trim();
+        const [entera, decimal] = numero.split(".");
+        return `${ordenPart}-${groupThousands(entera)}${numero.includes(".") ? "." + decimal : ""}`;
+      })
+      .join("+");
+    return `${combined}.svg`;
+  }
+  const val = (t) => termToUnitValueStr(t.numero.trim() || "0", t.jerarquia);
+  const LETRA = { suma: "A", resta: "S", multiplicacion: "M", division: "D" };
+  let numeros;
+  if (cfg.op === "suma") numeros = d.sumandos.map(val);
+  else if (cfg.op === "resta") numeros = [d.minuendo, ...d.sustraendos].map(val);
+  else if (cfg.op === "multiplicacion") numeros = [val(d.multiplicando), val(d.multiplicador)];
+  else numeros = [val(d.dividendo), cfg.division.divisor.trim()];
+  return `${[LETRA[cfg.op], ...numeros].join("-")}.SVG`;
+}
+
+// =====================================================================
+// Estado e interfaz
+// =====================================================================
+const nuevo = (numero) => ({ numero, jerarquia: "U", formato: true });
+const datos = {
+  numeros: [nuevo("950000")],
+  sumandos: [nuevo("436"), nuevo("523")],
+  minuendo: nuevo("257"),
+  sustraendos: [nuevo("124")],
+  multiplicando: nuevo("2.31"),
+  multiplicador: nuevo("24"),
+  dividendo: nuevo("93"),
+};
+
+const $ = (id) => document.getElementById(id);
+
+function currentMaxMin() {
+  return {
+    maxPow: parseInt($("hastaOrden").value, 10),
+    minPow: parseInt($("hastaOrdenDecimal").value, 10),
+  };
+}
+
+// HTML de las <option> de jerarquía válidas para el rango actual y el
+// valor final (corregido a "U" si el guardado dejó de ser válido).
+function jerarquiaOptionsHTML(selectedCode, maxPow, minPow, soloEnteros) {
+  const opts = ORDERS.filter(
+    (o) => o.pow <= maxPow && o.pow >= (soloEnteros ? Math.max(minPow, 0) : minPow),
+  ).sort((a, b) => a.pow - b.pow);
+  const value = opts.some((o) => o.code === selectedCode) ? selectedCode : "U";
+  return {
+    html: opts
+      .map((o) => `<option value="${o.code}"${o.code === value ? " selected" : ""}>${o.label}</option>`)
+      .join(""),
+    value,
+  };
+}
+
+// Una fila de la interfaz para un número: etiqueta, campo, jerarquía,
+// casilla «Coma y punto» y, en las listas, botón «Quitar».
+function filaNumeroDOM(t, etiqueta, { soloEnteros, placeholder, quitar }) {
+  const { maxPow, minPow } = currentMaxMin();
+  const { html, value } = jerarquiaOptionsHTML(t.jerarquia, maxPow, minPow, soloEnteros);
+  t.jerarquia = value;
+  const row = document.createElement("div");
+  row.className = "numeroRow";
+  row.innerHTML =
+    `<span class="tag">${etiqueta}</span>` +
+    `<input type="text" class="textInput numero-input" inputmode="decimal" placeholder="${placeholder}">` +
+    `<select class="jerarquia-select" aria-label="Jerarquía de ${etiqueta.toLowerCase()}">${html}</select>` +
+    `<label class="checkbox"><input type="checkbox" class="fmt"${t.formato !== false ? " checked" : ""} /><span class="box">✓</span>Coma y punto</label>` +
+    (quitar ? `<button type="button" class="btn btn-ghost removeBtn"${quitar.puede ? "" : " disabled"}>Quitar</button>` : "");
+  const input = row.querySelector(".numero-input");
+  input.value = t.numero;
+  input.addEventListener("input", () => {
+    t.numero = input.value;
+    render();
+  });
+  row.querySelector(".jerarquia-select").addEventListener("change", (e) => {
+    t.jerarquia = e.target.value;
+    render();
+  });
+  row.querySelector(".fmt").addEventListener("change", (e) => {
+    t.formato = e.target.checked;
+    render();
+  });
+  if (quitar) {
+    row.querySelector(".removeBtn").addEventListener("click", () => {
+      if (!quitar.puede) return;
+      quitar.fn();
+      renderForms();
+      render();
+    });
+  }
+  return row;
+}
+
+function llenar(id, filas) {
+  const c = $(id);
+  c.innerHTML = "";
+  filas.forEach((f) => c.appendChild(f));
+}
+
+// Filas de una lista con un mínimo de elementos (no se puede quitar por
+// debajo de él).
+function filasDeLista(lista, nombre, minimo, placeholder) {
+  return lista.map((t, i) =>
+    filaNumeroDOM(t, `${nombre} ${i + 1}`, {
+      placeholder,
+      quitar: { puede: lista.length > minimo, fn: () => lista.splice(i, 1) },
+    }),
+  );
+}
+
+function renderDecimalesSelect() {
+  const sel = $("decimales");
+  const maxDec = Math.max(0, -currentMaxMin().minPow);
+  const prev = parseInt(sel.value, 10);
+  const labels = ["Ninguno (división entera)", "1 decimal", "2 decimales", "3 decimales"];
+  sel.innerHTML = labels
+    .slice(0, maxDec + 1)
+    .map((l, i) => `<option value="${i}">${l}</option>`)
+    .join("");
+  sel.value = String(!isNaN(prev) && prev <= maxDec ? prev : Math.min(2, maxDec));
+}
+
+function renderResultJerarquiaSelect() {
+  const sel = $("resultJerarquia");
+  const { maxPow, minPow } = currentMaxMin();
+  const { html, value } = jerarquiaOptionsHTML(sel.value || "U", maxPow, minPow, false);
+  sel.innerHTML = html;
+  sel.value = value;
+}
+
+function renderForms() {
+  llenar("numerosList", filasDeLista(datos.numeros, "Número", 1, "Ej. 4500 o 63.21"));
+  llenar("sumandosList", filasDeLista(datos.sumandos, "Sumando", 2, "Ej. 19.5"));
+  llenar("minuendoRow", [filaNumeroDOM(datos.minuendo, "Minuendo", { placeholder: "Ej. 19.5" })]);
+  llenar("sustraendosList", filasDeLista(datos.sustraendos, "Sustraendo", 1, "Ej. 19.5"));
+  llenar("multiplicandoRow", [filaNumeroDOM(datos.multiplicando, "Multiplicando", { placeholder: "Ej. 2.31" })]);
+  llenar("multiplicadorRow", [
+    filaNumeroDOM(datos.multiplicador, "Multiplicador", { placeholder: "Ej. 24 (entero)", soloEnteros: true }),
+  ]);
+  llenar("dividendoRow", [
+    filaNumeroDOM(datos.dividendo, "Dividendo", { placeholder: "Ej. 93 (entero)", soloEnteros: true }),
+  ]);
+  renderDecimalesSelect();
+  renderResultJerarquiaSelect();
+}
+
+const OP_RESULT_LABEL = {
+  suma: "Mostrar resultado",
+  resta: "Mostrar resultado",
+  multiplicacion: "Mostrar resultado",
+  division: "Mostrar cociente y procedimiento",
+};
+
+// Solo se ve el panel de la operación elegida (los demás se ocultan, no se
+// quitan del DOM) y el de «Resultado» cuando hay operación.
+function updateOpPanels() {
+  const op = $("operacion").value;
+  document.querySelectorAll("[data-op-panel]").forEach((el) => {
+    el.hidden = el.dataset.opPanel !== op;
+  });
+  $("panelResultado").hidden = op === "ninguna";
+  if (op !== "ninguna") $("mostrarResultadoLabel").textContent = OP_RESULT_LABEL[op];
+}
+
+function leerConfig() {
+  const { maxPow, minPow } = currentMaxMin();
+  return {
+    op: $("operacion").value,
+    datos,
+    maxPow,
+    minPow,
+    showClase: $("mostrarClase").checked,
+    showPeriodos: $("mostrarPeriodos").checked,
+    digitColor: $("colorDigitos").value,
+    resultado: {
+      mostrar: $("mostrarResultado").checked,
+      comas: $("mostrarComas").checked,
+      punto: $("mostrarPuntoResultado").checked,
+      jerarquia: $("resultJerarquia").value,
+      puntoProductos: $("mostrarPuntoProductos").checked,
+    },
+    division: {
+      divisor: $("divisor").value,
+      decimales: parseInt($("decimales").value, 10) || 0,
+    },
+  };
+}
+
+function render() {
+  const cfg = leerConfig();
+  const result = buildSVG(cfg);
+  const panel = document.querySelector(`[data-op-panel="${cfg.op}"]`);
+  const campo = result.error ? result.error.campo : undefined;
+  // Marca en rojo el campo que causó el error y limpia los demás.
+  document.querySelectorAll(".numero-input").forEach((el) => el.classList.remove("hasError"));
+  panel.querySelectorAll(".numero-input").forEach((el, i) => el.classList.toggle("hasError", i === campo));
+  $("divisor").classList.toggle("hasError", campo === "divisor");
+  if (result.error) {
+    $("errorMessage").textContent = result.error.message;
+    $("errorCallout").style.display = "flex";
+    return;
+  }
+  $("errorCallout").style.display = "none";
+  $("svgHolder").innerHTML = result.svg;
+}
+
+async function download() {
+  const result = buildSVG(leerConfig());
+  if (result.error || !result.svg) return;
+  await Banco.guardarSVG(result.svg, result.filename); // compartido/guardar-svg.js
+}
+
+// ---- Eventos ----
+[
+  "colorDigitos",
+  "mostrarClase",
+  "mostrarPeriodos",
+  "mostrarResultado",
+  "mostrarComas",
+  "mostrarPuntoResultado",
+  "resultJerarquia",
+  "mostrarPuntoProductos",
+  "divisor",
+  "decimales",
+].forEach((id) => {
+  $(id).addEventListener("input", render);
+  $(id).addEventListener("change", render);
+});
+$("operacion").addEventListener("change", () => {
+  updateOpPanels();
+  render();
+});
+["hastaOrden", "hastaOrdenDecimal"].forEach((id) =>
+  $(id).addEventListener("change", () => {
+    renderForms();
+    render();
+  }),
+);
+[
+  ["addNumero", datos.numeros],
+  ["addSumando", datos.sumandos],
+  ["addSustraendo", datos.sustraendos],
+].forEach(([id, lista]) =>
+  $(id).addEventListener("click", () => {
+    lista.push(nuevo("0"));
+    renderForms();
+    render();
+  }),
+);
+$("downloadBtn").addEventListener("click", download);
+// Enter en cualquier campo de número (o en el divisor) guarda el SVG.
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Enter") return;
+  if (!e.target.matches(".numero-input, #divisor")) return;
+  e.preventDefault();
+  download();
+});
+
+renderForms();
+updateOpPanels();
+render();

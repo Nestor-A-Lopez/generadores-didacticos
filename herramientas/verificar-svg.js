@@ -1,5 +1,5 @@
-// Verificación de la salida de los generadores: exporta 43 casos fijos
-// (de 6 a 7 por generador) y da, para cada uno, el nombre de archivo, el
+// Verificación de la salida de los generadores: exporta 57 casos fijos
+// (de 6 a 14 por generador) y da, para cada uno, el nombre de archivo, el
 // tamaño y un hash SHA-256 del SVG. Sirve para comprobar que un cambio
 // que no debía tocar las figuras (mover archivos, reorganizar compartido/,
 // refactorizar) deja el SVG idéntico byte a byte.
@@ -23,6 +23,7 @@ const RUTAS = {
   "recta-numerica": "../sitio/recta-numerica/index.html",
   tabla: "../sitio/tabla-valor-posicional/index.html",
   operaciones: "../sitio/operaciones/index.html",
+  "valor-posicional": "../sitio/valor-posicional/index.html",
 };
 
 // Pasos: ["set", selector, valor] (cambia el valor o la casilla y dispara
@@ -85,6 +86,24 @@ const CASOS = {
     "div-93-4": [["set", "#operacion", "division"], ["set", "#dividendoRow .num@0", "93"], ["set", "#divisor", "4"]],
     "suma-sin-res": [["set", "#mostrarResultado", false]],
     "resta-dec": [["set", "#operacion", "resta"], ["set", "#mostrarMilesimos", true], ["set", "#minuendoRow .num@0", "5.4"], ["set", "#sustraendosList .num@0", "2.35"]],
+  },
+  // Generador unificado. Los 7 primeros repiten los de «tabla» con la
+  // operación «Ninguna»: su hash debe ser idéntico al de «tabla».
+  "valor-posicional": {
+    "950000": [["set", "#numerosList .numero-input@0", "950000"]],
+    "9673": [["set", "#numerosList .numero-input@0", "9673"]],
+    "dos-decimales": [["set", "#hastaOrdenDecimal", "-3"], ["set", "#numerosList .numero-input@0", "0.37"], ["click", "#addNumero"], ["set", "#numerosList .numero-input@1", "0.370"]],
+    "427-punto": [["set", "#numerosList .numero-input@0", "427."]],
+    "sin-coma-clase": [["set", "#numerosList .fmt@0", false], ["set", "#mostrarClase", true], ["set", "#numerosList .numero-input@0", "4500"]],
+    "periodos-millon": [["set", "#hastaOrden", "8"], ["set", "#mostrarPeriodos", true], ["set", "#numerosList .numero-input@0", "12345678"]],
+    "vacia": [["set", "#numerosList .numero-input@0", ""]],
+    "suma-dec": [["set", "#operacion", "suma"], ["set", "#hastaOrden", "2"], ["set", "#hastaOrdenDecimal", "-3"], ["set", "#sumandosList .numero-input@0", "0.15"], ["set", "#sumandosList .numero-input@1", "0.028"]],
+    "suma-3": [["set", "#operacion", "suma"], ["set", "#hastaOrden", "2"], ["set", "#sumandosList .numero-input@0", "125"], ["set", "#sumandosList .numero-input@1", "348"], ["click", "#addSumando"], ["set", "#sumandosList .numero-input@2", "27"]],
+    "resta-miles": [["set", "#operacion", "resta"], ["set", "#minuendoRow .numero-input@0", "8750"], ["set", "#sustraendosList .numero-input@0", "2300"]],
+    "mult-2.31x24": [["set", "#operacion", "multiplicacion"], ["set", "#hastaOrden", "2"], ["set", "#hastaOrdenDecimal", "-2"]],
+    "div-93-4": [["set", "#operacion", "division"], ["set", "#hastaOrden", "2"], ["set", "#hastaOrdenDecimal", "-2"], ["set", "#decimales", "0"]],
+    "suma-sin-res": [["set", "#operacion", "suma"], ["set", "#hastaOrden", "2"], ["set", "#mostrarResultado", false]],
+    "resta-dec-cero": [["set", "#operacion", "resta"], ["set", "#hastaOrden", "2"], ["set", "#hastaOrdenDecimal", "-2"], ["set", "#minuendoRow .numero-input@0", "05.4"], ["set", "#sustraendosList .numero-input@0", "2.35"]],
   },
 };
 
