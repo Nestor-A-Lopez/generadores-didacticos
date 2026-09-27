@@ -551,24 +551,141 @@ body {
 .barra .plegable {
   padding-top: var(--space-5);
 }
-/* Agrupaciones y color, lado a lado mientras quepan. */
+/* Agrupaciones, color de las jerarquías y color de los números, lado a
+   lado mientras quepan (repartidos a lo ancho). */
 .tablaOpciones {
   flex-direction: row;
   flex-wrap: wrap;
   align-items: flex-start;
+  justify-content: space-between;
   gap: var(--space-6) var(--space-10);
 }
 .tablaOpciones .field {
   flex: 0 1 auto;
 }
-#colorDigitos {
+.tablaOpciones .colorNumeros {
+  flex: 0 1 320px;
+}
+
+/* ---- «Color de las jerarquías» (como «Color de los bloques» de
+   numeros-dienes) ----
+   Tres celdas (Unidad | Decena | Centena) separadas por sus bordes
+   internos. En cada una, dos bloques: el color de defecto y el propio
+   (gris con «+» hasta que se elige uno). */
+.colores {
+  display: flex;
+  flex-wrap: wrap;
+}
+.colorPieza {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-5);
+  border-left: 1px solid var(--border-subtle);
+}
+.colorPieza:first-child {
+  padding-left: 0;
+  border-left: none;
+}
+.colorNombre {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+.colorOpciones {
+  display: flex;
+  gap: var(--space-2);
+}
+.swatch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 48px;
-  height: 44px;
-  padding: 3px;
-  border: 1px solid var(--border-default);
+  height: 48px;
+  padding: 0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: var(--radius-sm);
-  background: var(--neutral-0);
   cursor: pointer;
+  transition: box-shadow var(--duration-fast) var(--ease-standard);
+}
+/* Elegido: anillo azul separado del bloque por un filo blanco. */
+.swatch[aria-pressed="true"] {
+  box-shadow:
+    0 0 0 2px var(--neutral-0),
+    0 0 0 4px var(--action-primary);
+}
+.swatch:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--neutral-0),
+    var(--focus-ring);
+}
+.colorPieza[data-pieza="U"] .swatchDefecto {
+  background: var(--base10-unidad);
+}
+.colorPieza[data-pieza="D"] .swatchDefecto {
+  background: var(--base10-decena);
+}
+.colorPieza[data-pieza="C"] .swatchDefecto {
+  background: var(--base10-centena);
+}
+.swatchPropio {
+  background: var(--neutral-100);
+  color: var(--text-body);
+}
+.swatchPropio:hover {
+  background: var(--neutral-200);
+}
+.swatchPropio svg {
+  width: 22px;
+  height: 22px;
+}
+/* Con color propio, el bloque toma ese color (lo pone el script) y
+   pierde el «+». */
+.swatchPropio.tieneColor svg {
+  display: none;
+}
+.swatchWrap {
+  position: relative;
+  display: flex;
+}
+/* El selector nativo se abre junto al bloque. */
+.swatchWrap input[type="color"] {
+  left: 0;
+  bottom: 0;
+}
+/* Aviso al pasar el cursor (Tooltip de Vesta). Con display, como .segTip,
+   para que oculto no ensanche la página. */
+.swatchTip {
+  position: absolute;
+  z-index: 40;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  width: max-content;
+  max-width: 220px;
+  padding: 7px 11px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-inverse);
+  color: var(--text-inverse);
+  font-size: var(--text-xs);
+  line-height: 1.45;
+  text-align: left;
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+}
+.colorPieza:first-child .swatchTip {
+  left: -56px;
+  transform: none;
+}
+.colorPieza:last-child .swatchTip {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+.swatchWrap:hover .swatchTip,
+.swatchWrap:focus-within .swatchTip {
+  display: block;
 }
 
 /* ---- Panel de números ---- */
@@ -769,6 +886,23 @@ body {
   }
   .seg button {
     padding: 8px 10px;
+  }
+  .tablaOpciones .field,
+  .tablaOpciones .colorNumeros {
+    flex: 1 1 100%;
+  }
+  /* Las tres celdas de color ocupan el ancho por partes iguales. */
+  .colores {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .colorPieza,
+  .colorPieza:first-child {
+    padding: 0 var(--space-2);
+  }
+  .swatch {
+    width: 40px;
+    height: 40px;
   }
 }
 

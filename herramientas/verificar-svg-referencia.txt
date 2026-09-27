@@ -55,3 +55,6 @@ valor-posicional/mult-2.31x24: M-2.31-24.SVG 39942 1f424d22889630c7
 valor-posicional/div-93-4: D-93-4.SVG 37575 d9e542da0815aaea
 valor-posicional/suma-sin-res: A-436-523.SVG 18867 1c915572ac8a7fc3
 valor-posicional/resta-dec-cero: S-5.4-2.35.SVG 36469 53286d41f6039ad8
+valor-posicional/celdas-propias: U-9-673.svg 29527 d108242866a95076
+valor-posicional/numeros-color: U-4-521.378.svg 47080 5aa024f8a51c79a2
+valor-posicional/suma-color-celda: A-436-523.SVG 21578 7b755350d267f13e

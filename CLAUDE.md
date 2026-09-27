@@ -16,7 +16,7 @@ AVISOS-DE-TERCEROS.md           ← material de terceros: qué es, de dónde vie
 .claude/skills/vesta/           ← sistema de diseño Vesta (copia local, como skill)
 herramientas/                   ← no se publican
 ├── extraer_glifos.py           ← regenera sitio/compartido/glifos.js
-└── verificar-svg.html/.js      ← comprueba que el SVG exportado no cambió (57 casos)
+└── verificar-svg.html/.js      ← comprueba que el SVG exportado no cambió (60 casos)
 sitio/                          ← lo único que se publica
 ├── index.html  style.css       ← portada
 ├── licencia/index.html         ← «Licencia y avisos» (usa ../style.css)
@@ -102,7 +102,7 @@ Todo lo publicable está en `sitio/`. Cada carpeta de generador tiene `index.htm
 | `sitio/estrategias/` | Completar la decena en suma y resta; en la resta, pestaña «Distancia entre dos números» (recta numérica + material + ecuación) | — |
 | `sitio/recta-numerica/` | Recta numérica: extremos, paso y separación entre marcas | — |
 | `sitio/compartido/` | Tokens, glifos y guardado que usan varios generadores; ver «Carpeta compartida» | — |
-| `herramientas/` | `extraer_glifos.py` (regenera `sitio/compartido/glifos.js`) y `verificar-svg.html` (57 casos de exportación con su hash; `verificar-svg-referencia.txt` es la corrida del 2026-09-26) | — |
+| `herramientas/` | `extraer_glifos.py` (regenera `sitio/compartido/glifos.js`) y `verificar-svg.html` (60 casos de exportación con su hash; `verificar-svg-referencia.txt` es la corrida del 2026-09-26) | — |
 | `.claude/skills/vesta/` | Sistema de diseño **Vesta** (no es un generador; ver abajo) | `SKILL.md`, `readme.md` |
 
 Antes, cada generador era un solo `.html` con prefijo `_` (para que quedara arriba de la lista de SVG en el explorador); ahora todos se llaman `index.html`. Hasta el 2026-09-26 los generadores estaban en la raíz (las tablas, en `tabla-valor-posicional/tabla-valor-posicional/` y `tabla-valor-posicional/operaciones/`), el script de glifos en `fracciones/_extraer_glifos.py` y Vesta en `fracciones/_desing-system-vesta/`. Los nombres viejos siguen en el historial de git (`git log --follow`).
@@ -138,7 +138,7 @@ Los códigos de orden son `U D C UM DM CM UMM…` para enteros y `dec cen mil` (
 
 ## Colores de las figuras
 
-- Material base 10 (fijos; los alumnos ya los asocian con el material físico): unidad `#57A639` (verde), decena `#1C75BC` (azul), centena `#CC2027` (rojo). Son tokens de Vesta: `--base10-unidad`, `--base10-decena`, `--base10-centena`. Son los únicos colores de figura que viven en el sistema de diseño. Son los de defecto: en numeros-dienes, «Color de los bloques» deja elegir otro por pieza (`colorPieza` en su `script.js`), y con los de defecto el SVG no cambia.
+- Material base 10 (fijos; los alumnos ya los asocian con el material físico): unidad `#57A639` (verde), decena `#1C75BC` (azul), centena `#CC2027` (rojo). Son tokens de Vesta: `--base10-unidad`, `--base10-decena`, `--base10-centena`. Son los únicos colores de figura que viven en el sistema de diseño. Son los de defecto: en numeros-dienes, «Color de los bloques» deja elegir otro por pieza (`colorPieza` en su `script.js`), y en valor-posicional, «Color de las jerarquías» otro para las celdas de cada orden (`colorCeldaDe`); con los de defecto el SVG no cambia.
 - Fracciones: `morado #8080F0`, `azul #2ED9D9`, `naranja #f48600`, `rojo #E8384F`, `verde #7CBF33`, `amarillo #ffd500` (`COLORS` de `sitio/fracciones/script.js`).
 - Ninguna paleta de figuras se «armoniza» con la rampa azul de Vesta. La de fracciones no está en Vesta.
 

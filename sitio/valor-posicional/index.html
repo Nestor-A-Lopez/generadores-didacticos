@@ -125,9 +125,56 @@
                     </label>
                   </div>
                 </div>
+                <!-- Relleno de las celdas de cada orden (C, D, U y dec, cen,
+                     mil), como «Color de los bloques» de numeros-dienes: el
+                     bloque del color de defecto y otro para uno propio, que
+                     guarda su <input type="color">. -->
                 <div class="field">
-                  <label class="fieldLabel" for="colorDigitos">Color de los números</label>
-                  <input type="color" id="colorDigitos" value="#000000" />
+                  <span class="fieldLabel" id="coloresLabel">Color de las jerarquías</span>
+                  <div class="colores" role="group" aria-labelledby="coloresLabel">
+                    <div class="colorPieza" data-pieza="U" role="group" aria-label="Color de las unidades">
+                      <span class="colorNombre">Unidad</span>
+                      <div class="colorOpciones">
+                        <button type="button" class="swatch swatchDefecto" data-opcion="defecto" aria-label="Verde original de las unidades"></button>
+                        <span class="swatchWrap">
+                          <button type="button" class="swatch swatchPropio" data-opcion="propio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+                          <input type="color" class="visuallyHidden" tabindex="-1" aria-hidden="true" id="celdaU" value="#57a639" />
+                          <span class="swatchTip" role="tooltip"></span>
+                        </span>
+                      </div>
+                    </div>
+                    <div class="colorPieza" data-pieza="D" role="group" aria-label="Color de las decenas">
+                      <span class="colorNombre">Decena</span>
+                      <div class="colorOpciones">
+                        <button type="button" class="swatch swatchDefecto" data-opcion="defecto" aria-label="Azul original de las decenas"></button>
+                        <span class="swatchWrap">
+                          <button type="button" class="swatch swatchPropio" data-opcion="propio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+                          <input type="color" class="visuallyHidden" tabindex="-1" aria-hidden="true" id="celdaD" value="#1c75bc" />
+                          <span class="swatchTip" role="tooltip"></span>
+                        </span>
+                      </div>
+                    </div>
+                    <div class="colorPieza" data-pieza="C" role="group" aria-label="Color de las centenas">
+                      <span class="colorNombre">Centena</span>
+                      <div class="colorOpciones">
+                        <button type="button" class="swatch swatchDefecto" data-opcion="defecto" aria-label="Rojo original de las centenas"></button>
+                        <span class="swatchWrap">
+                          <button type="button" class="swatch swatchPropio" data-opcion="propio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+                          <input type="color" class="visuallyHidden" tabindex="-1" aria-hidden="true" id="celdaC" value="#cc2027" />
+                          <span class="swatchTip" role="tooltip"></span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Cifras en negro o con el color de la celda de su orden. -->
+                <div class="field colorNumeros">
+                  <span class="fieldLabel" id="colorNumerosLabel">Color de los números</span>
+                  <div class="seg segFill" role="group" aria-labelledby="colorNumerosLabel" data-for="colorNumeros" data-animate></div>
+                  <select id="colorNumeros" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+                    <option value="negro" selected>Negro</option>
+                    <option value="color">Color</option>
+                  </select>
                 </div>
               </div>
             </div>

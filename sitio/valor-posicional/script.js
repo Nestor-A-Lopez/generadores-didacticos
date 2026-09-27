@@ -670,6 +670,12 @@ function makeBorderedCell(gridLeft, gridRight, stroke) {
 //   extra(geo)     devuelve más elementos sueltos (galera, divisor, resto)
 function dibujarTabla(filas, cfg, opts) {
   const { maxPow, minPow, showClase, digitColor } = cfg;
+  // Relleno de la celda de cada orden (U, D, C; los decimales usan el de su
+  // colorKey) y color de sus cifras: negro (digitColor) o, con «Color», el
+  // de la celda de su orden. Sin cfg.colorCeldas, los del material.
+  const colorCelda = (key) => (cfg.colorCeldas || COLORS)[key];
+  const colorCifra = (pow) =>
+    cfg.colorNumeros === "color" ? colorCelda(ORDER_BY_POW[pow].colorKey) : digitColor;
   const s = SCALE;
   const leftPad = opts.leftPad || 0;
   const separadorDesde = opts.separadorDesde || 1;
@@ -776,7 +782,7 @@ function dibujarTabla(filas, cfg, opts) {
     const x0 = leftPad + i * colW;
     const fSize = fittedFontSize(order.cellLabel, GLYPH_DATA.bold, fLetter, colW * 0.9);
     svgTable += "<g>";
-    svgTable += borderedCell(x0, letterTop, colW, letterH, COLORS[order.colorKey]);
+    svgTable += borderedCell(x0, letterTop, colW, letterH, colorCelda(order.colorKey));
     svgTable += glyphRun(order.cellLabel, GLYPH_DATA.bold, x0 + colW / 2, letterTop + letterH / 2, fSize, LETTERROW_REF, "#ffffff");
     svgTable += "</g>";
   });
@@ -798,7 +804,7 @@ function dibujarTabla(filas, cfg, opts) {
       const val = cols[pow];
       if (val !== null && val !== undefined) {
         const cx = leftPad + i * colW + colW / 2;
-        svgNumbers += glyphRun(String(val), GLYPH_DATA.regular, cx, digitCY, fDigit, DIGIT_REF, digitColor);
+        svgNumbers += glyphRun(String(val), GLYPH_DATA.regular, cx, digitCY, fDigit, DIGIT_REF, colorCifra(pow));
       }
     });
 
@@ -859,6 +865,7 @@ function dibujarTabla(filas, cfg, opts) {
 // buildSVG (pura) y nombre de archivo
 // =====================================================================
 // cfg = { op, datos, maxPow, minPow, showClase, showPeriodos, digitColor,
+//         colorCeldas: { U, D, C }, colorNumeros: "negro" | "color",
 //         resultado: { mostrar, comas, punto, jerarquia, puntoProductos },
 //         division: { divisor, decimales } }
 function buildSVG(cfg) {
@@ -1180,6 +1187,14 @@ function syncResultado() {
   syncSegmented("decimales");
 }
 
+// Relleno elegido para las celdas de un orden ("U", "D" o "C"): el del
+// material (COLORS, tal cual, para que el SVG de defecto no cambie) o el
+// propio de su <input type="color">.
+function colorCeldaDe(key) {
+  const celda = document.querySelector(`.colorPieza[data-pieza="${key}"]`);
+  return celda.dataset.activo === "propio" ? $("celda" + key).value : COLORS[key];
+}
+
 function leerConfig() {
   const { maxPow, minPow } = currentMaxMin();
   return {
@@ -1189,7 +1204,11 @@ function leerConfig() {
     minPow,
     showClase: $("mostrarClase").checked,
     showPeriodos: $("mostrarPeriodos").checked,
-    digitColor: $("colorDigitos").value,
+    // Signos, divisor y «Resto» van siempre en negro; las cifras de la
+    // tabla, según «Color de los números».
+    digitColor: "#000000",
+    colorNumeros: $("colorNumeros").value,
+    colorCeldas: { U: colorCeldaDe("U"), D: colorCeldaDe("D"), C: colorCeldaDe("C") },
     resultado: {
       mostrar: $("mostrarResultado").checked,
       comas: $("mostrarComas").checked,
@@ -1244,7 +1263,7 @@ async function download() {
 
 // ---- Eventos ----
 [
-  "colorDigitos",
+  "colorNumeros",
   "mostrarClase",
   "mostrarPeriodos",
   "mostrarResultado",
@@ -1403,6 +1422,76 @@ document.querySelectorAll(".plegable").forEach((seccion) => {
     seccion.querySelectorAll(".seg[data-for]").forEach(placeIndicator);
   });
 });
+
+// ---- «Color de las jerarquías»: un color por orden ----
+// (Como «Color de los bloques» de numeros-dienes.) Cada orden tiene dos
+// bloques: el de su color de defecto y otro que abre el selector de color
+// (gris con «+» mientras no hay color propio; después, del color elegido).
+// Elegir el mismo color que el de defecto no cuenta como propio.
+(function () {
+  const NOMBRE = { U: "las unidades", D: "las decenas", C: "las centenas" };
+
+  // Pone al día los dos bloques de un orden y su aviso.
+  function syncColor(celda) {
+    const k = celda.dataset.pieza;
+    const input = $("celda" + k);
+    const propio = celda.querySelector('[data-opcion="propio"]');
+    const tieneColor = celda.dataset.propio === "si";
+    const activo = celda.dataset.activo;
+    celda.querySelector('[data-opcion="defecto"]').setAttribute("aria-pressed", String(activo !== "propio"));
+    propio.setAttribute("aria-pressed", String(activo === "propio"));
+    propio.classList.toggle("tieneColor", tieneColor);
+    propio.style.background = tieneColor ? input.value : "";
+    propio.setAttribute(
+      "aria-label",
+      tieneColor ? `Cambiar el color propio de ${NOMBRE[k]}` : `Elegir otro color para ${NOMBRE[k]}`,
+    );
+    celda.querySelector(".swatchTip").textContent = tieneColor
+      ? "Haz clic para cambiar este color. Para volver al original, elige el primer bloque."
+      : `Elige otro color para las celdas de ${NOMBRE[k]}`;
+  }
+
+  document.querySelectorAll(".colorPieza").forEach((celda) => {
+    const k = celda.dataset.pieza;
+    const input = $("celda" + k);
+    celda.dataset.activo = "defecto";
+    celda.dataset.propio = "no";
+
+    celda.querySelector('[data-opcion="defecto"]').addEventListener("click", () => {
+      celda.dataset.activo = "defecto";
+      syncColor(celda);
+      render();
+    });
+
+    celda.querySelector('[data-opcion="propio"]').addEventListener("click", () => {
+      // Si ya hay color propio, se usa de inmediato; el selector permite cambiarlo.
+      if (celda.dataset.propio === "si") {
+        celda.dataset.activo = "propio";
+        syncColor(celda);
+        render();
+      }
+      try {
+        if (input.showPicker) input.showPicker();
+        else input.click();
+      } catch (e) {
+        input.click();
+      }
+    });
+
+    // "input" llega mientras se mueve el selector; "change", al cerrarlo.
+    const elegir = () => {
+      const igual = input.value.toLowerCase() === COLORS[k].toLowerCase();
+      celda.dataset.propio = igual ? "no" : "si";
+      celda.dataset.activo = igual ? "defecto" : "propio";
+      syncColor(celda);
+      render();
+    };
+    input.addEventListener("input", elegir);
+    input.addEventListener("change", elegir);
+
+    syncColor(celda);
+  });
+})();
 
 renderForms();
 updateOpPanels();
