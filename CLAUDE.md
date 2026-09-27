@@ -158,7 +158,7 @@ Cómo se aplica en este repo:
 Coordinación entre diseño y código:
 
 - Los cambios de diseño (colores, tipografía, componentes, pantallas) se hacen en Vesta, en claude.ai, y de ahí se bajan a la copia local (`.claude/skills/vesta/`) y a `sitio/compartido/vesta.css`. No inventar colores ni estilos nuevos directamente en un generador.
-- Si al programar surge un componente reutilizable nuevo, se sube a Vesta con `/design-sync` (un componente a la vez, sin reemplazar el sistema completo).
+- Si al programar surge un componente reutilizable nuevo, se pide **dentro del proyecto de Vesta en claude.ai**, un componente a la vez: un mensaje con su anatomía, medidas, tokens y comportamiento tomados del generador, aclarando que no cambie el namespace `EntornoDesignSystem_a1e3d1` ni toque los componentes que ya existen (ver pendiente 1). Después se baja a la copia local. **No se usa `/design-sync`**: esa herramienta importa un repositorio de componentes React completo a un proyecto nuevo de Claude Design (o reemplaza el contenido de uno existente); no sirve para agregar un componente a Vesta, y subiría `_ds_bundle.js` y los `.jsx` de la copia local (comprobado el 2026-09-27).
 
 ## Reglas transversales para el SVG exportado
 
@@ -194,7 +194,7 @@ En este orden, y preguntando antes de mover o borrar:
 2. **Separación entre interruptores contiguos** (regla en «Sistema de diseño "Vesta"»: 9 px entre pistas). Hoy la cumplen «Agrupaciones» de valor-posicional, solo desde 640 px (`.tablaOpciones .switch + .switch { margin-top: -9px }` en su `style.css`), y fracciones a todos los anchos (desde el rediseño del 2026-09-27: `.switch + .switch { margin-top: -9px }`, con el interruptor de numeros-dienes, medido en 9 px). Falta:
    - valor-posicional: «Agrupaciones» por debajo de 640 px y los interruptores de «¿Cómo se ve el resultado?» (hoy van pegados, sin solapar: 18 px entre pistas). Lo natural es mover la regla a `.switches` (o `.switch + .switch`) para todo el generador.
    - numeros-dienes («¿Cuál es la cantidad?») y estrategias: revisar qué interruptores quedan seguidos (en numeros-dienes, «Mostrar valor» y «Mostrar descomposición» solo lo son cuando la opción de en medio está oculta) y medir su separación actual; en estrategias el interruptor es otro componente (`.switch input` con `::after`), así que la cuenta de los 9 px se rehace con su pista.
-   - Si se vuelve regla de Vesta, subirla al sistema de diseño (con `/design-sync`) y no solo al CSS de cada generador.
+   - Si se vuelve regla de Vesta, pedirla en el proyecto de Vesta en claude.ai (ver «Coordinación entre diseño y código») y no dejarla solo en el CSS de cada generador. Ya va incluida en el pedido de `SwitchMenu` de fracciones (ver su `CLAUDE.md`, sección 9).
 3. **Retirar «Tabla de valor posicional» (`sitio/tabla-valor-posicional/`) y «Operaciones en la tabla» (`sitio/operaciones/`)** (decisión del usuario, 2026-09-27): los dos roles ya los cumple «Tabla de valor posicional y operaciones» (`sitio/valor-posicional/`). Al hacerlo, preguntando antes de borrar:
    - Pasar al `CLAUDE.md` de valor-posicional lo que hoy explican los `CLAUDE.md` de los dos viejos y que remite a ellos (el porqué de los bordes, el agrupamiento y la tipografía), antes de borrarlos.
    - Quitar sus dos tarjetas de la portada (`sitio/index.html`) y actualizar el «Mapa de carpetas», «Quién carga qué» y «Nombres de archivo de los SVG» de este archivo.
