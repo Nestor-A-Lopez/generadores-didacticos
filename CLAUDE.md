@@ -152,6 +152,7 @@ Cómo se aplica en este repo:
 - Los generadores **no** cargan `styles.css`, `_ds_bundle.js` ni componentes React. Los tokens que usan las interfaces (colores, radios, sombras, tipografía, movimiento) viven en `sitio/compartido/vesta.css`; el `style.css` de cada generador solo tiene sus estilos propios y usa esos tokens con `var(--…)`.
 - Tipografía de la interfaz: **Fraunces** (títulos) + **Poppins** (todo lo demás), por Google Fonts.
 - Rampa azul `--blue-50 … --blue-950`, neutros con tinte azul, botones en cápsula (`999px`), tarjetas = borde 1px + `--shadow-sm`, avisos con el estilo `Callout`, foco con `--ring-focus`. Sin degradados, sin emoji, sin rebotes.
+- **Interruptores contiguos** (regla del usuario, 2026-09-26): el espacio vertical entre dos interruptores seguidos es siempre el mismo, en todos los generadores y a todos los anchos, e igual al que hay entre «Mostrar periodos» y «Mostrar clases» en valor-posicional: **9 px entre la pista de uno y la del siguiente** (con la pista de 26 px centrada en su fila de 44 px, las filas se solapan 9 px). Todavía no se aplica en todas partes: ver «Pendientes».
 - **Idioma y números:** español de México con la convención de clase: punto decimal, coma de millares y apóstrofe entre periodos, tanto en las figuras como en la interfaz (el `readme.md` de Vesta ya lo dice así desde el 2026-09-26).
 
 Coordinación entre diseño y código:
@@ -190,6 +191,10 @@ En este orden, y preguntando antes de mover o borrar:
 
 1. **Vesta**: mantener sincronizada la copia local con la de claude.ai (proyecto `a1e3d138-2f59-4b09-a37b-bfefd2e094f5`). Desde el 2026-09-26 las dos coinciden (textos, tokens con `--base10-*`, diapositivas, plantilla, UI kits, `reference-palette.png`, punto decimal; `Icon` carga Lucide 0.544.0 desde unpkg en las dos). La única diferencia es **a propósito**:
    - El namespace de los componentes: en claude.ai es `EntornoDesignSystem_a1e3d1` (lo usan los diseños ya hechos, como «Pantalla base 10»); en la copia local, `VestaDesignSystem_a1e3d1`. Por eso **no** se suben `_ds_bundle.js`, `_ds_manifest.json` ni los `.jsx` desde la copia local, y los archivos que lo mencionan se suben con el nombre de claude.ai. Los cambios en `.jsx` se piden dentro del proyecto en claude.ai, aclarando que no cambie el namespace; cambiarlo recompila el bundle y rompe los diseños que usan el nombre viejo.
+2. **Separación entre interruptores contiguos** (regla en «Sistema de diseño "Vesta"»: 9 px entre pistas). Hoy solo la cumple «Agrupaciones» de valor-posicional, y solo desde 640 px (`.tablaOpciones .switch + .switch { margin-top: -9px }` en su `style.css`). Falta:
+   - valor-posicional: «Agrupaciones» por debajo de 640 px y los interruptores de «¿Cómo se ve el resultado?» (hoy van pegados, sin solapar: 18 px entre pistas). Lo natural es mover la regla a `.switches` (o `.switch + .switch`) para todo el generador.
+   - numeros-dienes («¿Cuál es la cantidad?»), fracciones y estrategias: revisar qué interruptores quedan seguidos (en numeros-dienes, «Mostrar valor» y «Mostrar descomposición» solo lo son cuando la opción de en medio está oculta) y medir su separación actual; en fracciones y estrategias el interruptor es otro componente (`.switch input` con `::after`), así que la cuenta de los 9 px se rehace con su pista.
+   - Si se vuelve regla de Vesta, subirla al sistema de diseño (con `/design-sync`) y no solo al CSS de cada generador.
 
 ## Cómo trabajar aquí
 
