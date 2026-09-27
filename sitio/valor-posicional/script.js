@@ -1,5 +1,6 @@
 // Generador unificado de tablas de valor posicional: une el de la tabla
-// (../tabla-valor-posicional/) y el de operaciones (../operaciones/).
+// (tabla-valor-posicional/) y el de operaciones (operaciones/), que se
+// retiraron el 2026-09-27 (siguen en el historial de git).
 // Con la operación «Ninguna» dibuja uno o varios números en la tabla, igual
 // que la tabla de valor posicional (mismo SVG byte a byte); con suma, resta,
 // multiplicación o división dibuja además signos, la línea del resultado,

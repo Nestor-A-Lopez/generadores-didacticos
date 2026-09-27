@@ -1,20 +1,20 @@
 # Tabla de valor posicional y operaciones — `sitio/valor-posicional/`
 
-Generador unificado (2026-09-26, rama `unificar-tabla-operaciones`): une `../tabla-valor-posicional/` y `../operaciones/`, que eran casi la misma herramienta. Mientras no se decida retirarlos, los dos siguen publicados e intactos; su `CLAUDE.md` explica el porqué de los bordes, el agrupamiento y la tipografía, y todo eso aplica aquí igual. Las convenciones generales están en el `CLAUDE.md` de la raíz.
+Generador unificado (2026-09-26, rama `unificar-tabla-operaciones`): une los generadores «Tabla de valor posicional» (`tabla-valor-posicional/`) y «Operaciones en la tabla» (`operaciones/`), que eran casi la misma herramienta. Los dos se retiraron el 2026-09-27 (rama `retirar-tabla-operaciones`): su código y sus `CLAUDE.md` siguen en el historial de git, y lo que explicaban sobre el SVG está en «Por qué el SVG es así», abajo. Sus URL publicadas dejaron de existir, sin redirección (decisión del usuario). Las convenciones generales están en el `CLAUDE.md` de la raíz.
 
-En la portada tiene su propia tarjeta (ícono Lucide `sheet`, también en la cabecera y la pestaña), después de las de los dos generadores viejos. **Sus SVG se guardan en `_recursos/figuras/tabla-valor-posicional/`**, con o sin operación (decisión del usuario, 2026-09-26): no tiene carpeta propia en `figuras/`.
+En la portada tiene su propia tarjeta (ícono Lucide `sheet`, también en la cabecera y la pestaña). **Sus SVG se guardan en `_recursos/figuras/tabla-valor-posicional/`**, con o sin operación (decisión del usuario, 2026-09-26): no tiene carpeta propia en `figuras/`.
 
 ## Qué hace
 
 - **Operación** (`#operacion`): «Ninguna (solo números)» (por defecto), suma, resta, multiplicación o división.
-- **Con «Ninguna»** hace lo mismo que la tabla de valor posicional: uno o varios números, cada uno con su jerarquía, separados por una línea punteada. **El SVG es idéntico byte a byte al de `tabla-valor-posicional`** (lo comprueban los 7 primeros casos de `valor-posicional` en `herramientas/verificar-svg.js`).
+- **Con «Ninguna»** hace lo mismo que la tabla de valor posicional: uno o varios números, cada uno con su jerarquía, separados por una línea punteada. **El SVG es idéntico byte a byte al que daba el generador de la tabla** (lo comprueban los 7 primeros casos de `valor-posicional` en `herramientas/verificar-svg.js`: su hash en la referencia es el de ese generador).
 - **Con una operación**, lo de operaciones: signos + − × a la izquierda, línea sólida sobre el resultado, productos parciales, galera con el divisor, pasos de la división y «Resto: N». Panel «Resultado»: mostrarlo, sus comas, su punto y en qué jerarquía va el punto (`#resultJerarquia`).
 
 ## Qué se tomó de cada generador (decisión del usuario, 2026-09-26)
 
 | Aspecto | Viene de | Consecuencia |
 | --- | --- | --- |
-| Medidas y tamaños de letra del dibujo (columna 98, fila 98, encabezados 46/56; letra 40·s, comas 46·s, punto 34·s) | tabla | Las operaciones se ven más compactas que en `operaciones/`; sin margen `PAD` en el `viewBox` (comas y punto se recortan a la cuadrícula con `glyphRunClamped`) |
+| Medidas y tamaños de letra del dibujo (columna 98, fila 98, encabezados 46/56; letra 40·s, comas 46·s, punto 34·s) | tabla | Las operaciones se ven más compactas que en el generador de operaciones; sin margen `PAD` en el `viewBox` (comas y punto se recortan a la cuadrícula con `glyphRunClamped`) |
 | Lectura de los números (`computeColumns`): conserva los ceros a la izquierda, acepta «36.», valida por la posición del primer dígito | tabla | También en las operaciones: «05.4 − 2.35» dibuja el 0 en la columna D |
 | Comas relativas al punto (`intShift`) y ajuste de etiquetas (`fittedFontSize`) | tabla | Una sola regla de comas para todas las filas |
 | Rango decimal con selector fino (`#hastaOrdenDecimal`: sin decimales, décimos, centésimos, milésimos) | tabla | Sustituye a la casilla «Mostrar hasta milésimos»; «Decimales en el cociente» llega hasta `-minPow` |
@@ -22,11 +22,39 @@ En la portada tiene su propia tarjeta (ícono Lucide `sheet`, también en la cab
 | Aviso de error con título que marca el campo (`.hasError`) y **Enter** para guardar | tabla | También en las operaciones y en `#divisor` |
 | Nombres de archivo | los dos | Sin operación, `[Orden]-[Número].svg` (tabla); con operación, `[A\|S\|M\|D]-….SVG` (operaciones) |
 
-Cambios respecto a `operaciones/`, además de lo anterior:
+Cambios respecto al generador de operaciones, además de lo anterior:
 
 - «Resto: N» ya no es `<text>` (rompía la regla 1 del repo): se dibuja con glifos («Resto:» en `cmb10`, el número en `cmr10`) y va en un solo `<g>` suelto. Para eso se agregaron `R`, `t` y `:` a `compartido/glifos-tabla.js`, sin tocar los glifos que ya existían: el SVG de todos los demás generadores quedó idéntico.
 - El punto del cociente solo aparece si el cociente tiene cifras decimales (antes, 8 ÷ 4 con «2 decimales» mostraba «2.»).
 - La barra horizontal de la galera empieza en la barra vertical, así la esquina queda cerrada.
+
+## Por qué el SVG es así (no romper)
+
+Heredado de los dos generadores retirados. Estas reglas salieron de varias iteraciones, por bugs que solo aparecían al «Convertir en forma» en PowerPoint; antes de tocar geometría, bordes o agrupamiento, entender por qué están así y verificar como dice el `CLAUDE.md` de la raíz (mover un `<g>` de celda con `transform="translate(…)"` y medir en píxeles el grosor del borde).
+
+**Tipografía.** Ningún texto del dibujo usa `<text>`: cada carácter es un `<path>` de Computer Modern (`cmr10` para cifras, `cmb10` para negritas), tomado de `compartido/glifos-tabla.js` (`Banco.GLYPH_DATA_TABLA`, formato `{upm, regular, bold}`). `glyphRun` centra un texto con una caja de referencia por fila (`DIGIT_REF`, `LETTERROW_REF`, `HEADER_REF`, `PERIOD_REF`); `glyphRunClamped` además lo recorta a los límites de la cuadrícula (comas, apóstrofes y punto, que pueden caer en el borde). Si una etiqueta de clase o periodo no cabe en su celda, `fittedFontSize` reduce la letra. Las etiquetas van sin acentos («Clase de los milesimos», «millones») porque el juego no trae letras acentuadas. Un carácter nuevo se extrae con `fontTools` (`SVGPathPen` + `BoundsPen`) de `cmr10.ttf`/`cmb10.ttf` y se agrega a `glifos-tabla.js` sin tocar los que ya hay. Los signos + − × no están en ese juego: se definen en `SIGN_GLYPHS`, en el mismo espacio de diseño.
+
+**Bordes** (`makeBorderedCell` → `borderedCell`):
+- Nada de `<line>` ni `stroke` en los bordes: todo borde es un rectángulo **relleno**. El trazo centrado se recorta o redondea distinto en cada lado al convertir a formas.
+- Cada celda de encabezado (periodo, clase, orden) es **una figura autocontenida**: un rectángulo negro que cubre la celda (medio grosor más hacia afuera en los lados internos, para superponerse exacto con el de la vecina) y encima el relleno de color, recortado hacia adentro. Así, al separar una celda en PowerPoint su borde queda completo y del mismo grosor. Nunca volver a líneas de cuadrícula compartidas ni a 4 franjas por lado.
+- En el perímetro de la cuadrícula (`gridLeft`, `gridRight`, y = 0) el negro no se extiende hacia afuera y el relleno se recorta el grosor completo.
+- Todas las medidas (`colW`, `periodH`, `headerH`, `letterH`, `digitH`, `stroke`) se **redondean a enteros**, y `stroke` se fuerza a par (≥ 2) para que `stroke/2` sea entero; las coordenadas pasan además por `R()` (3 decimales). Con decimales, dos celdas vecinas caían en sub-píxeles distintos y PowerPoint redondeaba cada borde por su lado: grosores desiguales.
+- Las filas de números no tienen borde (salvo el superior, que es el inferior de la fila de órdenes) ni fondo.
+
+**Agrupamiento en dos niveles** (`svgTable` y `svgNumbers` en `dibujarTabla`):
+
+```
+svg
+ ├─ g   (la tabla: una figura al desagrupar la 1.ª vez)
+ │   └─ g  (celda de periodo / clase / orden: borde + relleno + etiqueta) × N
+ └─ cifras, signos, comas, apóstrofes, puntos, líneas, galera, divisor, «Resto: N»   ← sueltos
+```
+
+Al desagrupar una vez se separan los números de la tabla; la segunda vez, la tabla se separa celda por celda. Sin `<g transform>` envolvente ni margen en el `viewBox` (añadiría un nivel y rompería los dos desagrupados) y sin rectángulo de fondo (fondo transparente).
+
+**Líneas sueltas.** La línea sólida sobre el resultado (`row.lineAbove`) y las barras de la galera son rectángulos rellenos sueltos. El separador entre números (`dashedSeparator`) es la única `<line>`: punteada (`stroke-dasharray`), negra al 22 % de opacidad; no es borde de celda, y los punteados sobreviven a «Convertir en forma» (regla 7 de la raíz).
+
+**Comas y apóstrofes.** Se agrupan de 3 en 3 a partir de los dígitos realmente escritos, empezando a la izquierda del punto y sin invadir la parte decimal: la frontera es `intShift = Math.max(nivel, 0)` con punto real y `shift` sin él. Las variantes anteriores (`nivel` directo, `Math.max(shift, 0)`) tenían bugs ya corregidos. Cada frontera lleva coma, salvo la de periodo (potencia múltiplo de 6), que lleva apóstrofe. Si el número no llega a una frontera, no se dibuja nada ahí. El punto va siempre justo a la derecha de la columna de la jerarquía elegida (`nivel`), no en un lugar fijo: «9.5» en Decenas pone el 9 en D y el 5 en U.
 
 ## Interfaz (diseño «Tabla valor posicional» de Vesta, 2026-09-26)
 

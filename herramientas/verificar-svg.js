@@ -1,5 +1,5 @@
-// Verificación de la salida de los generadores: exporta 63 casos fijos
-// (de 6 a 14 por generador) y da, para cada uno, el nombre de archivo, el
+// Verificación de la salida de los generadores: exporta 49 casos fijos
+// (de 6 a 20 por generador) y da, para cada uno, el nombre de archivo, el
 // tamaño y un hash SHA-256 del SVG. Sirve para comprobar que un cambio
 // que no debía tocar las figuras (mover archivos, reorganizar compartido/,
 // refactorizar) deja el SVG idéntico byte a byte.
@@ -21,8 +21,6 @@ const RUTAS = {
   "numeros-dienes": "../sitio/numeros-dienes/index.html",
   estrategias: "../sitio/estrategias/index.html",
   "recta-numerica": "../sitio/recta-numerica/index.html",
-  tabla: "../sitio/tabla-valor-posicional/index.html",
-  operaciones: "../sitio/operaciones/index.html",
   "valor-posicional": "../sitio/valor-posicional/index.html",
 };
 
@@ -69,26 +67,10 @@ const CASOS = {
     "10-20-2-sep05": [["set", "#izquierda", 10], ["set", "#derecha", 20], ["set", "#paso", 2], ["set", "#separacion", 0.5]],
     "0-12-1": [["set", "#izquierda", 0], ["set", "#derecha", 12]],
   },
-  tabla: {
-    "950000": [["set", ".numero-input@0", "950000"]],
-    "9673": [["set", ".numero-input@0", "9673"]],
-    "dos-decimales": [["set", "#hastaOrdenDecimal", "-3"], ["set", ".numero-input@0", "0.37"], ["click", "#addNumero"], ["set", ".numero-input@1", "0.370"]],
-    "427-punto": [["set", "#mostrarPunto", true], ["set", ".numero-input@0", "427."]],
-    "sin-coma-clase": [["set", "#coma", false], ["set", "#mostrarClase", true], ["set", ".numero-input@0", "4500"]],
-    "periodos-millon": [["set", "#hastaOrden", "8"], ["set", "#mostrarPeriodos", true], ["set", ".numero-input@0", "12345678"]],
-    "vacia": [["set", ".numero-input@0", ""]],
-  },
-  operaciones: {
-    "suma-dec": [["set", "#mostrarMilesimos", true], ["set", "#sumandosList .num@0", "0.15"], ["set", "#sumandosList .num@1", "0.028"]],
-    "suma-3": [["set", "#sumandosList .num@0", "125"], ["set", "#sumandosList .num@1", "348"], ["click", "#addSumando"], ["set", "#sumandosList .num@2", "27"]],
-    "resta-miles": [["set", "#operacion", "resta"], ["set", "#hastaOrden", "5"], ["set", "#minuendoRow .num@0", "8750"], ["set", "#sustraendosList .num@0", "2300"]],
-    "mult-34x6": [["set", "#operacion", "multiplicacion"], ["set", "#multiplicandoRow .num@0", "34"], ["set", "#multiplicadorRow .num@0", "6"]],
-    "div-93-4": [["set", "#operacion", "division"], ["set", "#dividendoRow .num@0", "93"], ["set", "#divisor", "4"]],
-    "suma-sin-res": [["set", "#mostrarResultado", false]],
-    "resta-dec": [["set", "#operacion", "resta"], ["set", "#mostrarMilesimos", true], ["set", "#minuendoRow .num@0", "5.4"], ["set", "#sustraendosList .num@0", "2.35"]],
-  },
-  // Generador unificado. Los 7 primeros repiten los de «tabla» con la
-  // operación «Ninguna»: su hash debe ser idéntico al de «tabla».
+  // Generador unificado. Los 7 primeros repiten los casos del generador de
+  // la tabla (retirado el 2026-09-27) con la operación «Ninguna»: su hash en
+  // la referencia es el que daba ese generador, así que siguen garantizando
+  // que la salida es la de la tabla.
   "valor-posicional": {
     "950000": [["set", "#numerosList .numero-input@0", "950000"]],
     "9673": [["set", "#numerosList .numero-input@0", "9673"]],

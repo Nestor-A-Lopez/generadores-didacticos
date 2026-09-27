@@ -27,20 +27,6 @@ recta-numerica/0-100-10-sep2: 0-100-10.svg 20642 761ee7ae205c12a1
 recta-numerica/-3-3-0.5: -3-3-0.5.svg 24500 f46aaf298aeb20cc
 recta-numerica/10-20-2-sep05: 10-20-2.svg 9036 adc85fa5c3328f86
 recta-numerica/0-12-1: 0-12-1.svg 14676 f8ff6431fe8bebb5
-tabla/9673: U-9-673.svg 29527 80c43ac7c0e79d4f
-tabla/950000: U-950-000.svg 30250 7692c06540e8a879
-tabla/dos-decimales: U-0.37+U-0.370.svg 47259 5043fd8305e7da5a
-tabla/427-punto: U-427..svg 27366 d29128d39761f051
-tabla/sin-coma-clase: U-4-500.svg 28035 a09e0869cbfd6b03
-tabla/periodos-millon: U-12-345-678.svg 60186 591e47ebf2a742a4
-tabla/vacia: SIN SVG
-operaciones/suma-dec: A-0.15-0.028.SVG 37546 feec381fc8a0be25
-operaciones/suma-3: A-125-348-27.SVG 37581 3e5a1d2f3c038735
-operaciones/resta-miles: S-8750-2300.SVG 52348 29a8b580629c8f9e
-operaciones/mult-34x6: M-34-6.SVG 33900 35fb356c06d4b60f
-operaciones/div-93-4: D-93-4.SVG 39571 3b5ffa2b6f2223e7
-operaciones/suma-sin-res: A-436-523.SVG 35022 5b4265121497fe7f
-operaciones/resta-dec: S-5.4-2.35.SVG 37238 51dce9d4537c7b16
 valor-posicional/9673: U-9-673.svg 29527 80c43ac7c0e79d4f
 valor-posicional/950000: U-950-000.svg 30250 7692c06540e8a879
 valor-posicional/dos-decimales: U-0.37+U-0.370.svg 47259 5043fd8305e7da5a
