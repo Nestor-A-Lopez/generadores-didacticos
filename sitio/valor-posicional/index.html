@@ -2,228 +2,288 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Tabla de valor posicional y operaciones</title>
     <!-- Ícono de la pestaña: el de este generador en la portada (Lucide
          «sheet», con el fondo --blue-50 y el trazo --blue-800 de su
          tarjeta), incrustado para que funcione también con doble clic. -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23e3f2fd'/%3E%3Cg transform='translate(4 4)' fill='none' stroke='%230d47a1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2' ry='2'/%3E%3Cline x1='3' x2='21' y1='9' y2='9'/%3E%3Cline x1='3' x2='21' y1='15' y2='15'/%3E%3Cline x1='9' x2='9' y1='9' y2='21'/%3E%3Cline x1='15' x2='15' y1='9' y2='21'/%3E%3C/g%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Fuentes del sistema de diseño "Vesta" (Fraunces = títulos,
+         Poppins = interfaz). Solo afectan a la interfaz, no al SVG. -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="../compartido/vesta.css" />
     <link rel="stylesheet" href="../compartido/cabecera.css" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="app">
-      <div class="topbar">
+    <!-- Diseño «Tabla valor posicional» de Vesta: barra de opciones arriba y,
+         debajo, panel lateral (1024px o más) o filas (menos). El DOM es el
+         mismo; solo cambia el CSS. -->
+    <div class="page">
+      <!-- Iconos (hoja de cálculo, descargar, flecha, más, alerta) de
+           Lucide/Feather, licencia ISC/MIT: ver AVISOS-DE-TERCEROS.md en la
+           raíz del repositorio. -->
+      <header class="header">
         <div class="headerMarca">
-          <!-- El mismo ícono que en la tarjeta de la portada (Lucide «sheet»,
-               licencia ISC: ver AVISOS-DE-TERCEROS.md en la raíz del repositorio). -->
+          <!-- El mismo ícono que en la tarjeta de la portada. -->
           <span class="icono" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="3" x2="21" y1="15" y2="15"/><line x1="9" x2="9" y1="9" y2="21"/><line x1="15" x2="15" y1="9" y2="21"/></svg>
           </span>
-          <div>
+          <div class="headerText">
             <h1>Tabla de valor posicional y operaciones</h1>
             <p>
               Escribe uno o varios números, o elige una operación, y guarda la
-              tabla como SVG para pegarla en PowerPoint. La vista previa se
-              actualiza al instante.
+              tabla como SVG para pegarla en tu presentación
             </p>
           </div>
         </div>
-      </div>
-
-      <div class="toolbar">
-        <div class="group">
-          <span class="caption">Operación</span>
-          <select id="operacion">
-            <option value="ninguna" selected>Ninguna (solo números)</option>
-            <option value="suma">Suma</option>
-            <option value="resta">Resta</option>
-            <option value="multiplicacion">Multiplicación</option>
-            <option value="division">División</option>
-          </select>
-        </div>
-        <div class="divider"></div>
-
-        <div class="group">
-          <span class="caption">Trabajar hasta el orden de…</span>
-          <div class="row2">
-            <select id="hastaOrden">
-              <option value="0">Unidades</option>
-              <option value="1">Decenas de unidad</option>
-              <option value="2">Centenas de unidad</option>
-              <option value="5" selected>Centenas de millar</option>
-              <option value="8">Centenas de millón</option>
-              <option value="11">Centenas de millar de millón</option>
-            </select>
-            <select id="hastaOrdenDecimal">
-              <option value="0" selected>Sin decimales</option>
-              <option value="-1">Décimos</option>
-              <option value="-2">Centésimos</option>
-              <option value="-3">Milésimos</option>
-            </select>
-          </div>
-        </div>
-        <div class="divider"></div>
-
-        <div class="group">
-          <span class="caption">Color</span>
-          <input type="color" id="colorDigitos" value="#000000" />
-        </div>
-        <div class="divider"></div>
-
-        <div class="group">
-          <span class="caption">Encabezado</span>
-          <div class="checkGroup">
-            <label class="checkbox"
-              ><input type="checkbox" id="mostrarPeriodos" checked /><span
-                class="box"
-                >✓</span
-              >Mostrar periodos</label
-            >
-            <label class="checkbox"
-              ><input type="checkbox" id="mostrarClase" checked /><span
-                class="box"
-                >✓</span
-              >Mostrar clases</label
-            >
-          </div>
-        </div>
-
         <button type="button" class="btn btn-primary" id="downloadBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Guardar SVG
         </button>
-      </div>
+      </header>
 
-      <!-- ============ NÚMEROS (sin operación) ============ -->
-      <div class="panel" data-op-panel="ninguna">
-        <span class="caption">Números</span>
-        <div class="termsList" id="numerosList"></div>
-        <div>
-          <button type="button" class="btn btn-outline" id="addNumero">
-            + Agregar número
+      <!-- ============ Barra de opciones de la tabla ============
+           Los segmentados son fachada de los <select> ocultos: el script
+           sigue leyendo #operacion, #hastaOrden y #hastaOrdenDecimal. Sus
+           botones los arma el script a partir de las <option>: el texto corto
+           sale de data-corto y el nombre completo va en el tooltip. -->
+      <section class="barra" aria-label="Opciones de la tabla">
+        <div class="barraFila">
+          <div class="barraGrupo">
+            <span class="eyebrow" id="opEyebrow">¿Qué quieres mostrar?</span>
+            <div class="field">
+              <span class="fieldLabel" id="opLabel">La tabla muestra</span>
+              <!-- Los signos se dibujan con los glifos de Computer Modern
+                   (como en LaTeX): los pone el script. -->
+              <div class="seg segFill segOp" role="group" aria-labelledby="opLabel" data-for="operacion" data-animate></div>
+              <select id="operacion" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+                <option value="ninguna" data-glifos="123" selected>Solo números</option>
+                <option value="suma" data-glifos="+">Suma</option>
+                <option value="resta" data-glifos="−">Resta</option>
+                <option value="multiplicacion" data-glifos="×">Multiplicación</option>
+                <option value="division" data-glifos="÷">División</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="barraGrupo barraOrden">
+            <span class="eyebrow">¿Hasta qué orden?</span>
+            <div class="ordenCampos">
+              <div class="field">
+                <span class="fieldLabel" id="ordLabel">Parte entera</span>
+                <div class="seg segFill" role="group" aria-labelledby="ordLabel" data-for="hastaOrden" data-animate></div>
+                <select id="hastaOrden" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+                  <option value="0" data-corto="U">Unidades</option>
+                  <option value="1" data-corto="DU">Decenas de unidad</option>
+                  <option value="2" data-corto="CU">Centenas de unidad</option>
+                  <option value="5" data-corto="CM" selected>Centenas de millar</option>
+                  <option value="8" data-corto="CMM">Centenas de millón</option>
+                  <option value="11" data-corto="CMMM">Centenas de millar de millón</option>
+                </select>
+              </div>
+              <div class="field">
+                <span class="fieldLabel" id="decLabel">Parte decimal</span>
+                <div class="seg segFill" role="group" aria-labelledby="decLabel" data-for="hastaOrdenDecimal" data-animate></div>
+                <select id="hastaOrdenDecimal" class="visuallyHidden" tabindex="-1" aria-hidden="true">
+                  <option value="0" selected>Sin decimales</option>
+                  <option value="-1" data-corto="Déc">Décimos</option>
+                  <option value="-2" data-corto="Cen">Centésimos</option>
+                  <option value="-3" data-corto="Mil">Milésimos</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- "¿Cómo se ve la tabla?": sección plegable (cerrada al abrir). -->
+        <section class="plegable" id="plegableTabla">
+          <button type="button" class="plegableToggle" aria-expanded="false" aria-controls="panelTabla">
+            <span class="eyebrow">¿Cómo se ve la tabla?</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
           </button>
-        </div>
-      </div>
-
-      <!-- ================= SUMA ================= -->
-      <div class="panel" data-op-panel="suma">
-        <span class="caption">Sumandos</span>
-        <div class="termsList" id="sumandosList"></div>
-        <div>
-          <button type="button" class="btn btn-outline" id="addSumando">
-            + Agregar sumando
-          </button>
-        </div>
-      </div>
-
-      <!-- ================= RESTA ================= -->
-      <div class="panel" data-op-panel="resta">
-        <span class="caption">Minuendo y sustraendos</span>
-        <div class="termsList" id="minuendoRow"></div>
-        <div class="termsList" id="sustraendosList"></div>
-        <div>
-          <button type="button" class="btn btn-outline" id="addSustraendo">
-            + Agregar sustraendo
-          </button>
-        </div>
-      </div>
-
-      <!-- ================= MULTIPLICACIÓN ================= -->
-      <div class="panel" data-op-panel="multiplicacion">
-        <span class="caption">Factores</span>
-        <div class="termsList" id="multiplicandoRow"></div>
-        <div class="termsList" id="multiplicadorRow"></div>
-        <div class="checkGroup">
-          <label class="checkbox"
-            ><input type="checkbox" id="mostrarPuntoProductos" checked /><span
-              class="box"
-              >✓</span
-            >Mostrar el punto decimal de los productos parciales</label
-          >
-        </div>
-        <p class="hint">
-          El multiplicador es un número entero (puede llevar jerarquía: "24" en
-          Decenas = 240). El multiplicando admite decimales si la tabla muestra
-          órdenes decimales. El punto de los productos parciales usa la misma
-          jerarquía que el del resultado.
-        </p>
-      </div>
-
-      <!-- ================= DIVISIÓN ================= -->
-      <div class="panel" data-op-panel="division">
-        <span class="caption">Dividendo y divisor</span>
-        <div class="termsList" id="dividendoRow"></div>
-        <div class="row2">
-          <div class="group">
-            <span class="caption">Divisor (1 cifra)</span>
-            <input
-              type="text"
-              class="textInput"
-              id="divisor"
-              value="4"
-              maxlength="1"
-              inputmode="numeric"
-            />
+          <div class="plegableBody" id="panelTabla" aria-hidden="true">
+            <div class="plegableClip">
+              <div class="plegableInner tablaOpciones">
+                <div class="field">
+                  <span class="fieldLabel">Agrupaciones</span>
+                  <div class="switches">
+                    <label class="switch">
+                      <input type="checkbox" role="switch" id="mostrarPeriodos" checked />
+                      <span class="switchTrack" aria-hidden="true"></span>
+                      Mostrar periodos
+                    </label>
+                    <label class="switch">
+                      <input type="checkbox" role="switch" id="mostrarClase" checked />
+                      <span class="switchTrack" aria-hidden="true"></span>
+                      Mostrar clases
+                    </label>
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="fieldLabel" for="colorDigitos">Color de los números</label>
+                  <input type="color" id="colorDigitos" value="#000000" />
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="group">
-            <span class="caption">Decimales en el cociente</span>
-            <select id="decimales"></select>
+        </section>
+      </section>
+
+      <div class="layout">
+        <aside class="panel">
+          <section class="numeros">
+            <span class="eyebrow">¿Qué números?</span>
+
+            <!-- Un panel por operación; solo se ve el activo (los demás se
+                 ocultan con hidden, no se quitan del DOM). Las filas las arma
+                 filaNumeroDOM en script.js. -->
+            <div class="opPanel" data-op-panel="ninguna">
+              <div class="termsList" id="numerosList"></div>
+              <div>
+                <button type="button" class="btn btn-outline" id="addNumero">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                  Agregar número
+                </button>
+              </div>
+            </div>
+
+            <div class="opPanel" data-op-panel="suma">
+              <div class="termsList" id="sumandosList"></div>
+              <div>
+                <button type="button" class="btn btn-outline" id="addSumando">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                  Agregar sumando
+                </button>
+              </div>
+            </div>
+
+            <div class="opPanel" data-op-panel="resta">
+              <div class="termsList" id="minuendoRow"></div>
+              <div class="termsList" id="sustraendosList"></div>
+              <div>
+                <button type="button" class="btn btn-outline" id="addSustraendo">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                  Agregar sustraendo
+                </button>
+              </div>
+            </div>
+
+            <div class="opPanel" data-op-panel="multiplicacion">
+              <div class="termsList" id="multiplicandoRow"></div>
+              <div class="termsList" id="multiplicadorRow"></div>
+            </div>
+
+            <div class="opPanel" data-op-panel="division">
+              <div class="termsList" id="dividendoRow"></div>
+              <!-- El divisor, con la misma cabecera que las filas de número
+                   para que «Coma y punto» quede en el mismo lugar. -->
+              <div class="numeroRow">
+                <div class="numeroCabeza">
+                  <label class="tag" for="divisor">Divisor</label>
+                  <div class="numeroAcciones">
+                    <label class="switch switchSm">
+                      <input type="checkbox" role="switch" id="divisorFormato" checked />
+                      <span class="switchTrack" aria-hidden="true"></span>
+                      Coma y punto
+                    </label>
+                    <span class="removeBtn removeHueco" aria-hidden="true">Quitar</span>
+                  </div>
+                </div>
+                <div class="divisorCampo">
+                  <input type="text" class="input" id="divisor" value="4" maxlength="1" inputmode="numeric" autocomplete="off" />
+                  <span class="numeroHint">De una sola cifra, como en la galera</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- "¿Cómo se ve el resultado?": plegable, solo con una operación. -->
+          <section class="plegable" id="panelResultado">
+            <button type="button" class="plegableToggle" aria-expanded="false" aria-controls="resultadoBody">
+              <span class="eyebrow">¿Cómo se ve el resultado?</span>
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="plegableBody" id="resultadoBody" aria-hidden="true">
+              <div class="plegableClip">
+                <div class="plegableInner">
+                  <div class="switches switchesColumna">
+                    <label class="switch">
+                      <input type="checkbox" role="switch" id="mostrarResultado" checked />
+                      <span class="switchTrack" aria-hidden="true"></span>
+                      <span id="mostrarResultadoLabel">Mostrar resultado</span>
+                    </label>
+                    <label class="switch">
+                      <input type="checkbox" role="switch" id="mostrarComas" checked />
+                      <span class="switchTrack" aria-hidden="true"></span>
+                      Comas y apóstrofes
+                    </label>
+                    <label class="switch">
+                      <input type="checkbox" role="switch" id="mostrarPuntoResultado" checked />
+                      <span class="switchTrack" aria-hidden="true"></span>
+                      Punto decimal
+                    </label>
+                    <label class="switch" data-solo-op="multiplicacion">
+                      <input type="checkbox" role="switch" id="mostrarPuntoProductos" checked />
+                      <span class="switchTrack" aria-hidden="true"></span>
+                      Punto decimal en los productos parciales
+                    </label>
+                  </div>
+                  <div class="field">
+                    <label class="fieldLabel" for="resultJerarquia">Punto decimal a la derecha de…</label>
+                    <span class="selectWrap">
+                      <select class="select" id="resultJerarquia"></select>
+                      <svg class="selectChevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                    </span>
+                  </div>
+                  <div class="field" data-solo-op="division">
+                    <div class="labelRow">
+                      <span class="fieldLabel" id="cocLabel">Decimales en el cociente</span>
+                      <span class="fieldHint" id="decimalesHint"></span>
+                    </div>
+                    <!-- Sus botones se rehacen con las <option> que deja el rango. -->
+                    <div class="seg segFill" role="group" aria-labelledby="cocLabel" data-for="decimales" data-animate></div>
+                    <select id="decimales" class="visuallyHidden" tabindex="-1" aria-hidden="true"></select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </aside>
+
+        <main class="preview">
+          <div class="callout error" id="errorCallout" role="alert" style="display: none">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+            <div>
+              <strong>No se puede generar la tabla</strong>
+              <span id="errorMessage"></span>
+            </div>
           </div>
-        </div>
-        <p class="hint">
-          El dividendo es un número entero (puede llevar jerarquía: "93" en
-          Unidades de millar = 93,000). El divisor es de una sola cifra, como
-          en la galera clásica.
-        </p>
+          <div class="stage">
+            <div id="svgHolder" role="img" aria-label="Tabla de valor posicional">
+              <div class="loading">Cargando vista previa…</div>
+            </div>
+          </div>
+        </main>
       </div>
 
-      <!-- ====== RESULTADO (solo con una operación) ====== -->
-      <div class="panel" id="panelResultado">
-        <span class="caption">Resultado</span>
-        <div class="row2 alinear">
-          <div class="checkGroup">
-            <label class="checkbox"
-              ><input type="checkbox" id="mostrarResultado" checked /><span
-                class="box"
-                >✓</span
-              ><span id="mostrarResultadoLabel">Mostrar resultado</span></label
-            >
-            <label class="checkbox"
-              ><input type="checkbox" id="mostrarComas" checked /><span
-                class="box"
-                >✓</span
-              >Comas y apóstrofes</label
-            >
-            <label class="checkbox"
-              ><input type="checkbox" id="mostrarPuntoResultado" checked /><span
-                class="box"
-                >✓</span
-              >Punto decimal</label
-            >
-          </div>
-          <div class="group">
-            <span class="caption">Punto decimal a la derecha de…</span>
-            <select id="resultJerarquia"></select>
-          </div>
-        </div>
-      </div>
-
-      <div class="callout" id="errorCallout" style="display: none">
-        <div>
-          <strong>No se puede generar la tabla</strong>
-          <span id="errorMessage"></span>
-        </div>
-      </div>
-
-      <div class="stage">
-        <div class="stage-inner">
-          <div id="svgHolder">
-            <div class="loading">Cargando vista previa…</div>
-          </div>
-        </div>
-      </div>
+      <!-- Pie: derechos de autor y licencia, alineados a la derecha. -->
+      <footer class="pie">
+        © 2026 Néstor A. López ·
+        <a href="../licencia/index.html">Licencia CC BY-NC 4.0</a>
+      </footer>
     </div>
+
     <script src="../compartido/glifos-tabla.js" defer></script>
+    <!-- glifos.js y texto-svg.js solo se usan en la interfaz: los signos del
+         selector de operación («123 + − × ÷») en Computer Modern. -->
+    <script src="../compartido/glifos.js" defer></script>
+    <script src="../compartido/texto-svg.js" defer></script>
     <script src="../compartido/guardar-svg.js" defer></script>
     <script src="script.js" defer></script>
   </body>

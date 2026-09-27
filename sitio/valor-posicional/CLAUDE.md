@@ -28,6 +28,21 @@ Cambios respecto a `operaciones/`, además de lo anterior:
 - El punto del cociente solo aparece si el cociente tiene cifras decimales (antes, 8 ÷ 4 con «2 decimales» mostraba «2.»).
 - La barra horizontal de la galera empieza en la barra vertical, así la esquina queda cerrada.
 
+## Interfaz (diseño «Tabla valor posicional» de Vesta, 2026-09-26)
+
+Sale del diseño hecho con Claude Design en el proyecto de Vesta (`c01f5295-ac6a-4466-98bf-06eb779621b6`, archivo `Tabla valor posicional.dc.html`), pasado a HTML/CSS/JS estáticos con la misma base que `numeros-dienes` (segmentados, interruptores, plegables, pie).
+
+- **Cabecera**: ícono, título, texto y **Guardar SVG** (con ícono; desactivado mientras hay error).
+- **Barra de opciones** (tarjeta arriba): «¿Qué quieres mostrar?» (segmentado de `#operacion`), «¿Hasta qué orden?» (segmentados de `#hastaOrden`: U, DU, CU, CM, CMM, CMMM, y de `#hastaOrdenDecimal`: Sin decimales, Déc, Cen, Mil) y la plegable «¿Cómo se ve la tabla?» (`#mostrarPeriodos`, `#mostrarClase` como interruptores y `#colorDigitos`). Desde 1240 px una línea separa los dos grupos.
+- **Distribución**: panel lateral de 380 px desde 1024 px; por debajo, los números arriba y la figura a todo lo ancho. Bajo 640 px, márgenes de 16 px.
+- **Panel «¿Qué números?»**: los cinco `data-op-panel`, uno visible. Cada fila (`filaNumeroDOM`): arriba, etiqueta, interruptor «Coma y punto» (`.fmt`) y «Quitar»; abajo, campo y jerarquía; debajo, la ayuda (multiplicador y dividendo). **Las filas sin «Quitar» (minuendo, factores, dividendo, divisor) guardan su hueco** (`.removeHueco`) para que el interruptor no se mueva entre operaciones (decisión del usuario). El divisor es una fila más, con su propio «Coma y punto» (`#divisorFormato`, pedido por el usuario): llega a `cfg.division.formato`, pero `buildSVG` todavía no lo usa, porque el divisor es de una cifra y nunca lleva ni coma ni punto.
+- **Plegable «¿Cómo se ve el resultado?»** (`#panelResultado`, cerrada al abrir, solo con operación): interruptores del resultado; `#mostrarPuntoProductos` solo en la multiplicación y «Decimales en el cociente» (segmentado de `#decimales`, con su ayuda `#decimalesHint`) solo en la división (`[data-solo-op]`). Sin resultado, sus opciones se ven desactivadas; sin punto, también `#resultJerarquia` (`syncResultado`; solo apariencia).
+- **Vista previa**: aviso de error con ícono (`#errorCallout`) sobre la tarjeta de la figura; el campo culpable lleva `.hasError` y `aria-invalid`.
+- **Segmentados**: fachada de los `<select>` ocultos, como en numeros-dienes, pero los botones los arma `armarSegmentado` a partir de las `<option>`: texto corto en `data-corto` y nombre completo en el tooltip (`.segTip`). Los de `#decimales` se rehacen al cambiar el rango. Los signos de la operación («123 + − × ÷») van en Computer Modern, como en LaTeX: `glifosCM` los dibuja con `compartido/glifos.js` + `texto-svg.js`, que esta página carga **solo para la interfaz** (el SVG exportado sigue usando `glifos-tabla.js`).
+- Iconos Lucide 0.544.0 incrustados: `sheet`, descargar, `chevron-down`, `plus`, `circle-alert` (registrados en `AVISOS-DE-TERCEROS.md`).
+- Del diseño **no** se pasó (decisión del usuario, 2026-09-26): «Color de las jerarquías» (color de las celdas por orden) ni «Color de los números» en Negro/Color; los dos cambiarían el dibujo y quedan para otro paso. Se conservó `#colorDigitos`. Las abreviaturas del millón son las del script (CMM), no las del diseño (CMi).
+- **Pendiente de subir a Vesta** (con `/design-sync`, uno a la vez): la fila de número con jerarquía, el segmentado con tooltip, el interruptor pequeño con etiqueta y el selector de color por jerarquía.
+
 ## Organización de `script.js`
 
 Constantes (`ORDERS`, colores, `SIGN_GLYPHS`) → cálculo puro (`computeColumns`, `leerTerminos`, `filasSumaResta`, `filasMultiplicacion`, `filasDivision`) → dibujo (`dibujarTabla`, con `makeBorderedCell`, `glyphRun*`) → `buildSVG(cfg)` y `buildFilename(cfg)` (puras) → estado e interfaz.
@@ -36,3 +51,4 @@ Constantes (`ORDERS`, colores, `SIGN_GLYPHS`) → cálculo puro (`computeColumns
 - Una fila es `{ cols: {pow: dígito}, hayDecimal, nivel, shift, numDigits, showComma, showPunto, sign?, lineAbove? }`; `nivel` es la columna a cuya derecha va el punto.
 - Los errores se lanzan como `ErrorCampo(mensaje, campo)`: `campo` es el índice del número en `terminosDe(op)` (mismo orden que los campos del panel), `"divisor"` o `null`.
 - Todos los paneles están siempre en el DOM; se ocultan con `hidden`.
+- Estado e interfaz: `filaNumeroDOM`, `renderForms`, `renderDecimalesSelect`, `updateOpPanels`, `syncResultado`, `leerConfig`, `render`, `download`; al final, los eventos, los segmentados (`syncSegmented`, `armarSegmentado`, `glifosCM`) y las plegables.

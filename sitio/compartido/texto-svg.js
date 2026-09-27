@@ -1,6 +1,7 @@
 // ---------------------------------------------------------------
 // Texto como <path>, igual en todos los generadores que usan glifos.js
-// (fracciones, estrategias, recta-numerica y numeros-dienes).
+// (fracciones, estrategias, recta-numerica, numeros-dienes y, solo para su
+// interfaz, valor-posicional).
 //
 // Banco.glyphRunSvg(text, x, y, fontSize, fill, glyphFor)
 //   Un <path> por carácter, con la escala y el volteo vertical ya

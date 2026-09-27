@@ -67,7 +67,7 @@ E-Mail: bakoma@mail.ru
   - `sitio/estrategias/index.html`: foco (`lightbulb`, en la cabecera y como ícono de la pestaña), descargar, más y menos.
   - `sitio/tabla-valor-posicional/index.html`: tabla (`table-2`, en la cabecera y como ícono de la pestaña).
   - `sitio/operaciones/index.html`: calculadora (`calculator`, en la cabecera y como ícono de la pestaña).
-  - `sitio/valor-posicional/index.html`: hoja de cálculo (`sheet`, en la cabecera y como ícono de la pestaña).
+  - `sitio/valor-posicional/index.html`: hoja de cálculo (`sheet`, en la cabecera y como ícono de la pestaña), descargar, flecha hacia abajo (`chevron-down`, también en `script.js` para los selectores de jerarquía), alerta (`circle-alert`) y más (`plus`).
   - `sitio/numeros-dienes/index.html`: bloques (`blocks`, en la cabecera y como ícono de la pestaña), descargar, flecha hacia abajo (`chevron-down`), alerta (`circle-alert`) y más (`plus`).
 - **Licencia:** ISC, y MIT para lo derivado de Feather. Texto tomado de https://github.com/lucide-icons/lucide/blob/0.544.0/LICENSE:
 

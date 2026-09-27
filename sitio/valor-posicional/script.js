@@ -1019,20 +1019,32 @@ function jerarquiaOptionsHTML(selectedCode, maxPow, minPow, soloEnteros) {
   };
 }
 
-// Una fila de la interfaz para un número: etiqueta, campo, jerarquía,
-// casilla «Coma y punto» y, en las listas, botón «Quitar».
-function filaNumeroDOM(t, etiqueta, { soloEnteros, placeholder, quitar }) {
+const CHEVRON_SVG =
+  '<svg class="selectChevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+
+// Una fila de la interfaz para un número. Arriba: etiqueta, interruptor
+// «Coma y punto» y «Quitar» (en las filas fijas queda su hueco, para que el
+// interruptor no cambie de lugar entre operaciones). Abajo: campo y
+// jerarquía; debajo, la ayuda si la hay.
+function filaNumeroDOM(t, etiqueta, { soloEnteros, placeholder, quitar, ayuda }) {
   const { maxPow, minPow } = currentMaxMin();
   const { html, value } = jerarquiaOptionsHTML(t.jerarquia, maxPow, minPow, soloEnteros);
   t.jerarquia = value;
   const row = document.createElement("div");
   row.className = "numeroRow";
   row.innerHTML =
-    `<span class="tag">${etiqueta}</span>` +
-    `<input type="text" class="textInput numero-input" inputmode="decimal" placeholder="${placeholder}">` +
-    `<select class="jerarquia-select" aria-label="Jerarquía de ${etiqueta.toLowerCase()}">${html}</select>` +
-    `<label class="checkbox"><input type="checkbox" class="fmt"${t.formato !== false ? " checked" : ""} /><span class="box">✓</span>Coma y punto</label>` +
-    (quitar ? `<button type="button" class="btn btn-ghost removeBtn"${quitar.puede ? "" : " disabled"}>Quitar</button>` : "");
+    `<div class="numeroCabeza"><span class="tag">${etiqueta}</span><div class="numeroAcciones">` +
+    `<label class="switch switchSm"><input type="checkbox" role="switch" class="fmt"${t.formato !== false ? " checked" : ""} />` +
+    `<span class="switchTrack" aria-hidden="true"></span>Coma y punto</label>` +
+    (quitar
+      ? `<button type="button" class="removeBtn"${quitar.puede ? "" : " disabled"}>Quitar</button>`
+      : `<span class="removeBtn removeHueco" aria-hidden="true">Quitar</span>`) +
+    `</div></div>` +
+    `<div class="numeroCampos">` +
+    `<input type="text" class="input numero-input" inputmode="decimal" autocomplete="off" aria-label="${etiqueta}" placeholder="${placeholder}">` +
+    `<span class="selectWrap"><select class="select jerarquia-select" aria-label="Jerarquía de ${etiqueta.toLowerCase()}">${html}</select>${CHEVRON_SVG}</span>` +
+    `</div>` +
+    (ayuda ? `<span class="numeroHint">${ayuda}</span>` : "");
   const input = row.querySelector(".numero-input");
   input.value = t.numero;
   input.addEventListener("input", () => {
@@ -1075,16 +1087,26 @@ function filasDeLista(lista, nombre, minimo, placeholder) {
   );
 }
 
+// «Decimales en el cociente»: llega hasta la parte decimal de la tabla. Sus
+// botones del segmentado se rehacen con las opciones que quedan.
 function renderDecimalesSelect() {
   const sel = $("decimales");
   const maxDec = Math.max(0, -currentMaxMin().minPow);
   const prev = parseInt(sel.value, 10);
-  const labels = ["Ninguno (división entera)", "1 decimal", "2 decimales", "3 decimales"];
-  sel.innerHTML = labels
+  const opciones = [
+    ["Ninguno (división entera)", "Ninguno"],
+    ["Décimos (1 decimal)", "Déc"],
+    ["Centésimos (2 decimales)", "Cen"],
+    ["Milésimos (3 decimales)", "Mil"],
+  ];
+  sel.innerHTML = opciones
     .slice(0, maxDec + 1)
-    .map((l, i) => `<option value="${i}">${l}</option>`)
+    .map(([l, c], i) => `<option value="${i}" data-corto="${c}">${l}</option>`)
     .join("");
   sel.value = String(!isNaN(prev) && prev <= maxDec ? prev : Math.min(2, maxDec));
+  $("decimalesHint").textContent =
+    maxDec === 0 ? "Elige una parte decimal para poder sacar decimales" : "Llega hasta la parte decimal de la tabla";
+  armarSegmentado(document.querySelector('.seg[data-for="decimales"]'));
 }
 
 function renderResultJerarquiaSelect() {
@@ -1102,10 +1124,18 @@ function renderForms() {
   llenar("sustraendosList", filasDeLista(datos.sustraendos, "Sustraendo", 1, "Ej. 19.5"));
   llenar("multiplicandoRow", [filaNumeroDOM(datos.multiplicando, "Multiplicando", { placeholder: "Ej. 2.31" })]);
   llenar("multiplicadorRow", [
-    filaNumeroDOM(datos.multiplicador, "Multiplicador", { placeholder: "Ej. 24 (entero)", soloEnteros: true }),
+    filaNumeroDOM(datos.multiplicador, "Multiplicador", {
+      placeholder: "Ej. 24 (entero)",
+      soloEnteros: true,
+      ayuda: "Número entero; puede llevar jerarquía: 24 en Decenas es 240.",
+    }),
   ]);
   llenar("dividendoRow", [
-    filaNumeroDOM(datos.dividendo, "Dividendo", { placeholder: "Ej. 93 (entero)", soloEnteros: true }),
+    filaNumeroDOM(datos.dividendo, "Dividendo", {
+      placeholder: "Ej. 93 (entero)",
+      soloEnteros: true,
+      ayuda: "Número entero; puede llevar jerarquía: 93 en Unidades de millar es 93,000.",
+    }),
   ]);
   renderDecimalesSelect();
   renderResultJerarquiaSelect();
@@ -1119,14 +1149,35 @@ const OP_RESULT_LABEL = {
 };
 
 // Solo se ve el panel de la operación elegida (los demás se ocultan, no se
-// quitan del DOM) y el de «Resultado» cuando hay operación.
+// quitan del DOM), el de «Resultado» cuando hay operación y, dentro de él,
+// lo que es de una sola operación ([data-solo-op]).
 function updateOpPanels() {
   const op = $("operacion").value;
   document.querySelectorAll("[data-op-panel]").forEach((el) => {
     el.hidden = el.dataset.opPanel !== op;
   });
+  document.querySelectorAll("[data-solo-op]").forEach((el) => {
+    el.hidden = el.dataset.soloOp !== op;
+  });
   $("panelResultado").hidden = op === "ninguna";
   if (op !== "ninguna") $("mostrarResultadoLabel").textContent = OP_RESULT_LABEL[op];
+  // El segmentado del cociente estaba oculto: su píldora se mide de nuevo.
+  syncSegmented("decimales");
+}
+
+// Sin resultado, sus opciones no aplican y se ven desactivadas; sin punto,
+// tampoco su jerarquía. Solo cambia la apariencia: leerConfig() sigue
+// leyendo los mismos valores.
+function syncResultado() {
+  const off = !$("mostrarResultado").checked;
+  ["mostrarComas", "mostrarPuntoResultado", "mostrarPuntoProductos", "decimales"].forEach((id) => {
+    $(id).disabled = off;
+  });
+  const sinPunto = off || !$("mostrarPuntoResultado").checked;
+  $("resultJerarquia").disabled = sinPunto;
+  document.querySelector('label[for="resultJerarquia"]').classList.toggle("is-disabled", sinPunto);
+  $("cocLabel").classList.toggle("is-disabled", off);
+  syncSegmented("decimales");
 }
 
 function leerConfig() {
@@ -1148,20 +1199,34 @@ function leerConfig() {
     },
     division: {
       divisor: $("divisor").value,
+      // «Coma y punto» del divisor. Hoy el divisor es de una cifra y nunca
+      // lleva ni coma ni punto, así que buildSVG no lo usa todavía.
+      formato: $("divisorFormato").checked,
       decimales: parseInt($("decimales").value, 10) || 0,
     },
   };
 }
 
 function render() {
+  syncResultado();
   const cfg = leerConfig();
   const result = buildSVG(cfg);
   const panel = document.querySelector(`[data-op-panel="${cfg.op}"]`);
   const campo = result.error ? result.error.campo : undefined;
   // Marca en rojo el campo que causó el error y limpia los demás.
-  document.querySelectorAll(".numero-input").forEach((el) => el.classList.remove("hasError"));
-  panel.querySelectorAll(".numero-input").forEach((el, i) => el.classList.toggle("hasError", i === campo));
+  document.querySelectorAll(".numero-input").forEach((el) => {
+    el.classList.remove("hasError");
+    el.removeAttribute("aria-invalid");
+  });
+  panel.querySelectorAll(".numero-input").forEach((el, i) => {
+    el.classList.toggle("hasError", i === campo);
+    if (i === campo) el.setAttribute("aria-invalid", "true");
+  });
   $("divisor").classList.toggle("hasError", campo === "divisor");
+  if (campo === "divisor") $("divisor").setAttribute("aria-invalid", "true");
+  else $("divisor").removeAttribute("aria-invalid");
+  // Con error no hay nada que guardar.
+  $("downloadBtn").disabled = !!result.error;
   if (result.error) {
     $("errorMessage").textContent = result.error.message;
     $("errorCallout").style.display = "flex";
@@ -1188,6 +1253,7 @@ async function download() {
   "resultJerarquia",
   "mostrarPuntoProductos",
   "divisor",
+  "divisorFormato",
   "decimales",
 ].forEach((id) => {
   $(id).addEventListener("input", render);
@@ -1221,6 +1287,121 @@ document.addEventListener("keydown", (e) => {
   if (!e.target.matches(".numero-input, #divisor")) return;
   e.preventDefault();
   download();
+});
+
+// ---- Controles segmentados: fachada de los <select> ocultos ----
+// (Como en numeros-dienes.) Cada .seg[data-for=id] maneja el <select id=id>:
+// al hacer clic cambia su valor y dispara "change", así el resto del script
+// sigue leyendo .value como siempre. Los botones salen de las <option>: el
+// texto corto de data-corto (si no, el de la opción) y el nombre completo en
+// el tooltip; en la operación, los signos de data-glifos.
+function syncSegmented(id) {
+  const select = $(id);
+  const seg = document.querySelector(`.seg[data-for="${id}"]`);
+  if (!seg) return;
+  seg.classList.toggle("is-disabled", select.disabled);
+  seg.querySelectorAll("button").forEach((b) => {
+    b.setAttribute("aria-pressed", String(b.dataset.value === select.value));
+    b.disabled = select.disabled;
+  });
+  placeIndicator(seg);
+}
+
+// La píldora se mueve a la opción elegida. Se mide con offsetLeft/Top
+// porque .seg es su offsetParent (position: relative).
+function placeIndicator(seg) {
+  const ind = seg.querySelector(".segInd");
+  const b = seg.querySelector('button[aria-pressed="true"]');
+  if (!ind || !b) return;
+  ind.style.left = b.offsetLeft + "px";
+  ind.style.top = b.offsetTop + "px";
+  ind.style.width = b.offsetWidth + "px";
+  ind.style.height = b.offsetHeight + "px";
+}
+
+function armarSegmentado(seg) {
+  const select = $(seg.dataset.for);
+  seg.querySelectorAll("button").forEach((b) => b.remove());
+  for (const opt of select.options) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.dataset.value = opt.value;
+    const corto = opt.dataset.corto;
+    if (opt.dataset.glifos) b.innerHTML = glifosCM(opt.dataset.glifos);
+    else b.textContent = corto || opt.text;
+    if (opt.dataset.glifos || (corto && corto !== opt.text)) {
+      b.setAttribute("aria-label", opt.text);
+      b.insertAdjacentHTML("beforeend", `<span class="segTip" role="tooltip">${opt.text}</span>`);
+    }
+    b.addEventListener("click", () => {
+      if (select.disabled || select.value === b.dataset.value) return;
+      select.value = b.dataset.value;
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    seg.appendChild(b);
+  }
+  syncSegmented(seg.dataset.for);
+}
+
+// Texto con los glifos de Computer Modern (compartido/glifos.js), como en
+// LaTeX, en un <svg> que toma el color del botón. Todos comparten el mismo
+// alto (el de «123+−×÷»), así los signos quedan a la altura de siempre.
+const GLIFOS_OP = "123+−×÷";
+function glifosCM(texto) {
+  const G = Banco.GLYPH_DATA;
+  const F = 1000; // tamaño de trabajo; el alto real lo pone el CSS
+  const s = F / G.upm;
+  let arriba = -Infinity;
+  let abajo = Infinity;
+  for (const ch of GLIFOS_OP) {
+    abajo = Math.min(abajo, G.r[ch][1] * s);
+    arriba = Math.max(arriba, G.r[ch][2] * s);
+  }
+  let ancho = 0;
+  for (const ch of texto) ancho += G.r[ch][0] * s;
+  const alto = arriba - abajo;
+  return (
+    `<svg viewBox="0 0 ${Math.round(ancho)} ${Math.round(alto)}" aria-hidden="true">` +
+    Banco.glyphRunSvg(texto, 0, arriba, F, "currentColor") +
+    `</svg>`
+  );
+}
+
+document.querySelectorAll(".seg[data-for]").forEach((seg) => {
+  const id = seg.dataset.for;
+  const ind = document.createElement("span");
+  ind.className = "segInd";
+  ind.setAttribute("aria-hidden", "true");
+  seg.prepend(ind);
+  // Al cambiar de distribución los botones cambian de tamaño.
+  if (window.ResizeObserver) new ResizeObserver(() => placeIndicator(seg)).observe(seg);
+  // Sin transición en la primera colocación, para que no entre deslizándose.
+  requestAnimationFrame(() => {
+    placeIndicator(seg);
+    requestAnimationFrame(() => ind.classList.add("is-ready"));
+  });
+  $(id).addEventListener("change", () => syncSegmented(id));
+  if (id !== "decimales") armarSegmentado(seg); // el del cociente lo arma renderDecimalesSelect
+});
+
+// ---- Secciones plegables («¿Cómo se ve la tabla?», «… el resultado?») ----
+// .is-settled llega cuando termina de abrirse: hasta entonces el contenido
+// se recorta (para la animación); después se dejan ver los tooltips.
+document.querySelectorAll(".plegable").forEach((seccion) => {
+  const toggle = seccion.querySelector(".plegableToggle");
+  const body = seccion.querySelector(".plegableBody");
+  let timer = null;
+  toggle.addEventListener("click", () => {
+    const open = !seccion.classList.contains("is-open");
+    clearTimeout(timer);
+    seccion.classList.toggle("is-open", open);
+    seccion.classList.remove("is-settled");
+    toggle.setAttribute("aria-expanded", String(open));
+    body.setAttribute("aria-hidden", String(!open));
+    if (open) timer = setTimeout(() => seccion.classList.add("is-settled"), 400);
+    // Los segmentados que estaban ocultos se miden de nuevo.
+    seccion.querySelectorAll(".seg[data-for]").forEach(placeIndicator);
+  });
 });
 
 renderForms();
