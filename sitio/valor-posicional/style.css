@@ -448,6 +448,14 @@ body {
   display: flex;
   flex-direction: column;
 }
+/* «Agrupaciones»: el segundo interruptor sube 9px para que su pista
+   termine donde la cuadrícula de 2×2 de «Color de los números» (70px). La
+   pista (26px) va centrada en su fila de 44px; solo cuando comparten fila. */
+@media (min-width: 640px) {
+  .tablaOpciones .switch + .switch {
+    margin-top: -9px;
+  }
+}
 
 /* ---- Secciones plegables ---- */
 .plegable {
