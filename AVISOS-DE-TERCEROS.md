@@ -66,7 +66,7 @@ E-Mail: bakoma@mail.ru
   - `sitio/recta-numerica/index.html`: flechas a los lados (`move-horizontal`, en la cabecera y como ícono de la pestaña) y descargar.
   - `sitio/estrategias/index.html`: foco (`lightbulb`, en la cabecera y como ícono de la pestaña), descargar, más y menos.
   - `sitio/valor-posicional/index.html`: hoja de cálculo (`sheet`, en la cabecera y como ícono de la pestaña), descargar, flecha hacia abajo (`chevron-down`, también en `script.js` para los selectores de jerarquía), alerta (`circle-alert`) y más (`plus`).
-  - `sitio/compartido/generadores.js` y `menu.js` (menú de navegación entre generadores): los mismos iconos de las tarjetas de la portada, lupa (`search`), menú (`menu`), cerrar (`x`), cuadrícula (`layout-grid`, «Todos los generadores») y ocultar y mostrar el menú (`panel-left-close`, `panel-left-open`).
+  - `sitio/compartido/generadores.js` y `menu.js` (menú de navegación entre generadores): los mismos iconos de las tarjetas de la portada, lupa (`search`), menú (`menu`), cerrar (`x`) y cuadrícula (`layout-grid`, «Todos los generadores»).
   - `sitio/numeros-dienes/index.html`: bloques (`blocks`, en la cabecera y como ícono de la pestaña), descargar, flecha hacia abajo (`chevron-down`), alerta (`circle-alert`) y más (`plus`).
 - **Licencia:** ISC, y MIT para lo derivado de Feather. Texto tomado de https://github.com/lucide-icons/lucide/blob/0.544.0/LICENSE:
 
