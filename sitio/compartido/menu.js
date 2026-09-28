@@ -44,10 +44,14 @@
   // Barra de arriba: botón del menú, marca y lupa.
   const barra = document.createElement("header");
   barra.className = "menuGen-barra";
+  // El contenido va en .menuGen-barraInterior, con el ancho de .page,
+  // para que no llegue a las orillas de la pantalla (como en la portada).
   barra.innerHTML = `
-    <button type="button" class="menuGen-boton" data-abrir aria-controls="menuGen" aria-expanded="false" aria-label="Abrir menú de generadores" title="Menú">${icono(I.menu)}</button>
-    <a class="menuGen-marca" href="${portada}" title="Todos los generadores">Banco<span class="menuGen-punto">.</span></a>
-    <button type="button" class="menuGen-boton" data-buscar aria-controls="menuGen" aria-label="Buscar generador" title="Buscar generador">${icono(I.buscar)}</button>`;
+    <div class="menuGen-barraInterior">
+      <button type="button" class="menuGen-boton" data-abrir aria-controls="menuGen" aria-expanded="false" aria-label="Abrir menú de generadores" title="Menú">${icono(I.menu)}</button>
+      <a class="menuGen-marca" href="${portada}" title="Todos los generadores">Banco<span class="menuGen-punto">.</span></a>
+      <button type="button" class="menuGen-boton" data-buscar aria-controls="menuGen" aria-label="Buscar generador" title="Buscar generador">${icono(I.buscar)}</button>
+    </div>`;
 
   const menu = document.createElement("aside");
   menu.className = "menuGen";

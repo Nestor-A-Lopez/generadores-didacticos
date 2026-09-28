@@ -69,15 +69,35 @@
   position: sticky;
   top: 0;
   z-index: 50;
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  height: 56px;
-  padding: 0 var(--space-2);
   background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border-subtle);
   color: var(--text-heading);
+}
+/* El fondo y el borde ocupan todo el ancho; el contenido, el de .page
+   (1280 px como máximo, centrado), como .barraInterior en la portada.
+   Los íconos de ≡ y la lupa quedan a la altura de la orilla del
+   contenido del generador, --menuGen-orilla: 40 px, y 16 px con menos
+   de 640 px. Recta numérica y estrategias tienen otra orilla (32 px) y
+   la cambian en su style.css, junto al padding de su .section. El
+   ícono está a 10 px del borde de su botón de 40, por eso el padding
+   es 10 px menor que la orilla. */
+:root {
+  --menuGen-orilla: 40px;
+}
+@media (max-width: 639px) {
+  :root {
+    --menuGen-orilla: 16px;
+  }
+}
+.menuGen-barraInterior {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: 1280px;
+  height: 56px;
+  margin: 0 auto;
+  padding: 0 calc(var(--menuGen-orilla) - 10px);
 }
 /* La marca ocupa el espacio del medio y empuja la lupa a la derecha. */
 .menuGen-barra .menuGen-marca {
