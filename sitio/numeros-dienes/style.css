@@ -231,6 +231,10 @@ body {
     background var(--duration-fast) var(--ease-out),
     color 220ms var(--ease-out);
 }
+/* Hover del `SegmentedControl` de Vesta (como en fracciones). */
+.seg button:hover:not([aria-pressed="true"]):not(:disabled) {
+  background: var(--action-secondary);
+}
 .seg button[aria-pressed="true"] {
   background: var(--action-primary);
   color: var(--text-inverse);
@@ -337,13 +341,20 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  /* 40px, como las muestras de `OrderColorPicker` de Vesta. */
+  width: 40px;
+  height: 40px;
   padding: 0;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(9, 47, 107, 0.16);
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: box-shadow var(--duration-fast) var(--ease-standard);
+}
+/* Como `OrderColorPicker`: los bloques con color llevan sombra suave; el
+   anillo de elegido o de foco la reemplaza. */
+.swatchDefecto,
+.swatchPropio.tieneColor:not([aria-pressed="true"]):not(:focus-visible) {
+  box-shadow: var(--shadow-xs);
 }
 /* Elegido: anillo azul separado del bloque por un filo blanco. */
 .swatch[aria-pressed="true"] {
@@ -365,16 +376,21 @@ body {
 .colorPieza[data-pieza="c"] .swatchDefecto {
   background: var(--base10-centena);
 }
+/* Sin color propio, borde más tenue (el de `OrderColorPicker`). */
 .swatchPropio {
+  border-color: rgba(9, 47, 107, 0.08);
   background: var(--neutral-100);
   color: var(--neutral-600);
+}
+.swatchPropio.tieneColor {
+  border-color: rgba(9, 47, 107, 0.16);
 }
 .swatchPropio:hover {
   background: var(--neutral-200);
 }
 .swatchPropio svg {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
 }
 /* Con color propio, el bloque toma ese color (lo pone el script) y
    pierde el «+». */
