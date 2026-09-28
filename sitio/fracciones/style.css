@@ -17,6 +17,7 @@
   --rojo: #e8384f;
   --verde: #7cbf33;
   --amarillo: #ffd500;
+  --rosa: #f06eaa;
 }
 *,
 *::before,
@@ -275,7 +276,9 @@ a:hover {
 /* ---- Tooltip de Vesta ----
    Nombre de cada forma, ayuda de «Valor del entero», de «Denominador» y
    «Ancho total» (solo con su forma) y de los colores del texto; al pasar
-   el cursor o al recibir el foco. */
+   el cursor o al recibir el foco. Los de «Denominador» y «Ancho total»,
+   solo con el cursor, no al seleccionar el campo (pedido del usuario,
+   2026-09-27). */
 .tipText {
   position: absolute;
   z-index: 40;
@@ -313,8 +316,8 @@ a:hover {
 .swatchWrap:focus-within .tipText,
 #valorEnteroField:hover .tipText,
 #valorEnteroField:focus-within .tipText,
-.page[data-forma="triangulo"] [data-tip-forma="triangulo"]:is(:hover, :focus-within) .tipText,
-.page[data-forma="rectangulo"] [data-tip-forma="rectangulo"]:is(:hover, :focus-within) .tipText {
+.page[data-forma="triangulo"] [data-tip-forma="triangulo"]:hover .tipText,
+.page[data-forma="rectangulo"] [data-tip-forma="rectangulo"]:hover .tipText {
   opacity: 1;
   visibility: visible;
 }
@@ -419,10 +422,8 @@ a:hover {
 .swatch[data-color="naranja"] { background: var(--naranja); }
 .swatch[data-color="rojo"] { background: var(--rojo); }
 .swatch[data-color="verde"] { background: var(--verde); }
-.swatch[data-color="amarillo"] {
-  background: var(--amarillo);
-  color: var(--blue-950);
-}
+.swatch[data-color="rosa"] { background: var(--rosa); }
+.swatch[data-color="amarillo"] { background: var(--amarillo); }
 /* «＋»: gris hasta que se elige; elegido, toma el color personalizado (lo
    pone el script) y la palomita en vez del «+». */
 .swatch[data-color="personalizado"] {
@@ -708,6 +709,22 @@ a:hover {
 }
 .menuSwitchRow > :is(#valorEnteroField, #colorValorTotalField, #labelModeField, #colorValorParteField) {
   display: flex !important;
+}
+/* «Valor del entero» y «Color del total»: cada menú es una columna, con
+   las medidas de «Valor de las partes» y «Color en las partes» (y el mismo
+   hueco), así las dos filas se alinean y parten igual si no caben. El menú
+   del total, cerrado, no tiene alto pero conserva su ancho: «Valor del
+   entero» no cambia de tamaño con solo el valor de cada parte. */
+.menuFila {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--space-4);
+}
+.menuFila > [data-menu="valor"] {
+  flex: 1 1 226px;
+}
+.menuFila > [data-menu="total"] {
+  flex: 0 1 152px;
 }
 .fValor {
   flex: 1 1 100%;
@@ -1136,6 +1153,12 @@ a:hover {
   }
   .switch {
     font-size: var(--text-sm);
+  }
+  /* Las ocho muestras (siete colores + «＋», 320px) en una fila: la
+     separación baja de 8px solo lo necesario (a 375px queda en 3.3px). Con
+     menos de 2px ya no caben y pasan a dos filas con la separación mínima. */
+  .swatches {
+    column-gap: max(2px, min(var(--space-2), calc((100% - 320px) / 7)));
   }
   .stage {
     min-height: 240px;

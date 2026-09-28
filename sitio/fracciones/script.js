@@ -1,10 +1,11 @@
 const COLORS = {
-  morado: "#8080F0",
-  azul: "#2ED9D9",
-  naranja: "#f48600",
-  rojo: "#E8384F",
   verde: "#7CBF33",
   amarillo: "#ffd500",
+  azul: "#2ED9D9",
+  rojo: "#E8384F",
+  naranja: "#f48600",
+  morado: "#8080F0",
+  rosa: "#F06EAA",
 };
 // Márgenes de las figuras y de las partes: negro.
 const STROKE_COLOR = "#000000";

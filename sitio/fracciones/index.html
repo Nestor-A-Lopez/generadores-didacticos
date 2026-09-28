@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Generador de fracciones (círculo / triángulo / rectángulo)</title>
+    <title>Fracciones</title>
     <!-- Ícono de la pestaña: el de este generador en la portada (Lucide
          «chart-pie», con el fondo --blue-50 y el trazo --blue-800 de su
          tarjeta), incrustado para que funcione también con doble clic. -->
@@ -36,7 +36,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12c.552 0 1.005-.449.95-.998a10 10 0 0 0-8.953-8.951c-.55-.055-.998.398-.998.95v8a1 1 0 0 0 1 1z"/><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/></svg>
           </span>
           <div class="headerText">
-            <h1>Generador de fracciones</h1>
+            <h1>Fracciones</h1>
             <p>
               Elige la forma, escribe la fracción y guárdala como SVG para
               pegarla en tu presentación
@@ -103,27 +103,29 @@
             </div>
           </div>
 
-          <!-- Color: seis muestras + «＋» que manejan el <select id="color">
+          <!-- Color: siete muestras + «＋» que manejan el <select id="color">
                oculto. La paleta es la de las figuras (COLORS del script), no
                la de Vesta. El anillo (.swatchRing) lo mueve el script. -->
           <div class="field fColor">
             <span class="fieldLabel" id="colorLabel">Color de las partes</span>
             <div class="swatches" role="group" aria-labelledby="colorLabel">
               <span class="swatchRing" aria-hidden="true"></span>
-              <button type="button" class="swatch" data-color="morado" title="Morado" aria-label="Morado"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button>
-              <button type="button" class="swatch" data-color="azul" title="Azul" aria-label="Azul"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button>
-              <button type="button" class="swatch" data-color="naranja" title="Naranja" aria-label="Naranja"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button>
-              <button type="button" class="swatch" data-color="rojo" title="Rojo" aria-label="Rojo"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button>
               <button type="button" class="swatch" data-color="verde" title="Verde" aria-label="Verde"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button>
               <button type="button" class="swatch" data-color="amarillo" title="Amarillo" aria-label="Amarillo"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button>
+              <button type="button" class="swatch" data-color="azul" title="Azul" aria-label="Azul"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button>
+              <button type="button" class="swatch" data-color="rojo" title="Rojo" aria-label="Rojo"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button>
+              <button type="button" class="swatch" data-color="naranja" title="Naranja" aria-label="Naranja"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button>
+              <button type="button" class="swatch" data-color="morado" title="Morado" aria-label="Morado"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button>
+              <button type="button" class="swatch" data-color="rosa" title="Rosa" aria-label="Rosa"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button>
               <button type="button" class="swatch" data-color="personalizado" title="Personalizado…" aria-label="Personalizado…"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><svg class="mas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
               <select id="color" class="visuallyHidden" tabindex="-1" aria-hidden="true">
-                <option value="morado">Morado</option>
-                <option value="azul" selected>Azul</option>
-                <option value="naranja">Naranja</option>
-                <option value="rojo">Rojo</option>
                 <option value="verde">Verde</option>
                 <option value="amarillo">Amarillo</option>
+                <option value="azul" selected>Azul</option>
+                <option value="rojo">Rojo</option>
+                <option value="naranja">Naranja</option>
+                <option value="morado">Morado</option>
+                <option value="rosa">Rosa</option>
                 <option value="personalizado">Personalizado…</option>
               </select>
             </div>
@@ -166,43 +168,48 @@
 
                   <!-- Los menús se despliegan con su interruptor (CSS :has).
                        «Valor del entero» va aparte, con cualquiera de los dos:
-                       también da el número automático de cada parte. -->
-                  <div class="menuSwitch" data-menu="valor" id="menuValor">
-                    <div class="menuSwitchInner">
-                      <div class="menuSwitchRow">
-                        <div class="field fValor campoTip" id="valorEnteroField" data-hide-when="true">
-                          <label class="fieldLabel" for="valorEntero">Valor del entero</label>
-                          <input class="input" type="text" id="valorEntero" value="4" aria-describedby="valorEnteroTip" />
-                          <span class="tipText" role="tooltip" id="valorEnteroTip">Número, decimal, fracción o LaTeX</span>
+                       también da el número automático de cada parte. Comparte
+                       fila con «Color del total» (.menuFila), en las mismas
+                       columnas que «Valor de las partes | Color en las partes»;
+                       sin el total, su columna sigue ahí, vacía. -->
+                  <div class="menuFila">
+                    <div class="menuSwitch" data-menu="valor" id="menuValor">
+                      <div class="menuSwitchInner">
+                        <div class="menuSwitchRow">
+                          <div class="field fValor campoTip" id="valorEnteroField" data-hide-when="true">
+                            <label class="fieldLabel" for="valorEntero">Valor del entero</label>
+                            <input class="input" type="text" id="valorEntero" value="4" aria-describedby="valorEnteroTip" />
+                            <span class="tipText" role="tooltip" id="valorEnteroTip">Número, decimal, fracción o LaTeX</span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div class="menuSwitch" data-menu="total" id="menuTotal">
-                    <div class="menuSwitchInner">
-                      <div class="menuSwitchRow">
-                        <!-- Color de la llave y del valor total. Las muestras
-                             copian su color en #colorValorTotal (el que lee el
-                             script); «+» abre el selector. -->
-                        <div class="field fColorValor" id="colorValorTotalField" data-hide-when="true">
-                          <span class="fieldLabel" id="colorValorTotalLabel">Color del total</span>
-                          <div class="colorPick" role="group" aria-labelledby="colorValorTotalLabel" data-for="colorValorTotal">
-                            <span class="swatchWrap">
-                              <button type="button" class="colorPickSwatch" data-valor="#000000" aria-label="Negro (original)" style="background: #000000"></button>
-                              <span class="tipText tipMulti" aria-hidden="true">Negro (original)</span>
-                            </span>
-                            <span class="swatchWrap">
-                              <button type="button" class="colorPickSwatch" data-valor="#ffffff" aria-label="Blanco" style="background: #ffffff"></button>
-                              <span class="tipText tipMulti" aria-hidden="true">Blanco</span>
-                            </span>
-                            <span class="swatchWrap">
-                              <label class="colorPickMas">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-                                <input type="color" id="colorValorTotal" value="#000000" aria-label="Elegir otro color para la llave y su valor" />
-                              </label>
-                              <span class="tipText tipMulti" aria-hidden="true">Elige otro color para la llave y su valor</span>
-                            </span>
+                    <div class="menuSwitch" data-menu="total" id="menuTotal">
+                      <div class="menuSwitchInner">
+                        <div class="menuSwitchRow">
+                          <!-- Color de la llave y del valor total. Las muestras
+                               copian su color en #colorValorTotal (el que lee el
+                               script); «+» abre el selector. -->
+                          <div class="field fColorValor" id="colorValorTotalField" data-hide-when="true">
+                            <span class="fieldLabel" id="colorValorTotalLabel">Color del total</span>
+                            <div class="colorPick" role="group" aria-labelledby="colorValorTotalLabel" data-for="colorValorTotal">
+                              <span class="swatchWrap">
+                                <button type="button" class="colorPickSwatch" data-valor="#000000" aria-label="Negro (original)" style="background: #000000"></button>
+                                <span class="tipText tipMulti" aria-hidden="true">Negro (original)</span>
+                              </span>
+                              <span class="swatchWrap">
+                                <button type="button" class="colorPickSwatch" data-valor="#ffffff" aria-label="Blanco" style="background: #ffffff"></button>
+                                <span class="tipText tipMulti" aria-hidden="true">Blanco</span>
+                              </span>
+                              <span class="swatchWrap">
+                                <label class="colorPickMas">
+                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                                  <input type="color" id="colorValorTotal" value="#000000" aria-label="Elegir otro color para la llave y su valor" />
+                                </label>
+                                <span class="tipText tipMulti" aria-hidden="true">Elige otro color para la llave y su valor</span>
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </div>
