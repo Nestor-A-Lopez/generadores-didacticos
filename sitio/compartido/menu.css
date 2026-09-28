@@ -1,27 +1,18 @@
 /* ---------------------------------------------------------------
-   Menú de navegación entre generadores (barra lateral).
-   Lo arma compartido/menu.js. Sale del Sidebar del kit de app de Vesta
-   (ui_kits/app/AppChrome.jsx): fondo --surface-inverse, texto
-   --text-inverse-muted y el abierto en blanco sobre rgba(255,255,255,.12).
-
-   Tres anchos:
-   - desde 1440 px: abierta y fija (248 px); la página se corre a la
-     derecha y le queda el ancho de siempre (1280 px máx.);
-   - de 1024 a 1439 px: riel de íconos (72 px), para que la página no
-     pierda tanto ancho; el botón de menú o la lupa la abren encima;
-   - menos de 1024 px: oculta; una barra arriba con el botón de menú, la
-     marca y la lupa la abre encima de la página.
+   Menú de navegación entre generadores. Lo arma compartido/menu.js.
+   Igual en todos los anchos:
+   - .menuGen-barra: barra fija arriba (sticky), blanca translúcida con
+     borde abajo, como la de la portada (sitio/style.css, .barra): botón
+     del menú, marca y lupa;
+   - .menuGen: menú lateral que se abre encima de la página y de la
+     barra, con un velo. Sale del Sidebar del kit de app de Vesta
+     (ui_kits/app/AppChrome.jsx): fondo --surface-inverse, texto
+     --text-inverse-muted y el abierto en blanco sobre rgba(255,255,255,.12).
 
    Todo lleva el prefijo menuGen para no chocar con los estilos de los
    generadores. Usa los tokens de vesta.css, así que se carga después.
    --------------------------------------------------------------- */
 
-/* En :root porque también las usa el padding de <body>. */
-:root {
-  --menuGen-fijo: 248px;
-  --menuGen-riel: 72px;
-  --menuGen-abierto: 280px;
-}
 .menuGen,
 .menuGen-barra {
   font-family: var(--font-sans);
@@ -39,36 +30,6 @@
   flex: 0 0 auto;
 }
 
-/* ---- Barra lateral ---- */
-.menuGen {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 60;
-  width: var(--menuGen-fijo);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  padding: var(--space-5) var(--space-3);
-  overflow-y: auto;
-  background: var(--surface-inverse);
-  color: var(--text-inverse);
-  transition:
-    width var(--duration-fast) var(--ease-standard),
-    transform var(--duration-fast) var(--ease-standard);
-}
-body.menuGen-con {
-  padding-left: var(--menuGen-fijo);
-}
-
-.menuGen-cabeza {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 40px;
-  padding-left: var(--space-3);
-}
 .menuGen-marca {
   font-family: var(--font-serif-display);
   font-variation-settings: "opsz" 48;
@@ -78,9 +39,6 @@ body.menuGen-con {
   color: inherit;
   text-decoration: none;
   border-radius: var(--radius-sm);
-}
-.menuGen .menuGen-punto {
-  color: var(--blue-300);
 }
 
 /* Botones de solo ícono (menú, lupa, cerrar): 40 px, como IconButton sm. */
@@ -98,18 +56,85 @@ body.menuGen-con {
   cursor: pointer;
   transition: background var(--duration-fast) var(--ease-standard);
 }
+
+.menuGen a:focus-visible,
+.menuGen-boton:focus-visible,
+.menuGen-barra .menuGen-marca:focus-visible {
+  outline: none;
+  box-shadow: var(--ring-focus);
+}
+
+/* ---- Barra de arriba ---- */
+.menuGen-barra {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 56px;
+  padding: 0 var(--space-2);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-heading);
+}
+/* La marca ocupa el espacio del medio y empuja la lupa a la derecha. */
+.menuGen-barra .menuGen-marca {
+  flex: 1 1 auto;
+}
+.menuGen-barra .menuGen-punto {
+  color: var(--blue-500);
+}
+.menuGen-barra .menuGen-boton:hover {
+  background: var(--blue-50);
+}
+
+/* ---- Menú lateral ---- */
+.menuGen {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 60;
+  width: 280px;
+  max-width: calc(100vw - 48px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-3);
+  overflow-y: auto;
+  background: var(--surface-inverse);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-xl);
+  transform: translateX(-100%);
+  visibility: hidden;
+  transition:
+    transform var(--duration-fast) var(--ease-standard),
+    visibility 0s linear var(--duration-fast);
+}
+.menuGen.is-abierto {
+  transform: none;
+  visibility: visible;
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+.menuGen-cabeza {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 40px;
+  padding-left: var(--space-3);
+}
+.menuGen .menuGen-punto {
+  color: var(--blue-300);
+}
 .menuGen .menuGen-boton {
   color: var(--text-inverse-muted);
 }
 .menuGen .menuGen-boton:hover {
   background: rgba(255, 255, 255, 0.08);
   color: var(--text-inverse);
-}
-.menuGen-cerrar,
-.menuGen-riel,
-.menuGen.is-abierto .menuGen-ocultar,
-.menuGen-mostrar {
-  display: none;
 }
 
 /* ---- Buscador ---- */
@@ -178,6 +203,12 @@ body.menuGen-con {
 .menuGen-buscador input:focus ~ .menuGen-atajo {
   display: none;
 }
+/* En el celular no hay teclado para el atajo. */
+@media (max-width: 1023px) {
+  .menuGen-atajo {
+    display: none;
+  }
+}
 
 /* ---- Lista ---- */
 /* Rótulo de sección: el de «Materias» del Sidebar de Vesta. */
@@ -239,13 +270,7 @@ body.menuGen-con {
   padding-top: var(--space-4);
 }
 
-.menuGen a:focus-visible,
-.menuGen-boton:focus-visible {
-  outline: none;
-  box-shadow: var(--ring-focus);
-}
-
-/* Velo sobre la página cuando el menú se abre encima. */
+/* Velo sobre la página y la barra mientras el menú está abierto. */
 .menuGen-velo {
   position: fixed;
   inset: 0;
@@ -254,165 +279,6 @@ body.menuGen-con {
 }
 .menuGen-velo[hidden] {
   display: none;
-}
-
-/* ---- Barra de arriba (pantallas angostas) ---- */
-.menuGen-barra {
-  display: none;
-}
-
-/* ---- Riel: de 1024 a 1439 px ---- */
-@media (max-width: 1439px) {
-  body.menuGen-con {
-    padding-left: var(--menuGen-riel);
-  }
-  .menuGen:not(.is-abierto) {
-    width: var(--menuGen-riel);
-    align-items: center;
-  }
-  .menuGen:not(.is-abierto) .menuGen-cabeza {
-    padding-left: 0;
-    justify-content: center;
-  }
-  .menuGen:not(.is-abierto) .menuGen-marcaResto,
-  .menuGen:not(.is-abierto) .menuGen-cabeza .menuGen-ocultar,
-  .menuGen:not(.is-abierto) .menuGen-buscador,
-  .menuGen:not(.is-abierto) .menuGen-titulo,
-  .menuGen:not(.is-abierto) .menuGen-vacio {
-    display: none;
-  }
-  .menuGen:not(.is-abierto) .menuGen-riel {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-    padding-bottom: var(--space-3);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-  }
-  /* En el riel el nombre solo se oculta a la vista: sigue siendo el
-     nombre del enlace para lectores de pantalla (y está en el tooltip). */
-  .menuGen:not(.is-abierto) .menuGen-texto {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-  }
-  .menuGen:not(.is-abierto) .menuGen-nav a,
-  .menuGen:not(.is-abierto) .menuGen-portada {
-    width: 48px;
-    justify-content: center;
-    padding: 12px 0;
-  }
-  .menuGen:not(.is-abierto) .menuGen-portada {
-    border-radius: var(--radius-md);
-  }
-  /* Abierta encima de la página. */
-  .menuGen.is-abierto {
-    width: var(--menuGen-abierto);
-    box-shadow: var(--shadow-xl);
-  }
-  .menuGen.is-abierto .menuGen-cerrar {
-    display: inline-flex;
-  }
-}
-
-/* ---- Menú oculto (desde 1024 px) ----
-   Con «Ocultar menú» (body.menuGen-oculto, lo pone menu.js) la barra sale
-   de la pantalla y la página usa todo el ancho. Queda un botón flotante
-   arriba a la izquierda para volver a mostrarla; el atajo de búsqueda la
-   abre encima, como en el riel. En pantallas angostas no cambia nada:
-   ahí ya está oculta detrás de la barra de arriba. */
-@media (min-width: 1024px) {
-  body.menuGen-con.menuGen-oculto {
-    padding-left: 0;
-  }
-  .menuGen-oculto .menuGen:not(.is-abierto) {
-    transform: translateX(-100%);
-    visibility: hidden;
-  }
-  .menuGen-oculto .menuGen.is-abierto {
-    width: var(--menuGen-abierto);
-    box-shadow: var(--shadow-xl);
-  }
-  .menuGen-oculto .menuGen.is-abierto .menuGen-cerrar {
-    display: inline-flex;
-  }
-  .menuGen-oculto .menuGen-mostrar {
-    position: fixed;
-    top: 16px;
-    left: 16px;
-    z-index: 50;
-    display: inline-flex;
-    border: 1px solid var(--border-default);
-    background: var(--surface-page);
-    box-shadow: var(--shadow-sm);
-    color: var(--text-heading);
-  }
-  .menuGen-mostrar:hover {
-    background: var(--blue-50);
-  }
-  .menuGen-mostrar:focus-visible {
-    outline: none;
-    box-shadow: var(--ring-focus);
-  }
-}
-/* Hasta 1399 px el margen a los lados de .page no alcanza para el botón
-   flotante, que taparía el ícono del título: el título (.headerMarca, de
-   cabecera.css, igual en todos los generadores) se corre a la derecha. */
-@media (min-width: 1024px) and (max-width: 1399px) {
-  .menuGen-oculto .headerMarca {
-    margin-left: var(--space-12);
-  }
-}
-
-/* ---- Pantallas angostas: menos de 1024 px ---- */
-@media (max-width: 1023px) {
-  body.menuGen-con {
-    padding-left: 0;
-  }
-  .menuGen {
-    width: var(--menuGen-abierto);
-    max-width: calc(100vw - 48px);
-    transform: translateX(-100%);
-    visibility: hidden;
-  }
-  .menuGen.is-abierto {
-    transform: none;
-    visibility: visible;
-  }
-  /* En el celular no hay teclado para el atajo. */
-  .menuGen-atajo {
-    display: none;
-  }
-  .menuGen-barra {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    height: 56px;
-    padding: 0 var(--space-2);
-    background: rgba(255, 255, 255, 0.88);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border-subtle);
-    color: var(--text-heading);
-  }
-  .menuGen-barra .menuGen-marca {
-    flex: 1 1 auto;
-  }
-  .menuGen-barra .menuGen-punto {
-    color: var(--blue-500);
-  }
-  .menuGen-barra .menuGen-boton:hover {
-    background: var(--blue-50);
-  }
-  .menuGen-barra .menuGen-boton:focus-visible,
-  .menuGen-barra .menuGen-marca:focus-visible {
-    outline: none;
-    box-shadow: var(--ring-focus);
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
