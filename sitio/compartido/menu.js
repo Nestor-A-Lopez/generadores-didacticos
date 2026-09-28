@@ -11,6 +11,11 @@
 // - Según el ancho (ver menu.css): abierta y fija desde 1440 px; de
 //   1024 a 1439 px, un riel de íconos que se abre encima de la página;
 //   con menos, oculta, y se abre con el botón de la barra de arriba.
+// - Desde 1024 px se puede ocultar por completo («Ocultar menú»): la
+//   página usa todo el ancho y queda un botón flotante para volver a
+//   mostrarla. La elección se guarda en el navegador (localStorage), así
+//   sigue igual en los demás generadores y la próxima vez. Oculta, el
+//   atajo de búsqueda la abre encima de la página, sin fijarla.
 // - Buscador: filtra la lista al escribir. Enter abre el primero que
 //   quede, flecha abajo pasa a la lista y Escape borra o cierra. «/» o
 //   Ctrl+K llevan al buscador desde cualquier parte, salvo mientras se
@@ -28,8 +33,11 @@
   const partes = location.pathname.split("/");
   const actual = partes[partes.length - 2];
 
-  // Iconos de Lucide 0.544.0: search, menu, x, layout-grid.
+  // Iconos de Lucide 0.544.0: search, menu, x, layout-grid,
+  // panel-left-close y panel-left-open.
   const I = {
+    ocultar: '<rect width="18" height="18" x="3" y="3" rx="2" /><path d="M9 3v18" /><path d="m16 15-3-3 3-3" />',
+    mostrar: '<rect width="18" height="18" x="3" y="3" rx="2" /><path d="M9 3v18" /><path d="m14 9 3 3-3 3" />',
     buscar: '<path d="m21 21-4.34-4.34" /><circle cx="11" cy="11" r="8" />',
     menu: '<path d="M4 12h16" /><path d="M4 18h16" /><path d="M4 6h16" />',
     cerrar: '<path d="M18 6 6 18" /><path d="m6 6 12 12" />',
@@ -56,11 +64,13 @@
   menu.innerHTML = `
     <div class="menuGen-cabeza">
       <a class="menuGen-marca" href="${portada}" title="Todos los generadores">B<span class="menuGen-marcaResto">anco</span><span class="menuGen-punto">.</span></a>
+      <button type="button" class="menuGen-boton menuGen-ocultar" data-ocultar aria-label="Ocultar menú" title="Ocultar menú">${icono(I.ocultar)}</button>
       <button type="button" class="menuGen-boton menuGen-cerrar" data-cerrar aria-label="Cerrar menú">${icono(I.cerrar)}</button>
     </div>
     <div class="menuGen-riel">
       <button type="button" class="menuGen-boton" data-abrir aria-controls="menuGen" aria-expanded="false" aria-label="Abrir menú de generadores" title="Abrir menú">${icono(I.menu)}</button>
       <button type="button" class="menuGen-boton" data-buscar aria-controls="menuGen" aria-label="Buscar generador" title="Buscar generador">${icono(I.buscar)}</button>
+      <button type="button" class="menuGen-boton" data-ocultar aria-label="Ocultar menú" title="Ocultar menú">${icono(I.ocultar)}</button>
     </div>
     <div class="menuGen-buscador">
       <span class="menuGen-lupa">${icono(I.buscar)}</span>
@@ -89,7 +99,27 @@
   velo.className = "menuGen-velo";
   velo.hidden = true;
 
-  document.body.prepend(barra, menu, velo);
+  // Botón flotante para volver a mostrar el menú oculto (menu.css solo lo
+  // muestra con body.menuGen-oculto y desde 1024 px).
+  const mostrar = document.createElement("button");
+  mostrar.type = "button";
+  mostrar.className = "menuGen-boton menuGen-mostrar";
+  mostrar.setAttribute("aria-label", "Mostrar menú de generadores");
+  mostrar.title = "Mostrar menú";
+  mostrar.innerHTML = icono(I.mostrar);
+
+  // Se lee antes de insertar el menú, para que no se vea un instante.
+  const CLAVE = "banco.menuOculto";
+  let oculto = false;
+  try {
+    oculto = localStorage.getItem(CLAVE) === "1";
+  } catch (e) {
+    // Sin almacenamiento (ventana privada, archivos locales bloqueados…):
+    // el menú empieza visible y la elección dura lo que la página.
+  }
+  document.body.classList.toggle("menuGen-oculto", oculto);
+
+  document.body.prepend(barra, menu, velo, mostrar);
   document.body.classList.add("menuGen-con");
 
   const campo = menu.querySelector("#menuGenBuscar");
@@ -100,9 +130,13 @@
   let resultados = Banco.GENERADORES.slice();
   let origen = null; // el botón que abrió el menú, para devolverle el foco
 
-  // ---- Abrir y cerrar (riel y pantallas angostas) ----
+  // Abierta y fija a la izquierda: desde 1440 px y sin ocultar. En los
+  // demás casos se abre encima de la página.
+  const anclado = () => fijo.matches && !oculto;
+
+  // ---- Abrir y cerrar (riel, menú oculto y pantallas angostas) ----
   function abrir(conBusqueda) {
-    if (!fijo.matches) {
+    if (!anclado()) {
       origen = document.activeElement;
       menu.classList.add("is-abierto");
       velo.hidden = false;
@@ -111,10 +145,31 @@
     if (conBusqueda) {
       campo.focus();
       campo.select();
-    } else if (!fijo.matches) {
+    } else if (!anclado()) {
       (menu.querySelector("[aria-current]") || campo).focus();
     }
   }
+
+  // ---- Ocultar y mostrar (desde 1024 px) ----
+  function ponerOculto(valor) {
+    oculto = valor;
+    menu.classList.remove("is-abierto");
+    velo.hidden = true;
+    botonesAbrir.forEach((b) => b.setAttribute("aria-expanded", "false"));
+    origen = null;
+    document.body.classList.toggle("menuGen-oculto", valor);
+    try {
+      if (valor) localStorage.setItem(CLAVE, "1");
+      else localStorage.removeItem(CLAVE);
+    } catch (e) {
+      // Sin almacenamiento: vale solo para esta página.
+    }
+    // El foco pasa al botón que hace lo contrario, para seguir con el
+    // teclado desde ahí.
+    (valor ? mostrar : menu.querySelector(fijo.matches ? ".menuGen-ocultar" : ".menuGen-riel [data-ocultar]")).focus();
+  }
+  menu.querySelectorAll("[data-ocultar]").forEach((b) => b.addEventListener("click", () => ponerOculto(true)));
+  mostrar.addEventListener("click", () => ponerOculto(false));
   function cerrar() {
     if (!menu.classList.contains("is-abierto")) return;
     menu.classList.remove("is-abierto");
@@ -130,9 +185,10 @@
   document.querySelectorAll("[data-buscar]").forEach((b) => b.addEventListener("click", () => abrir(true)));
   menu.querySelector("[data-cerrar]").addEventListener("click", cerrar);
   velo.addEventListener("click", cerrar);
-  // Al pasar a 1440 px o más el menú queda fijo: se quita el «abierto».
+  // Al pasar a 1440 px o más el menú queda fijo (si no está oculto): se
+  // quita el «abierto».
   fijo.addEventListener("change", () => {
-    if (fijo.matches) cerrar();
+    if (anclado()) cerrar();
   });
 
   // ---- Búsqueda ----
