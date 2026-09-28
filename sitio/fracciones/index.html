@@ -153,12 +153,12 @@
                   <!-- Interruptores contiguos: 9px entre pista y pista. -->
                   <div class="switches">
                     <label class="switch">
-                      <input type="checkbox" role="switch" id="showTotalLabel" />
+                      <input type="checkbox" role="switch" id="showTotalLabel" aria-expanded="false" aria-controls="menuValor menuTotal" />
                       Mostrar valor total del entero
                       <span class="switchTrack" aria-hidden="true"></span>
                     </label>
                     <label class="switch">
-                      <input type="checkbox" role="switch" id="showPartLabels" />
+                      <input type="checkbox" role="switch" id="showPartLabels" aria-expanded="false" aria-controls="menuValor menuPartes" />
                       Mostrar valor de cada parte
                       <span class="switchTrack" aria-hidden="true"></span>
                     </label>
@@ -167,7 +167,7 @@
                   <!-- Los menús se despliegan con su interruptor (CSS :has).
                        «Valor del entero» va aparte, con cualquiera de los dos:
                        también da el número automático de cada parte. -->
-                  <div class="menuSwitch" data-menu="valor">
+                  <div class="menuSwitch" data-menu="valor" id="menuValor">
                     <div class="menuSwitchInner">
                       <div class="menuSwitchRow">
                         <div class="field fValor campoTip" id="valorEnteroField" data-hide-when="true">
@@ -179,7 +179,7 @@
                     </div>
                   </div>
 
-                  <div class="menuSwitch" data-menu="total">
+                  <div class="menuSwitch" data-menu="total" id="menuTotal">
                     <div class="menuSwitchInner">
                       <div class="menuSwitchRow">
                         <!-- Color de la llave y del valor total. Las muestras
@@ -209,7 +209,7 @@
                     </div>
                   </div>
 
-                  <div class="menuSwitch" data-menu="partes">
+                  <div class="menuSwitch" data-menu="partes" id="menuPartes">
                     <div class="menuSwitchInner">
                       <div class="menuSwitchRow">
                         <div class="field fModo" id="labelModeField" data-hide-when="true">

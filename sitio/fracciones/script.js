@@ -62,6 +62,15 @@ function updateVisibility() {
   setHidden("colorValorTotalField", !showTotalLabel);
   setHidden("etiquetasBadge", !(showPartLabels || showTotalLabel));
 
+  // Como `SwitchMenu` de Vesta: cada interruptor dice si su menú está
+  // desplegado (los menús los abre el CSS con :has; ver aria-controls).
+  document
+    .getElementById("showTotalLabel")
+    .setAttribute("aria-expanded", String(showTotalLabel));
+  document
+    .getElementById("showPartLabels")
+    .setAttribute("aria-expanded", String(showPartLabels));
+
   syncDesignControls(forma, colorSel);
 }
 

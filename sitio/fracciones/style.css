@@ -467,12 +467,12 @@ a:hover {
   opacity: 1;
   transition: transform 260ms var(--ease-out);
 }
-/* Campo del color personalizado (Input de Vesta con la muestra nativa). */
+/* Campo del color personalizado: el de `ColorSwatchGroup` de Vesta (todo el
+   ancho, hueco de 10px y la muestra nativa sin borde). */
 .colorField {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  align-self: flex-start;
+  gap: 10px;
   min-height: 48px;
   padding: 0 16px 0 10px;
   font-size: var(--text-sm);
@@ -486,7 +486,7 @@ a:hover {
   width: 28px;
   height: 28px;
   padding: 0;
-  border: 1px solid rgba(9, 47, 107, 0.08);
+  border: 0;
   border-radius: var(--radius-xs);
   background: none;
   cursor: pointer;
@@ -501,6 +501,10 @@ a:hover {
 .colorField input[type="color"]::-moz-color-swatch {
   border: none;
   border-radius: 3px;
+}
+/* «Color personalizado» ocupa el hueco y el hex queda a la derecha. */
+.colorField > span:not(.colorHex) {
+  flex: 1;
 }
 .colorHex {
   font-family: var(--font-mono);
