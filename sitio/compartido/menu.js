@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------
-// Menú de navegación entre generadores (propuesta lateral).
+// Menú de navegación entre generadores (barra lateral).
 // Una barra a la izquierda, oscura, como el Sidebar del kit de app de
 // Vesta: la marca «Banco.» (lleva a la portada), un buscador y un
 // enlace por generador.

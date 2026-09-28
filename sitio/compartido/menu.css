@@ -1,5 +1,5 @@
 /* ---------------------------------------------------------------
-   Menú de navegación entre generadores (propuesta lateral).
+   Menú de navegación entre generadores (barra lateral).
    Lo arma compartido/menu.js. Sale del Sidebar del kit de app de Vesta
    (ui_kits/app/AppChrome.jsx): fondo --surface-inverse, texto
    --text-inverse-muted y el abierto en blanco sobre rgba(255,255,255,.12).
