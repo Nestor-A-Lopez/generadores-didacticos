@@ -104,7 +104,7 @@ svg
 ## 8. Descarga del SVG
 
 - `download()`: el SVG ya es autosuficiente (glifos como `<path>`), así que no descarga ni incrusta ninguna fuente. Arma el SVG y el nombre y llama a `Banco.guardarSVG(svg, filename)` (`compartido/guardar-svg.js`): `showSaveFilePicker` (Chrome/Edge), recordando la última carpeta de la sesión, con fallback a `<a download>` en otros navegadores.
-- **Enter** en los campos de numerador o denominador dispara la descarga (igual que el botón).
+- **Enter** en los campos de numerador o denominador dispara la descarga (igual que el botón). También con el foco en «Forma del entero» o en «Color de las partes» (desde el 2026-09-28, en `elegirConFlechas`; ahí Enter no hace el clic nativo del botón, porque la opción ya quedó elegida con las flechas).
 - Nombre de archivo: `buildFilename()` → `[numerador]-[denominador]-[color].svg` (ej. `4-20-azul.svg`). Sin prefijo de forma — el usuario ya organiza los SVG en carpetas separadas por forma.
 
 ## 9. Interfaz (diseño «Generador fracciones» de Vesta, 2026-09-27)

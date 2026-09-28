@@ -1391,8 +1391,14 @@ function setDescribedBy(inputId, tipId, activo) {
 // y Fin a la primera y a la última. Eligen la opción al llegar, igual que
 // un clic, y el foco se va con ella. Solo la elegida tiene tabIndex 0 (lo
 // ponen syncSegmented y syncSwatches), así Tab entra y sale del grupo en
-// un solo paso.
+// un solo paso. Enter guarda el SVG, como en numerador y denominador (la
+// opción ya quedó elegida al llegar con las flechas).
 function elegirConFlechas(e, actual, todas) {
+  if (e.key === "Enter") {
+    e.preventDefault(); // sin el clic nativo del botón
+    download();
+    return;
+  }
   const i = todas.indexOf(actual);
   const destino = {
     ArrowLeft: i - 1,
