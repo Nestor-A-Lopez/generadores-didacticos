@@ -106,7 +106,9 @@ body.menuGen-con {
   color: var(--text-inverse);
 }
 .menuGen-cerrar,
-.menuGen-riel {
+.menuGen-riel,
+.menuGen.is-abierto .menuGen-ocultar,
+.menuGen-mostrar {
   display: none;
 }
 
@@ -273,6 +275,7 @@ body.menuGen-con {
     justify-content: center;
   }
   .menuGen:not(.is-abierto) .menuGen-marcaResto,
+  .menuGen:not(.is-abierto) .menuGen-cabeza .menuGen-ocultar,
   .menuGen:not(.is-abierto) .menuGen-buscador,
   .menuGen:not(.is-abierto) .menuGen-titulo,
   .menuGen:not(.is-abierto) .menuGen-vacio {
@@ -311,6 +314,55 @@ body.menuGen-con {
   }
   .menuGen.is-abierto .menuGen-cerrar {
     display: inline-flex;
+  }
+}
+
+/* ---- Menú oculto (desde 1024 px) ----
+   Con «Ocultar menú» (body.menuGen-oculto, lo pone menu.js) la barra sale
+   de la pantalla y la página usa todo el ancho. Queda un botón flotante
+   arriba a la izquierda para volver a mostrarla; el atajo de búsqueda la
+   abre encima, como en el riel. En pantallas angostas no cambia nada:
+   ahí ya está oculta detrás de la barra de arriba. */
+@media (min-width: 1024px) {
+  body.menuGen-con.menuGen-oculto {
+    padding-left: 0;
+  }
+  .menuGen-oculto .menuGen:not(.is-abierto) {
+    transform: translateX(-100%);
+    visibility: hidden;
+  }
+  .menuGen-oculto .menuGen.is-abierto {
+    width: var(--menuGen-abierto);
+    box-shadow: var(--shadow-xl);
+  }
+  .menuGen-oculto .menuGen.is-abierto .menuGen-cerrar {
+    display: inline-flex;
+  }
+  .menuGen-oculto .menuGen-mostrar {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 50;
+    display: inline-flex;
+    border: 1px solid var(--border-default);
+    background: var(--surface-page);
+    box-shadow: var(--shadow-sm);
+    color: var(--text-heading);
+  }
+  .menuGen-mostrar:hover {
+    background: var(--blue-50);
+  }
+  .menuGen-mostrar:focus-visible {
+    outline: none;
+    box-shadow: var(--ring-focus);
+  }
+}
+/* Hasta 1399 px el margen a los lados de .page no alcanza para el botón
+   flotante, que taparía el ícono del título: el título (.headerMarca, de
+   cabecera.css, igual en todos los generadores) se corre a la derecha. */
+@media (min-width: 1024px) and (max-width: 1399px) {
+  .menuGen-oculto .headerMarca {
+    margin-left: var(--space-12);
   }
 }
 
