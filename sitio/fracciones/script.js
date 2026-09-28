@@ -1434,10 +1434,14 @@ document.querySelectorAll(".seg[data-for]").forEach((seg) => {
 
 // ---- Color de las partes: muestras que manejan el <select id="color"> ----
 // Un solo anillo (.swatchRing) se desliza a la muestra elegida. «＋» toma
-// el color personalizado mientras está elegido.
+// el color personalizado mientras está elegido. Con el teclado se recorren
+// con las flechas (como un grupo de opciones): solo la elegida entra en el
+// orden de Tab, así Tab entra y sale de las muestras en un solo paso.
 function syncSwatches(colorSel) {
   document.querySelectorAll(".swatch").forEach((b) => {
-    b.setAttribute("aria-pressed", String(b.dataset.color === colorSel));
+    const elegida = b.dataset.color === colorSel;
+    b.setAttribute("aria-pressed", String(elegida));
+    b.tabIndex = elegida ? 0 : -1;
   });
   const custom = document.querySelector('.swatch[data-color="personalizado"]');
   custom.style.background =
@@ -1460,6 +1464,26 @@ document.querySelectorAll(".swatch").forEach((b) => {
     if (select.value === b.dataset.color) return;
     select.value = b.dataset.color;
     select.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+  // Flechas: ← ↑ a la anterior y → ↓ a la siguiente (dando la vuelta),
+  // Inicio y Fin a la primera y a la última. Eligen el color al llegar,
+  // igual que un clic, y el foco se va con él.
+  b.addEventListener("keydown", (e) => {
+    const todas = [...document.querySelectorAll(".swatch")];
+    const i = todas.indexOf(b);
+    const destino = {
+      ArrowLeft: i - 1,
+      ArrowUp: i - 1,
+      ArrowRight: i + 1,
+      ArrowDown: i + 1,
+      Home: 0,
+      End: todas.length - 1,
+    }[e.key];
+    if (destino === undefined) return;
+    e.preventDefault(); // que ↑ ↓ no desplacen la página
+    const otra = todas[(destino + todas.length) % todas.length];
+    otra.click();
+    otra.focus();
   });
 });
 (function () {
