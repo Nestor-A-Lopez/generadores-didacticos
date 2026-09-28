@@ -132,7 +132,7 @@ Los códigos de orden son `U D C UM DM CM UMM…` para enteros y `dec cen mil` (
 ## Colores de las figuras
 
 - Material base 10 (fijos; los alumnos ya los asocian con el material físico): unidad `#57A639` (verde), decena `#1C75BC` (azul), centena `#CC2027` (rojo). Son tokens de Vesta: `--base10-unidad`, `--base10-decena`, `--base10-centena`. Son los únicos colores de figura que viven en el sistema de diseño. Son los de defecto: en numeros-dienes, «Color de los bloques» deja elegir otro por pieza (`colorPieza` en su `script.js`), y en valor-posicional, «Color de las jerarquías» otro para las celdas de cada orden (`colorCeldaDe`); con los de defecto el SVG no cambia.
-- Fracciones: `morado #8080F0`, `azul #2ED9D9`, `naranja #f48600`, `rojo #E8384F`, `verde #7CBF33`, `amarillo #ffd500` (`COLORS` de `sitio/fracciones/script.js`).
+- Fracciones: `verde #7CBF33`, `amarillo #ffd500`, `azul #2ED9D9`, `rojo #E8384F`, `naranja #f48600`, `morado #8080F0`, `rosa #F06EAA` (`COLORS` de `sitio/fracciones/script.js`).
 - Ninguna paleta de figuras se «armoniza» con la rampa azul de Vesta. La de fracciones no está en Vesta.
 
 ## Sistema de diseño «Vesta»

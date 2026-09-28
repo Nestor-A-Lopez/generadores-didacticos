@@ -17,6 +17,7 @@
   --rojo: #e8384f;
   --verde: #7cbf33;
   --amarillo: #ffd500;
+  --rosa: #f06eaa;
 }
 *,
 *::before,
@@ -419,6 +420,7 @@ a:hover {
 .swatch[data-color="naranja"] { background: var(--naranja); }
 .swatch[data-color="rojo"] { background: var(--rojo); }
 .swatch[data-color="verde"] { background: var(--verde); }
+.swatch[data-color="rosa"] { background: var(--rosa); }
 .swatch[data-color="amarillo"] {
   background: var(--amarillo);
   color: var(--blue-950);
