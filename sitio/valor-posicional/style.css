@@ -439,8 +439,10 @@ body {
 /* Pequeño («Coma y punto» de cada número): el `Switch` `size="sm"` de Vesta.
    Misma pista y perilla que el normal; solo cambian el texto y la separación,
    y el margen de −8px hace que ocupe 28px en la fila sin perder los 44px
-   de área de toque. La etiqueta no se parte (regla de una línea). */
+   de área de toque. La etiqueta no se parte (regla de una línea). Como en
+   `NumberRow`, el texto va a la izquierda y la pista a la derecha. */
 .switchSm {
+  flex-direction: row-reverse;
   margin: -8px 0;
   gap: var(--space-2);
   font-size: var(--text-sm);
@@ -791,7 +793,12 @@ body {
   gap: var(--space-3);
   min-height: 44px;
 }
+/* La etiqueta cede ancho antes que las acciones: con el panel de 330px,
+   «Multiplicando» mide ~2px más de lo que le queda y, sin esto, empujaba
+   «Coma y punto» fuera de su lugar. El texto (una palabra) se adentra esos
+   px en el hueco de 12px, sin tocar el interruptor. */
 .numeroCabeza .tag {
+  min-width: 0;
   font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
   color: var(--text-heading);
