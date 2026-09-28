@@ -1299,6 +1299,12 @@ function render() {
 function buildFilename() {
   const numerador = document.getElementById("numerador").value;
   const denominador = document.getElementById("denominador").value;
+  // Con numerador 0 no hay partes coloreadas (todas en blanco, solo con
+  // sus márgenes): el color no cambia la figura, así que no va en el
+  // nombre. «0», «00» o «0.0» dan todos «0-[denominador].svg».
+  if (numerador.trim() !== "" && Number(numerador) === 0) {
+    return `0-${denominador}.svg`;
+  }
   const colorSel = document.getElementById("color").value;
   const colorNombre =
     colorSel === "personalizado"

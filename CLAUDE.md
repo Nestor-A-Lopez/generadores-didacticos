@@ -124,7 +124,7 @@ Se movieron ahí el 2026-09-26 (439 archivos); ese mismo día `numeros-material/
 
 | Generador | Formato | Ejemplos |
 | --- | --- | --- |
-| Fracciones | `[numerador]-[denominador]-[color].svg`, en la subcarpeta de la forma (`circulo/`, `rectangulo/`, `triangulo/`) | `3-4-verde.svg`, `0-6-azul.svg` |
+| Fracciones | `[numerador]-[denominador]-[color].svg`, en la subcarpeta de la forma (`circulo/`, `rectangulo/`, `triangulo/`). Con numerador 0, sin color: `0-[denominador].svg` (desde el 2026-09-28; los guardados antes llevan el color, como `0-6-azul.svg`) | `3-4-verde.svg`, `0-6.svg` |
 | Tabla de valor posicional y operaciones (`valor-posicional`), sin operación | `[Orden]-[Número].svg`; millares separados con `-`, punto decimal tal cual; varios números unidos con `+`; tabla en blanco → `vacia.svg` | `U-950-000.svg`, `mil-9-673.svg`, `U-0.37+U-0.370.svg`, `U-427..svg` (punto sin dígitos después) |
 | Tabla de valor posicional y operaciones (`valor-posicional`), con operación | `[A\|S\|M\|D]-[operando]-[operando]….SVG` (extensión en **mayúsculas**, así la genera `buildFilename()`); cada operando en unidades reales. Con o sin operación, todos se guardan en `figuras/valor-posicional/` | `A-0.15-0.028.SVG`, `S-8750-2300.SVG`, `M-2.31-24.SVG` |
 | Números con bloques Dienes | `[número].svg`, sin ceros a la izquierda (`007` → `7.svg`), como lo genera `buildFilename()` desde el 2026-09-26 (antes, `numero-N.svg`). Los archivos guardados antes llevan un prefijo con los órdenes, puesto a mano: `U-` (todo en unidades), `DU-`, `CDU-` | `236.svg`; antiguos: `U-36.svg`, `DU-36.svg`, `CDU-427.svg` |
