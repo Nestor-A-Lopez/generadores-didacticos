@@ -276,7 +276,9 @@ a:hover {
 /* ---- Tooltip de Vesta ----
    Nombre de cada forma, ayuda de «Valor del entero», de «Denominador» y
    «Ancho total» (solo con su forma) y de los colores del texto; al pasar
-   el cursor o al recibir el foco. */
+   el cursor o al recibir el foco. Los de «Denominador» y «Ancho total»,
+   solo con el cursor, no al seleccionar el campo (pedido del usuario,
+   2026-09-27). */
 .tipText {
   position: absolute;
   z-index: 40;
@@ -314,8 +316,8 @@ a:hover {
 .swatchWrap:focus-within .tipText,
 #valorEnteroField:hover .tipText,
 #valorEnteroField:focus-within .tipText,
-.page[data-forma="triangulo"] [data-tip-forma="triangulo"]:is(:hover, :focus-within) .tipText,
-.page[data-forma="rectangulo"] [data-tip-forma="rectangulo"]:is(:hover, :focus-within) .tipText {
+.page[data-forma="triangulo"] [data-tip-forma="triangulo"]:hover .tipText,
+.page[data-forma="rectangulo"] [data-tip-forma="rectangulo"]:hover .tipText {
   opacity: 1;
   visibility: visible;
 }
