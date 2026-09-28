@@ -29,7 +29,7 @@ Todo el código vive en `script.js`; de `../compartido/` toma los glifos (`glifo
 
 - Selector `#forma`: círculo, rectángulo (cuadrícula), triángulo. Unidad interna: `UNIT = 40` px por "unidad TikZ", `PAD = 14` px de margen. Convención de coordenadas: se trabaja en el sistema TikZ (y hacia arriba) y se convierte a SVG (y hacia abajo) al final con `toPx(x, y, offsetX, offsetY)`.
 - **Círculo**: diámetro fijo en 10 unidades (`R = 5*UNIT = 200px`). `wedgePath(cx, cy, r, angleStart, sweepDeg)` dibuja cada sector dividiendo el arco en tramos de **máximo 179°** — un arco SVG de exactamente 180°/360° es un caso ambiguo que varios conversores (incluido el de PowerPoint) pueden colapsar a tamaño casi nulo; esto ya se investigó y resolvió, no reintroducir arcos de un solo tramo ≥180°. Si `nTotal === 1` se dibuja un `<circle>` liso, sin líneas divisorias.
-- **Rectángulo**: alto fijo en 10 unidades, ancho ajustable (`#ancho`). `mayorDivisorHastaRaiz(nTotal)` reparte `nTotal` en la cuadrícula nFilas×nColumnas más cuadrada posible.
+- **Rectángulo**: alto fijo en 10 unidades, ancho ajustable (`#ancho`). `mayorDivisorHastaRaiz(nTotal)` reparte `nTotal` en la cuadrícula nFilas×nColumnas más cuadrada posible. Se colorea por columnas, de izquierda a derecha, y cada columna **de abajo hacia arriba** (desde el 2026-09-28, pedido del usuario; antes, de arriba abajo). El índice de coloreado `i` es también el de las etiquetas personalizadas (`customLabels`, «Parte N»).
 - **Triángulo**: alto fijo en 10 unidades. `nFilas = round(sqrt(nTotal))`; si `nTotal` no es cuadrado perfecto se muestra un warning (no bloqueante) y se usa `nFilas²` partes. `lado` y `alturaChica` salen de las fórmulas TikZ originales trasladadas a JS.
 
 ## 2. Numerador, denominador y validaciones
