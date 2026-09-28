@@ -972,9 +972,13 @@ function buildRectangulo(
   // otra vez, cada parte queda suelta (ver composeFigura).
   let svgPartes = "";
   let svgValores = "";
+  // Se colorea por columnas, de izquierda a derecha, y cada columna de
+  // abajo hacia arriba (pedido del usuario, 2026-09-28): i es el orden de
+  // coloreado, que es también el de las etiquetas personalizadas. fila 0
+  // es la de arriba.
   for (let i = 0; i < nTotal; i++) {
     const columna = Math.floor(i / nFilas);
-    const fila = i % nFilas;
+    const fila = nFilas - 1 - (i % nFilas);
     const xInicio = columna * anchoCelda;
     const yInicio = -fila * altoCelda;
     const fill = i < nColoreadas ? colorHex : "#ffffff";
