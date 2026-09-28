@@ -1139,6 +1139,12 @@ a:hover {
   .switch {
     font-size: var(--text-sm);
   }
+  /* Las ocho muestras (siete colores + «＋», 320px) en una fila: la
+     separación baja de 8px solo lo necesario (a 375px queda en 3.3px). Con
+     menos de 2px ya no caben y pasan a dos filas con la separación mínima. */
+  .swatches {
+    column-gap: max(2px, min(var(--space-2), calc((100% - 320px) / 7)));
+  }
   .stage {
     min-height: 240px;
     padding: var(--space-5) var(--space-4);
