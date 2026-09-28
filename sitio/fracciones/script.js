@@ -1385,15 +1385,43 @@ function setDescribedBy(inputId, tipId, activo) {
   else input.removeAttribute("aria-describedby");
 }
 
+// ---- Grupos que se recorren con las flechas («Forma del entero» y
+// «Color de las partes»), como un grupo de opciones ----
+// ← ↑ a la opción anterior y → ↓ a la siguiente (dando la vuelta), Inicio
+// y Fin a la primera y a la última. Eligen la opción al llegar, igual que
+// un clic, y el foco se va con ella. Solo la elegida tiene tabIndex 0 (lo
+// ponen syncSegmented y syncSwatches), así Tab entra y sale del grupo en
+// un solo paso.
+function elegirConFlechas(e, actual, todas) {
+  const i = todas.indexOf(actual);
+  const destino = {
+    ArrowLeft: i - 1,
+    ArrowUp: i - 1,
+    ArrowRight: i + 1,
+    ArrowDown: i + 1,
+    Home: 0,
+    End: todas.length - 1,
+  }[e.key];
+  if (destino === undefined) return;
+  e.preventDefault(); // que ↑ ↓ no desplacen la página
+  const otra = todas[(destino + todas.length) % todas.length];
+  otra.click();
+  otra.focus();
+}
+
 // ---- Segmentados: fachada de los <select> ocultos (como numeros-dienes) ----
 // Cada .seg[data-for=id] maneja el <select id=id>. Si el select cambia por
-// otro lado, syncSegmented pone los botones al día.
+// otro lado, syncSegmented pone los botones al día. El de «Forma del
+// entero» (.segForma) se recorre con las flechas (elegirConFlechas).
 function syncSegmented(id) {
   const select = document.getElementById(id);
   const seg = document.querySelector(`.seg[data-for="${id}"]`);
   if (!seg) return;
+  const conFlechas = seg.classList.contains("segForma");
   seg.querySelectorAll("button").forEach((b) => {
-    b.setAttribute("aria-pressed", String(b.dataset.value === select.value));
+    const elegido = b.dataset.value === select.value;
+    b.setAttribute("aria-pressed", String(elegido));
+    if (conFlechas) b.tabIndex = elegido ? 0 : -1;
   });
   placeIndicator(seg);
 }
@@ -1427,20 +1455,23 @@ document.querySelectorAll(".seg[data-for]").forEach((seg) => {
       requestAnimationFrame(() => ind.classList.add("is-ready"));
     });
   }
-  seg.querySelectorAll("button").forEach((b) => {
+  const botones = [...seg.querySelectorAll("button")];
+  botones.forEach((b) => {
     b.addEventListener("click", () => {
       if (select.value === b.dataset.value) return;
       select.value = b.dataset.value;
       select.dispatchEvent(new Event("change", { bubbles: true }));
     });
+    if (seg.classList.contains("segForma")) {
+      b.addEventListener("keydown", (e) => elegirConFlechas(e, b, botones));
+    }
   });
 });
 
 // ---- Color de las partes: muestras que manejan el <select id="color"> ----
 // Un solo anillo (.swatchRing) se desliza a la muestra elegida. «＋» toma
 // el color personalizado mientras está elegido. Con el teclado se recorren
-// con las flechas (como un grupo de opciones): solo la elegida entra en el
-// orden de Tab, así Tab entra y sale de las muestras en un solo paso.
+// con las flechas (elegirConFlechas).
 function syncSwatches(colorSel) {
   document.querySelectorAll(".swatch").forEach((b) => {
     const elegida = b.dataset.color === colorSel;
@@ -1469,26 +1500,9 @@ document.querySelectorAll(".swatch").forEach((b) => {
     select.value = b.dataset.color;
     select.dispatchEvent(new Event("change", { bubbles: true }));
   });
-  // Flechas: ← ↑ a la anterior y → ↓ a la siguiente (dando la vuelta),
-  // Inicio y Fin a la primera y a la última. Eligen el color al llegar,
-  // igual que un clic, y el foco se va con él.
-  b.addEventListener("keydown", (e) => {
-    const todas = [...document.querySelectorAll(".swatch")];
-    const i = todas.indexOf(b);
-    const destino = {
-      ArrowLeft: i - 1,
-      ArrowUp: i - 1,
-      ArrowRight: i + 1,
-      ArrowDown: i + 1,
-      Home: 0,
-      End: todas.length - 1,
-    }[e.key];
-    if (destino === undefined) return;
-    e.preventDefault(); // que ↑ ↓ no desplacen la página
-    const otra = todas[(destino + todas.length) % todas.length];
-    otra.click();
-    otra.focus();
-  });
+  b.addEventListener("keydown", (e) =>
+    elegirConFlechas(e, b, [...document.querySelectorAll(".swatch")]),
+  );
 });
 (function () {
   const swatches = document.querySelector(".swatches");
