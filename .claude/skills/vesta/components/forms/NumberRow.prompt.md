@@ -12,4 +12,5 @@ Number + order (hierarchy) row for place-value tables and operation terms: «36�
 - **Integer-only** (multiplicador, dividendo): pass `orderOptions` without decimal orders.
 - **Error**: `error` → Input red border + ring + `aria-invalid`. Show the message in an error `Callout` over the figure, not in the row.
 - `orderOptions` follow the table range; an out-of-range `order` falls back to «Unidades (U)» silently (calls `onOrderChange('U')`).
+- Narrow panels: the label yields width before the actions (`minWidth: 0` on the label, `flexShrink: 0` on the actions), so «Coma y punto» and «Quitar» never shift or overflow.
 - `hint` is optional helper text below the fields.

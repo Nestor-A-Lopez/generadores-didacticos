@@ -173,10 +173,15 @@ No había fuente que definiera un inventario de componentes, así que se autoró
 | Grupo | Componentes |
 | --- | --- |
 | `core/` | `Button` · `IconButton` · `Card` · `Badge` · `Tag` · `Icon` |
-| `forms/` | `Field` · `Input` · `Select` · `Checkbox` · `Radio` · `Switch` |
+| `forms/` | `Field` · `Input` · `InputWithPrefix` · `Select` · `Checkbox` · `Radio` · `Switch` · `SwitchMenu` + `SwitchGroup` · `SegmentedControl` · `ColorSwatchGroup` · `TextColorPicker` · `OrderColorPicker` · `ColorModeGrid` · `NumberRow` |
 | `feedback/` | `Callout` · `AnswerFeedback` · `Toast` · `Tooltip` · `Dialog` |
 | `navigation/` | `Tabs` · `ProgressTrack` · `StepIndicator` |
 | `learning/` | `Formula` · `LessonCard` |
+
+Exportaciones extra de `forms/`:
+
+- `SwitchGroup` (en `SwitchMenu.jsx`): agrupa varios `SwitchMenu` y aplica la regla de 9 px entre pistas de interruptores contiguos; los menús quedan debajo, en el mismo orden.
+- `DEFAULT_ORDERS` (en `OrderColorPicker.jsx`): constante, no componente. Son los órdenes por defecto de `OrderColorPicker` (unidad, decena, centena); se usa para extenderlos y pasarlos en `orders`.
 
 Cada uno trae `.d.ts` (contrato de props) y `.prompt.md` (cuándo y cómo usarlo). Cada carpeta tiene su tarjeta de previsualización `*.card.html`.
 

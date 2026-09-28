@@ -26,8 +26,8 @@ export function NumberRow({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6, ...style }} {...rest}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-3)', minHeight: 44 }}>
-        <span style={{ fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-heading)' }}>{label}</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
+        <span style={{ fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-heading)', minWidth: 0 }}>{label}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)', flexShrink: 0 }}>
           <Switch size="sm" label={separatorsLabel} checked={showSeparators}
             onChange={e => onShowSeparatorsChange && onShowSeparatorsChange(e.target.checked)}
             style={{ flexDirection: 'row-reverse' }} />

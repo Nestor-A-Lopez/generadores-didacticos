@@ -3,10 +3,10 @@ import React from 'react';
 export function Switch({ label, checked = false, onChange, disabled = false, size = 'md', style, ...rest }) {
   const sm = size === 'sm';
   const [focusRing, setFocusRing] = React.useState(false);
-  const focusProps = sm ? {
+  const focusProps = {
     onFocus: e => setFocusRing(e.target.matches(':focus-visible')),
     onBlur: () => setFocusRing(false),
-  } : {};
+  };
   return (
     <label style={{ display: 'inline-flex', alignItems: 'center', gap: sm ? 'var(--space-2)' : 'var(--space-3)', cursor: disabled ? 'not-allowed' : 'pointer', minHeight: 44, ...(sm ? { margin: '-8px 0' } : {}), opacity: disabled ? .55 : 1, ...style }} {...rest}>
       <input type="checkbox" role="switch" checked={checked} onChange={onChange} disabled={disabled} {...focusProps} style={{ position: 'absolute', opacity: 0, width: 1, height: 1 }} />
@@ -15,7 +15,7 @@ export function Switch({ label, checked = false, onChange, disabled = false, siz
         borderRadius: 'var(--radius-pill)',
         background: checked ? 'var(--action-primary)' : 'var(--neutral-200)',
         transition: 'background var(--duration-base) var(--ease-standard)',
-        ...(sm && focusRing ? { boxShadow: 'var(--focus-ring)' } : {}),
+        ...(focusRing ? { boxShadow: 'var(--focus-ring)' } : {}),
       }}>
         <span style={{
           position: 'absolute', top: 3, left: checked ? 23 : 3, width: 20, height: 20,

@@ -6,6 +6,8 @@ Instant-effect preference: sound on/off, show steps, dark reading mode.
 
 For anything needing a Save button, use `Checkbox`.
 
+**Focus:** both sizes (`md` and `sm`) show the focus ring (`--focus-ring`) on the track when reached by keyboard (`:focus-visible`).
+
 **One-line label (all sizes, `sm` included):** if it doesn't fit the available width, shorten the text — never let it wrap or reduce the font size. The track (46×26) is centred in a 44px row; a second line grows the row, pushes the track away from the previous switch and breaks the fixed 9px between consecutive tracks. Real case: «Punto decimal en los productos parciales» in a 330px panel ended up 11.8px from the previous one → shortened to «Punto en los productos parciales».
 - Good: «Punto», «Mostrar clases».
 - Bad: a label that takes two lines in the panel.
