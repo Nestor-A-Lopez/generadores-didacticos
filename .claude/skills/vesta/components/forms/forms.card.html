@@ -1,4 +1,4 @@
-<!-- @dsCard group="Components" viewport="700x400" name="Forms" subtitle="Field, Input, Select, Checkbox, Radio, Switch" -->
+<!-- @dsCard group="Components" viewport="700x1160" name="Forms" subtitle="Field, Input, Select, Checkbox, Radio, Switch, NumberRow, OrderColorPicker, ColorModeGrid" -->
 <!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Forms</title>
 <link rel="stylesheet" href="../../styles.css">
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
@@ -7,8 +7,14 @@
 <script src="../../_ds_bundle.js"></script>
 <style>body{padding:20px;background:var(--surface-page)}.row{display:flex;flex-wrap:wrap;align-items:center;gap:14px}.col{display:flex;flex-direction:column;gap:14px}.lbl{font-family:var(--font-sans);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)}</style></head><body><div id="root"></div>
 <script type="text/babel">
-const { Field, Input, Select, Checkbox, Radio, Switch } = window.VestaDesignSystem_a1e3d1;
-function Demo(){const [a,setA]=React.useState('b');const [c,setC]=React.useState(true);const [s,setS]=React.useState(true);
+const { Field, Input, Select, Checkbox, Radio, Switch, NumberRow, OrderColorPicker, ColorModeGrid } = window.VestaDesignSystem_a1e3d1;
+function Demo(){const [a,setA]=React.useState('b');const [c,setC]=React.useState(true);const [s,setS]=React.useState(true);const [m,setM]=React.useState(false);
+const ords=[{value:'U',label:'Unidades (U)'},{value:'D',label:'Decenas (D)'},{value:'C',label:'Centenas (C)'},{value:'dec',label:'Décimos (dec)'}];const ordsInt=ords.slice(0,3);
+const [n1,setN1]=React.useState('4500');const [o1,setO1]=React.useState('U');const [s1,setS1]=React.useState(true);
+const [n2,setN2]=React.useState('24');const [o2,setO2]=React.useState('D');const [s2,setS2]=React.useState(true);
+const [oc1,setOc1]=React.useState({});const [oc2,setOc2]=React.useState({D:{mode:'custom',color:'#7b3fa0'}});
+const [cn,setCn]=React.useState('negro');const [cnc,setCnc]=React.useState();const [cs,setCs]=React.useState('personalizado');const [csc,setCsc]=React.useState('#1a7f5a');
+const [n3,setN3]=React.useState('12,5');const [o3,setO3]=React.useState('U');const [s3,setS3]=React.useState(true);
 return <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'24px'}}>
 <div className="col">
 <Field label="Velocidad inicial" hint="En metros por segundo (m/s)." htmlFor="v0"><Input id="v0" defaultValue="9.8" suffix="m/s" inputMode="decimal"/></Field>
@@ -24,6 +30,25 @@ return <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'24px'}}>
 </div>
 <Checkbox label="Incluir el rozamiento del aire" checked={c} onChange={e=>setC(e.target.checked)}/>
 <Switch label="Mostrar el desarrollo paso a paso" checked={s} onChange={e=>setS(e.target.checked)}/>
-</div></div>}
+<div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'var(--space-2)'}}><span className="lbl">Valor en las partes</span><Switch size="sm" label="Mismo valor" checked={m} onChange={e=>setM(e.target.checked)} style={{flexDirection:'row-reverse'}}/></div>
+</div>
+<div style={{gridColumn:'1 / -1',display:'flex',flexDirection:'column',gap:'var(--space-4)'}}>
+<span className="lbl">NumberRow</span>
+<NumberRow label="Número 1" value={n1} onValueChange={setN1} order={o1} orderOptions={ords} onOrderChange={setO1} showSeparators={s1} onShowSeparatorsChange={setS1} onRemove={()=>{}} canRemove={false} placeholder="Ej. 4500 o 63.21"/>
+<NumberRow label="Multiplicador" value={n2} onValueChange={setN2} order={o2} orderOptions={ordsInt} onOrderChange={setO2} showSeparators={s2} onShowSeparatorsChange={setS2} reserveRemoveSpace placeholder="Ej. 24 (entero)" hint="Número entero; puede llevar jerarquía: 24 en Decenas es 240."/>
+<NumberRow label="Dividendo" value={n3} onValueChange={setN3} order={o3} orderOptions={ordsInt} onOrderChange={setO3} showSeparators={s3} onShowSeparatorsChange={setS3} reserveRemoveSpace error placeholder="Ej. 24 (entero)"/>
+</div>
+<div style={{gridColumn:'1 / -1',display:'flex',flexDirection:'column',gap:'var(--space-4)',paddingTop:'40px'}}>
+<span className="lbl">OrderColorPicker</span>
+<div style={{display:'flex',flexWrap:'wrap',gap:'40px',paddingTop:'40px'}}>
+<OrderColorPicker label="Color de las jerarquías" value={oc1} onChange={setOc1}/>
+<OrderColorPicker label="Color de los bloques" tooltipTarget="piezas" value={oc2} onChange={setOc2}/>
+</div></div>
+<div style={{gridColumn:'1 / -1',display:'flex',flexDirection:'column',gap:'var(--space-4)',paddingTop:'24px'}}>
+<span className="lbl">ColorModeGrid</span>
+<div style={{display:'flex',flexWrap:'wrap',gap:'var(--space-4)',paddingTop:'40px'}}>
+<ColorModeGrid style={{flex:'1 1 260px'}} label="Color de los números" options={[{value:'negro',label:'Negro'},{value:'color',label:'Color'}]} value={cn} customColor={cnc} onChange={(v,c)=>{setCn(v);setCnc(c);}}/>
+<ColorModeGrid style={{flex:'1 1 260px'}} label="Color de las comas y punto" defaultCustomColor="#cc2027" options={[{value:'rojo',label:'Rojo'},{value:'negro',label:'Negro'}]} value={cs} customColor={csc} onChange={(v,c)=>{setCs(v);setCsc(c);}}/>
+</div></div></div>}
 ReactDOM.createRoot(document.getElementById('root')).render(<Demo/>);
 </script></body></html>
