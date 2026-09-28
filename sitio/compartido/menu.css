@@ -1,0 +1,371 @@
+/* ---------------------------------------------------------------
+   Menú de navegación entre generadores (propuesta lateral).
+   Lo arma compartido/menu.js. Sale del Sidebar del kit de app de Vesta
+   (ui_kits/app/AppChrome.jsx): fondo --surface-inverse, texto
+   --text-inverse-muted y el abierto en blanco sobre rgba(255,255,255,.12).
+
+   Tres anchos:
+   - desde 1440 px: abierta y fija (248 px); la página se corre a la
+     derecha y le queda el ancho de siempre (1280 px máx.);
+   - de 1024 a 1439 px: riel de íconos (72 px), para que la página no
+     pierda tanto ancho; el botón de menú o la lupa la abren encima;
+   - menos de 1024 px: oculta; una barra arriba con el botón de menú, la
+     marca y la lupa la abre encima de la página.
+
+   Todo lleva el prefijo menuGen para no chocar con los estilos de los
+   generadores. Usa los tokens de vesta.css, así que se carga después.
+   --------------------------------------------------------------- */
+
+/* En :root porque también las usa el padding de <body>. */
+:root {
+  --menuGen-fijo: 248px;
+  --menuGen-riel: 72px;
+  --menuGen-abierto: 280px;
+}
+.menuGen,
+.menuGen-barra {
+  font-family: var(--font-sans);
+}
+.menuGen *,
+.menuGen *::before,
+.menuGen *::after,
+.menuGen-barra * {
+  box-sizing: border-box;
+}
+.menuGen svg,
+.menuGen-barra svg {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+}
+
+/* ---- Barra lateral ---- */
+.menuGen {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 60;
+  width: var(--menuGen-fijo);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-3);
+  overflow-y: auto;
+  background: var(--surface-inverse);
+  color: var(--text-inverse);
+  transition:
+    width var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
+body.menuGen-con {
+  padding-left: var(--menuGen-fijo);
+}
+
+.menuGen-cabeza {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 40px;
+  padding-left: var(--space-3);
+}
+.menuGen-marca {
+  font-family: var(--font-serif-display);
+  font-variation-settings: "opsz" 48;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+}
+.menuGen .menuGen-punto {
+  color: var(--blue-300);
+}
+
+/* Botones de solo ícono (menú, lupa, cerrar): 40 px, como IconButton sm. */
+.menuGen-boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+.menuGen .menuGen-boton {
+  color: var(--text-inverse-muted);
+}
+.menuGen .menuGen-boton:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-inverse);
+}
+.menuGen-cerrar,
+.menuGen-riel {
+  display: none;
+}
+
+/* ---- Buscador ---- */
+.menuGen-buscador {
+  position: relative;
+}
+.menuGen-lupa {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  color: var(--text-inverse-muted);
+  pointer-events: none;
+}
+.menuGen-lupa svg {
+  width: 18px;
+  height: 18px;
+}
+.menuGen-buscador input {
+  width: 100%;
+  height: 40px;
+  padding: 0 36px 0 38px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.08);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--text-inverse);
+  -webkit-appearance: none;
+  appearance: none;
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+.menuGen-buscador input::placeholder {
+  color: var(--text-inverse-muted);
+}
+.menuGen-buscador input::-webkit-search-cancel-button {
+  display: none;
+}
+.menuGen-buscador input:hover {
+  border-color: rgba(255, 255, 255, 0.32);
+}
+.menuGen-buscador input:focus {
+  outline: none;
+  border-color: var(--blue-300);
+  box-shadow: var(--ring-focus);
+}
+.menuGen-atajo {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  min-width: 20px;
+  padding: 1px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: var(--radius-xs);
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  line-height: 16px;
+  text-align: center;
+  color: var(--text-inverse-muted);
+  pointer-events: none;
+}
+.menuGen-buscador input:focus ~ .menuGen-atajo {
+  display: none;
+}
+
+/* ---- Lista ---- */
+/* Rótulo de sección: el de «Materias» del Sidebar de Vesta. */
+.menuGen-titulo {
+  margin-top: var(--space-2);
+  padding: 0 var(--space-3);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--blue-300);
+}
+.menuGen-nav ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.menuGen-nav li[hidden] {
+  display: none;
+}
+.menuGen-nav a,
+.menuGen-portada {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 44px;
+  padding: 10px var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  line-height: 1.3;
+  color: var(--text-inverse-muted);
+  text-decoration: none;
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+.menuGen-nav a:hover,
+.menuGen-portada:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-inverse);
+}
+.menuGen-nav a[aria-current="page"] {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--neutral-0);
+  font-weight: 600;
+}
+.menuGen-vacio {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--text-inverse-muted);
+}
+/* «Todos los generadores», abajo, separado de la lista. */
+.menuGen-portada {
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  padding-top: var(--space-4);
+}
+
+.menuGen a:focus-visible,
+.menuGen-boton:focus-visible {
+  outline: none;
+  box-shadow: var(--ring-focus);
+}
+
+/* Velo sobre la página cuando el menú se abre encima. */
+.menuGen-velo {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: rgba(9, 47, 107, 0.32);
+}
+.menuGen-velo[hidden] {
+  display: none;
+}
+
+/* ---- Barra de arriba (pantallas angostas) ---- */
+.menuGen-barra {
+  display: none;
+}
+
+/* ---- Riel: de 1024 a 1439 px ---- */
+@media (max-width: 1439px) {
+  body.menuGen-con {
+    padding-left: var(--menuGen-riel);
+  }
+  .menuGen:not(.is-abierto) {
+    width: var(--menuGen-riel);
+    align-items: center;
+  }
+  .menuGen:not(.is-abierto) .menuGen-cabeza {
+    padding-left: 0;
+    justify-content: center;
+  }
+  .menuGen:not(.is-abierto) .menuGen-marcaResto,
+  .menuGen:not(.is-abierto) .menuGen-buscador,
+  .menuGen:not(.is-abierto) .menuGen-titulo,
+  .menuGen:not(.is-abierto) .menuGen-vacio {
+    display: none;
+  }
+  .menuGen:not(.is-abierto) .menuGen-riel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  /* En el riel el nombre solo se oculta a la vista: sigue siendo el
+     nombre del enlace para lectores de pantalla (y está en el tooltip). */
+  .menuGen:not(.is-abierto) .menuGen-texto {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .menuGen:not(.is-abierto) .menuGen-nav a,
+  .menuGen:not(.is-abierto) .menuGen-portada {
+    width: 48px;
+    justify-content: center;
+    padding: 12px 0;
+  }
+  .menuGen:not(.is-abierto) .menuGen-portada {
+    border-radius: var(--radius-md);
+  }
+  /* Abierta encima de la página. */
+  .menuGen.is-abierto {
+    width: var(--menuGen-abierto);
+    box-shadow: var(--shadow-xl);
+  }
+  .menuGen.is-abierto .menuGen-cerrar {
+    display: inline-flex;
+  }
+}
+
+/* ---- Pantallas angostas: menos de 1024 px ---- */
+@media (max-width: 1023px) {
+  body.menuGen-con {
+    padding-left: 0;
+  }
+  .menuGen {
+    width: var(--menuGen-abierto);
+    max-width: calc(100vw - 48px);
+    transform: translateX(-100%);
+    visibility: hidden;
+  }
+  .menuGen.is-abierto {
+    transform: none;
+    visibility: visible;
+  }
+  /* En el celular no hay teclado para el atajo. */
+  .menuGen-atajo {
+    display: none;
+  }
+  .menuGen-barra {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    height: 56px;
+    padding: 0 var(--space-2);
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-heading);
+  }
+  .menuGen-barra .menuGen-marca {
+    flex: 1 1 auto;
+  }
+  .menuGen-barra .menuGen-punto {
+    color: var(--blue-500);
+  }
+  .menuGen-barra .menuGen-boton:hover {
+    background: var(--blue-50);
+  }
+  .menuGen-barra .menuGen-boton:focus-visible,
+  .menuGen-barra .menuGen-marca:focus-visible {
+    outline: none;
+    box-shadow: var(--ring-focus);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menuGen,
+  .menuGen * {
+    transition-duration: 0.01ms !important;
+  }
+}
