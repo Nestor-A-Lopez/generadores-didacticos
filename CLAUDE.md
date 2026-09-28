@@ -165,7 +165,7 @@ Aplican a todos los generadores (el detalle y el porqué están en el `CLAUDE.md
 2. **Agrupamiento en dos niveles** pensado para «desagrupar una vez / dos veces» en PowerPoint. No añadir un `<g>` envolvente (ni para márgenes: se desplaza el `viewBox`).
 3. **Fondo transparente**, sin `<rect>` de fondo blanco.
 4. En las tablas: bordes como rectángulos rellenos (nada de `<line>` ni `stroke`), medidas redondeadas a enteros y `stroke` par.
-5. Guardado con `Banco.guardarSVG` (`sitio/compartido/guardar-svg.js`): `showSaveFilePicker`, que recuerda la carpeta en la sesión, y respaldo `<a download>`. **Enter** en los campos numéricos guarda en todos los generadores (en valor-posicional, también en `#divisor`).
+5. Guardado con `Banco.guardarSVG` (`sitio/compartido/guardar-svg.js`): `showSaveFilePicker`, que recuerda la carpeta en la sesión, y respaldo `<a download>`. **Enter** en los campos numéricos guarda en todos los generadores (en valor-posicional, también en `#divisor`; en fracciones, también en «Forma del entero» y «Color de las partes»).
 6. No quitar controles del DOM para ocultarlos: el script lee todos los ids al cargar.
 7. Los trazos punteados (`stroke-dasharray`) y las formas huecas (`fill="none"`) **sobreviven** a «Convertir en forma»: el usuario lo confirmó en PowerPoint el 2026-09-26 con el generador de estrategias.
 8. **Borde del material concreto, igual en todos los generadores**: blanco (`#FFFFFF`), 0.75 pt en la unidad y 1.05 pt en la decena y la centena. `numeros-dienes` lo escribe como 1 px / 1.4 px (su SVG está en px y PowerPoint toma 1 px = 0.75 pt); los generadores que dibujan en pt (`estrategias`) usan 0.75 / 1.05. Es un grosor absoluto: no se escala con el tamaño del cuadrito.
