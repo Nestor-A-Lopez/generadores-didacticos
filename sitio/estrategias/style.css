@@ -48,6 +48,11 @@ body {
   padding-left: 32px;
   padding-right: 32px;
 }
+/* Orilla del contenido, para alinear la barra del menú
+   (compartido/menu.css). */
+:root {
+  --menuGen-orilla: 32px;
+}
 
 /* ---- Cabecera + acción principal ---- */
 .header {
@@ -355,6 +360,9 @@ body {
 }
 
 @media (max-width: 640px) {
+  :root {
+    --menuGen-orilla: 16px;
+  }
   .section {
     padding-left: 16px;
     padding-right: 16px;
