@@ -421,10 +421,7 @@ a:hover {
 .swatch[data-color="rojo"] { background: var(--rojo); }
 .swatch[data-color="verde"] { background: var(--verde); }
 .swatch[data-color="rosa"] { background: var(--rosa); }
-.swatch[data-color="amarillo"] {
-  background: var(--amarillo);
-  color: var(--blue-950);
-}
+.swatch[data-color="amarillo"] { background: var(--amarillo); }
 /* «＋»: gris hasta que se elige; elegido, toma el color personalizado (lo
    pone el script) y la palomita en vez del «+». */
 .swatch[data-color="personalizado"] {
@@ -710,6 +707,22 @@ a:hover {
 }
 .menuSwitchRow > :is(#valorEnteroField, #colorValorTotalField, #labelModeField, #colorValorParteField) {
   display: flex !important;
+}
+/* «Valor del entero» y «Color del total»: cada menú es una columna, con
+   las medidas de «Valor de las partes» y «Color en las partes» (y el mismo
+   hueco), así las dos filas se alinean y parten igual si no caben. El menú
+   del total, cerrado, no tiene alto pero conserva su ancho: «Valor del
+   entero» no cambia de tamaño con solo el valor de cada parte. */
+.menuFila {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--space-4);
+}
+.menuFila > [data-menu="valor"] {
+  flex: 1 1 226px;
+}
+.menuFila > [data-menu="total"] {
+  flex: 0 1 152px;
 }
 .fValor {
   flex: 1 1 100%;
