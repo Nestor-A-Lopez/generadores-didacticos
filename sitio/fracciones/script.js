@@ -1528,6 +1528,18 @@ document.querySelectorAll(".colorPick[data-for]").forEach((grupo) => {
       input.dispatchEvent(new Event("change", { bubbles: true }));
     });
   });
+  // Flechas entre las dos muestras y «+» (compartido/flechas.js). Al «+»
+  // (el <input type="color">) las flechas solo le dan el foco: el selector
+  // se abre con Enter. Está elegido cuando el color no es de las muestras.
+  Banco.flechasEnGrupo(grupo, ".colorPickSwatch, input[type=color]", {
+    alLlegar: (el) => {
+      if (el !== input) el.click();
+    },
+    esElegida: (el) =>
+      el === input
+        ? el.closest(".colorPickMas").classList.contains("is-selected")
+        : el.getAttribute("aria-pressed") === "true",
+  });
 });
 
 // ---- «Personalizado» y «Mismo valor» ----

@@ -1424,9 +1424,17 @@ document.querySelectorAll(".seg[data-for]").forEach((seg) => {
   });
   $(id).addEventListener("change", () => syncSegmented(id));
   if (id !== "decimales") armarSegmentado(seg); // el del cociente lo arma renderDecimalesSelect
-  // Flechas entre las opciones (compartido/flechas.js); el bloque «+» de
-  // los de cuadrícula queda fuera y se alcanza con Tab.
-  Banco.flechasEnGrupo(seg, "button[data-value]");
+  // Flechas entre las opciones (compartido/flechas.js), también el bloque
+  // «+» de los de cuadrícula. Lo que abre el selector de color («+», y
+  // «Personalizado» mientras no hay color elegido) solo recibe el foco al
+  // llegar: el selector se abre con Enter (el clic nativo del botón).
+  Banco.flechasEnGrupo(seg, "button[data-value], .swatchSeg", {
+    alLlegar: (b) => {
+      if (b.classList.contains("swatchSeg")) return;
+      if (b.dataset.value === "personalizado" && !seg.querySelector(".swatchSeg.tieneColor")) return;
+      b.click();
+    },
+  });
 });
 
 // ---- Secciones plegables («¿Cómo se ve la tabla?», «… el resultado?») ----
@@ -1489,13 +1497,15 @@ document.querySelectorAll(".plegable").forEach((seccion) => {
       render();
     });
 
+    // Si ya hay color propio, se usa de inmediato; el selector permite cambiarlo.
+    const usarPropio = () => {
+      if (celda.dataset.propio !== "si" || celda.dataset.activo === "propio") return;
+      celda.dataset.activo = "propio";
+      syncColor(celda);
+      render();
+    };
     celda.querySelector('[data-opcion="propio"]').addEventListener("click", () => {
-      // Si ya hay color propio, se usa de inmediato; el selector permite cambiarlo.
-      if (celda.dataset.propio === "si") {
-        celda.dataset.activo = "propio";
-        syncColor(celda);
-        render();
-      }
+      usarPropio();
       try {
         if (input.showPicker) input.showPicker();
         else input.click();
@@ -1514,6 +1524,13 @@ document.querySelectorAll(".plegable").forEach((seccion) => {
     };
     input.addEventListener("input", elegir);
     input.addEventListener("change", elegir);
+
+    // Flechas entre los dos bloques (compartido/flechas.js). Al llegar al
+    // segundo solo se usa su color propio, si lo hay; el selector se abre
+    // con Enter (el clic nativo del botón).
+    Banco.flechasEnGrupo(celda, "[data-opcion]", {
+      alLlegar: (b) => (b.dataset.opcion === "propio" ? usarPropio() : b.click()),
+    });
 
     syncColor(celda);
   });
