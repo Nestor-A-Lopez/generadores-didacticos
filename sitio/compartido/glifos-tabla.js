@@ -1,6 +1,7 @@
 // ---------------------------------------------------------------
 // Glifos vectoriales de Computer Modern para las tablas de valor
-// posicional: los usa valor-posicional (R, t y «:» son para «Resto: N»;
+// posicional: los usa valor-posicional (R, t y «:» se agregaron para «Resto: N»,
+// que desde el 2026-09-29 ya no se dibuja;
 // antes también los usaban tabla-valor-posicional y operaciones).
 // Formato propio, distinto del de glifos.js:
 //   { upm, regular: {car: {d, adv}}, bold: {car: {d, adv}} }
