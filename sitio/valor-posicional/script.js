@@ -1326,6 +1326,24 @@ document.addEventListener("keydown", (e) => {
   e.preventDefault();
   download();
 });
+// Flechas en los selectores de jerarquía: arriba o izquierda sube a la
+// jerarquía mayor (U → D, CM → UMM) y abajo o derecha baja a la menor
+// (U → dec, D → U). Las <option> van de menor a mayor, así que el
+// comportamiento nativo del <select> (arriba = opción anterior) era el
+// contrario. Con el menú desplegado, el navegador no manda estas teclas a
+// la página y las flechas siguen recorriendo la lista como siempre.
+const FLECHA_JERARQUIA = { ArrowUp: 1, ArrowLeft: 1, ArrowDown: -1, ArrowRight: -1 };
+document.addEventListener("keydown", (e) => {
+  const paso = FLECHA_JERARQUIA[e.key];
+  if (!paso || e.altKey || e.ctrlKey || e.metaKey) return;
+  if (!e.target.matches(".jerarquia-select, #resultJerarquia")) return;
+  e.preventDefault();
+  const sel = e.target;
+  const i = sel.selectedIndex + paso;
+  if (i < 0 || i >= sel.options.length) return;
+  sel.selectedIndex = i;
+  sel.dispatchEvent(new Event("change", { bubbles: true }));
+});
 
 // ---- Controles segmentados: fachada de los <select> ocultos ----
 // (Como en numeros-dienes.) Cada .seg[data-for=id] maneja el <select id=id>:
