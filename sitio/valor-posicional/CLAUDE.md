@@ -2,7 +2,7 @@
 
 Generador unificado (2026-09-26, rama `unificar-tabla-operaciones`): une los generadores «Tabla de valor posicional» (`tabla-valor-posicional/`) y «Operaciones en la tabla» (`operaciones/`), que eran casi la misma herramienta. Los dos se retiraron el 2026-09-27 (rama `retirar-tabla-operaciones`): su código y sus `CLAUDE.md` siguen en el historial de git, y lo que explicaban sobre el SVG está en «Por qué el SVG es así», abajo. Sus URL publicadas dejaron de existir, sin redirección (decisión del usuario). Las convenciones generales están en el `CLAUDE.md` de la raíz.
 
-En la portada tiene su propia tarjeta (ícono Lucide `sheet`, también en la cabecera y la pestaña). **Sus SVG se guardan en `_recursos/figuras/valor-posicional/`**, con o sin operación (decisión del usuario, 2026-09-27; antes iban en `figuras/tabla-valor-posicional/`, que se retiró junto con `figuras/operaciones/`).
+En la portada tiene su propia tarjeta (ícono Lucide `sheet`, también en la cabecera y la pestaña). **Sus SVG se guardan en `_recursos/figuras/valor-posicional/`**, con o sin operación (decisión del usuario, 2026-09-27; antes iban en `figuras/tabla-valor-posicional/`, que se retiró junto con `figuras/operaciones/`). Desde el 2026-09-29, en una subcarpeta por operación: `numeros/`, `suma/`, `resta/`, `multiplicacion/` y `division/`. Por eso el nombre (`buildFilename`) ya no lleva letra de operación ni de jerarquía: solo los números que se escriben, en unidades reales, unidos con `-` (`0.7-10.svg`), sin el resultado.
 
 ## Qué hace
 
@@ -20,7 +20,7 @@ En la portada tiene su propia tarjeta (ícono Lucide `sheet`, también en la cab
 | Rango decimal con selector fino (`#hastaOrdenDecimal`: sin decimales, décimos, centésimos, milésimos) | tabla | Sustituye a la casilla «Mostrar hasta milésimos»; «Decimales en el cociente» llega hasta `-minPow` |
 | Casilla «Coma y punto» en **cada** número (`.fmt`) | operaciones | Sustituye a las casillas globales `#coma`/`#mostrarPunto` de la tabla; el resultado conserva sus dos casillas |
 | Aviso de error con título que marca el campo (`.hasError`) y **Enter** para guardar | tabla | También en las operaciones y en `#divisor` |
-| Nombres de archivo | los dos | Sin operación, `[Orden]-[Número].svg` (tabla); con operación, `[A\|S\|M\|D]-….SVG` (operaciones) |
+| Nombres de archivo | los dos | Hasta el 2026-09-28: sin operación, `[Orden]-[Número].svg` (tabla); con operación, `[A\|S\|M\|D]-….SVG` (operaciones). Desde el 2026-09-29, un solo formato: `[número]-[número]….svg` en unidades reales (ver arriba) |
 
 Cambios respecto al generador de operaciones, además de lo anterior:
 

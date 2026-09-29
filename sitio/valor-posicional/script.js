@@ -942,25 +942,12 @@ function buildSVG(cfg) {
   }
 }
 
-// ---- Nombre sin operación: [Orden]-[Numero].svg ----
-// [Orden] es el código de la jerarquía (dec/cen/mil para los decimales) y
-// [Numero] lleva los millares separados por "-"; varios números se unen
-// con "+" (ej. "U-950-000+D-1-234.svg").
-function groupThousands(digitsStr) {
-  let out = "";
-  let count = 0;
-  for (let i = digitsStr.length - 1; i >= 0; i--) {
-    out = digitsStr[i] + out;
-    count++;
-    if (count % 3 === 0 && i !== 0) out = "-" + out;
-  }
-  return out;
-}
-const FILENAME_PREFIX = { d: "dec", c: "cen", m: "mil" };
-
-// ---- Nombre con operación: [A|S|M|D]-[Numero]-[Numero]….SVG ----
+// ---- Nombre del archivo: [Numero]-[Numero]….svg ----
 // Cada número en unidades reales (aplicando su jerarquía): "24" en
-// Decenas → "240".
+// Decenas → "240", "7" en Décimos → "0.7". Sin letra de operación ni de
+// jerarquía: los SVG se guardan en una carpeta por operación (y otra para
+// la tabla con solo números). En las operaciones van solo los números que
+// se escriben, sin el resultado.
 function shiftedDigitsToStr(digitsStr, shift) {
   digitsStr = digitsStr.replace(/^0+(?=\d)/, "") || "0";
   if (shift >= 0) {
@@ -982,25 +969,14 @@ function termToUnitValueStr(digitsStr, jerarquiaCode) {
 
 function buildFilename(cfg) {
   const d = cfg.datos;
-  if (cfg.op === "ninguna") {
-    const combined = d.numeros
-      .map((row) => {
-        const ordenPart = FILENAME_PREFIX[row.jerarquia] || row.jerarquia;
-        const numero = row.numero.trim();
-        const [entera, decimal] = numero.split(".");
-        return `${ordenPart}-${groupThousands(entera)}${numero.includes(".") ? "." + decimal : ""}`;
-      })
-      .join("+");
-    return `${combined}.svg`;
-  }
   const val = (t) => termToUnitValueStr(t.numero.trim() || "0", t.jerarquia);
-  const LETRA = { suma: "A", resta: "S", multiplicacion: "M", division: "D" };
   let numeros;
-  if (cfg.op === "suma") numeros = d.sumandos.map(val);
+  if (cfg.op === "ninguna") numeros = d.numeros.map(val);
+  else if (cfg.op === "suma") numeros = d.sumandos.map(val);
   else if (cfg.op === "resta") numeros = [d.minuendo, ...d.sustraendos].map(val);
   else if (cfg.op === "multiplicacion") numeros = [val(d.multiplicando), val(d.multiplicador)];
   else numeros = [val(d.dividendo), cfg.division.divisor.trim()];
-  return `${[LETRA[cfg.op], ...numeros].join("-")}.SVG`;
+  return `${numeros.join("-")}.svg`;
 }
 
 // =====================================================================
@@ -1325,6 +1301,24 @@ document.addEventListener("keydown", (e) => {
   if (!e.target.matches(".numero-input, #divisor")) return;
   e.preventDefault();
   download();
+});
+// Flechas en los selectores de jerarquía: arriba o izquierda sube a la
+// jerarquía mayor (U → D, CM → UMM) y abajo o derecha baja a la menor
+// (U → dec, D → U). Las <option> van de menor a mayor, así que el
+// comportamiento nativo del <select> (arriba = opción anterior) era el
+// contrario. Con el menú desplegado, el navegador no manda estas teclas a
+// la página y las flechas siguen recorriendo la lista como siempre.
+const FLECHA_JERARQUIA = { ArrowUp: 1, ArrowLeft: 1, ArrowDown: -1, ArrowRight: -1 };
+document.addEventListener("keydown", (e) => {
+  const paso = FLECHA_JERARQUIA[e.key];
+  if (!paso || e.altKey || e.ctrlKey || e.metaKey) return;
+  if (!e.target.matches(".jerarquia-select, #resultJerarquia")) return;
+  e.preventDefault();
+  const sel = e.target;
+  const i = sel.selectedIndex + paso;
+  if (i < 0 || i >= sel.options.length) return;
+  sel.selectedIndex = i;
+  sel.dispatchEvent(new Event("change", { bubbles: true }));
 });
 
 // ---- Controles segmentados: fachada de los <select> ocultos ----
