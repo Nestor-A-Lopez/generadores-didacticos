@@ -102,7 +102,7 @@ Todo lo publicable está en `sitio/`. Cada carpeta de generador tiene `index.htm
 | `sitio/estrategias/` | Completar la decena en suma y resta; en la resta, pestaña «Distancia entre dos números» (recta numérica + material + ecuación) | — |
 | `sitio/recta-numerica/` | Recta numérica: extremos, paso y separación entre marcas | — |
 | `sitio/compartido/` | Tokens, glifos y guardado que usan varios generadores; ver «Carpeta compartida» | — |
-| `herramientas/` | `extraer_glifos.py` (regenera `sitio/compartido/glifos.js`) y `verificar-svg.html` (49 casos de exportación con su hash; `verificar-svg-referencia.txt` es la corrida del 2026-09-26) | — |
+| `herramientas/` | `extraer_glifos.py` (regenera `sitio/compartido/glifos.js`) y `verificar-svg.html` (49 casos de exportación con su hash; `verificar-svg-referencia.txt` es la corrida del 2026-09-26, con los nombres de archivo actualizados el 2026-09-29) | — |
 | `.claude/skills/vesta/` | Sistema de diseño **Vesta** (no es un generador; ver abajo) | `SKILL.md`, `readme.md` |
 
 Antes, cada generador era un solo `.html` con prefijo `_` (para que quedara arriba de la lista de SVG en el explorador); ahora todos se llaman `index.html`. Hasta el 2026-09-26 los generadores estaban en la raíz (las tablas, en `tabla-valor-posicional/tabla-valor-posicional/` y `tabla-valor-posicional/operaciones/`), el script de glifos en `fracciones/_extraer_glifos.py` y Vesta en `fracciones/_desing-system-vesta/`. Los nombres viejos siguen en el historial de git (`git log --follow`).
@@ -117,7 +117,7 @@ _recursos/
 └── figuras/
     ├── fracciones/circulo/  fracciones/rectangulo/  fracciones/triangulo/
     ├── numeros-dienes/  estrategias/  recta-numerica/
-    └── valor-posicional/
+    └── valor-posicional/numeros/  suma/  resta/  multiplicacion/  division/
 ```
 
 Se movieron ahí el 2026-09-26 (439 archivos); ese mismo día `numeros-material/` pasó a `numeros-dienes/`, como el generador. Las carpetas que todavía no tienen SVG (`fracciones/triangulo/`, `recta-numerica/`) no existen: se crean al guardar el primero. El 2026-09-27, al retirar los generadores viejos, el usuario mandó a la papelera `figuras/tabla-valor-posicional/` y `figuras/operaciones/` (379 SVG) y creó `figuras/valor-posicional/`, vacía, para los nuevos. Al guardar, el diálogo del navegador recuerda la última carpeta de la sesión, así que la primera vez hay que elegir la de `figuras/`. El nombre describe el contenido, sin prefijo de carpeta ni de tipo de figura.
@@ -125,8 +125,7 @@ Se movieron ahí el 2026-09-26 (439 archivos); ese mismo día `numeros-material/
 | Generador | Formato | Ejemplos |
 | --- | --- | --- |
 | Fracciones | `[numerador]-[denominador]-[color].svg`, en la subcarpeta de la forma (`circulo/`, `rectangulo/`, `triangulo/`). Con numerador 0, sin color: `0-[denominador].svg` (desde el 2026-09-28; los guardados antes llevan el color, como `0-6-azul.svg`) | `3-4-verde.svg`, `0-6.svg` |
-| Tabla de valor posicional y operaciones (`valor-posicional`), sin operación | `[Orden]-[Número].svg`; millares separados con `-`, punto decimal tal cual; varios números unidos con `+`; tabla en blanco → `vacia.svg` | `U-950-000.svg`, `mil-9-673.svg`, `U-0.37+U-0.370.svg`, `U-427..svg` (punto sin dígitos después) |
-| Tabla de valor posicional y operaciones (`valor-posicional`), con operación | `[A\|S\|M\|D]-[operando]-[operando]….SVG` (extensión en **mayúsculas**, así la genera `buildFilename()`); cada operando en unidades reales. Con o sin operación, todos se guardan en `figuras/valor-posicional/` | `A-0.15-0.028.SVG`, `S-8750-2300.SVG`, `M-2.31-24.SVG` |
+| Tabla de valor posicional y operaciones (`valor-posicional`) | `[número]-[número]….svg` (desde el 2026-09-29): cada número en unidades reales (aplicando su jerarquía, sin ceros a la izquierda ni decimales sobrantes), sin letra de operación ni de jerarquía y, con operación, sin el resultado (solo los números que se escriben). Se guardan en una subcarpeta de `figuras/valor-posicional/`: `numeros/` (sin operación), `suma/`, `resta/`, `multiplicacion/` o `division/`. Los guardados antes llevan el formato viejo: `[Orden]-[Número].svg` sin operación (`U-950-000.svg`) y `[A\|S\|M\|D]-….SVG` con operación | `0.7-10.svg` (7 en décimos y 1 en decenas), `950000.svg`, `0.15-0.028.svg`, `93-4.svg` |
 | Números con bloques Dienes | `[número].svg`, sin ceros a la izquierda (`007` → `7.svg`), como lo genera `buildFilename()` desde el 2026-09-26 (antes, `numero-N.svg`). Los archivos guardados antes llevan un prefijo con los órdenes, puesto a mano: `U-` (todo en unidades), `DU-`, `CDU-` | `236.svg`; antiguos: `U-36.svg`, `DU-36.svg`, `CDU-427.svg` |
 | Completar decena (`estrategias`) | `[A]+[b].svg` (suma) / `[A]-[b].svg` (resta) | `28+5.svg`, `51-7.svg` |
 | Distancia entre números (`estrategias`) | `[A]-[b].svg`; sufijo `-sin-material` cuando el interruptor «Material sobre la recta» está apagado | `100-19.svg`, `10-3-sin-material.svg` |
