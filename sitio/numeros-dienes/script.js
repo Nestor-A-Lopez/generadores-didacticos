@@ -502,6 +502,7 @@ document.querySelectorAll(".seg[data-for]").forEach((seg) => {
   });
   select.addEventListener("change", () => syncSegmented(id));
   syncSegmented(id);
+  Banco.flechasEnGrupo(seg, "button"); // flechas entre las opciones (compartido/flechas.js)
 });
 
 // ============================================================
