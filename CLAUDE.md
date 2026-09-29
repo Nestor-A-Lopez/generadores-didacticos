@@ -105,7 +105,7 @@ Todo lo publicable está en `sitio/`. Cada carpeta de generador tiene `index.htm
 | `sitio/estrategias/` | Completar la decena en suma y resta; en la resta, pestaña «Distancia entre dos números» (recta numérica + material + ecuación) | — |
 | `sitio/recta-numerica/` | Recta numérica: extremos, paso y separación entre marcas | — |
 | `sitio/compartido/` | Tokens, glifos y guardado que usan varios generadores; ver «Carpeta compartida» | — |
-| `herramientas/` | `extraer_glifos.py` (regenera `sitio/compartido/glifos.js`) y `verificar-svg.html` (49 casos de exportación con su hash; `verificar-svg-referencia.txt` es la corrida del 2026-09-26, con los nombres de archivo actualizados el 2026-09-29) | — |
+| `herramientas/` | `extraer_glifos.py` (regenera `sitio/compartido/glifos.js`) y `verificar-svg.html` (49 casos de exportación con su hash; `verificar-svg-referencia.txt` es la corrida del 2026-09-26, con los nombres de archivo actualizados el 2026-09-29, y `div-93-4` ese mismo día, cuando el residuo pasó a la galera) | — |
 | `.claude/skills/vesta/` | Sistema de diseño **Vesta** (no es un generador; ver abajo) | `SKILL.md`, `readme.md` |
 
 Antes, cada generador era un solo `.html` con prefijo `_` (para que quedara arriba de la lista de SVG en el explorador); ahora todos se llaman `index.html`. Hasta el 2026-09-26 los generadores estaban en la raíz (las tablas, en `tabla-valor-posicional/tabla-valor-posicional/` y `tabla-valor-posicional/operaciones/`), el script de glifos en `fracciones/_extraer_glifos.py` y Vesta en `fracciones/_desing-system-vesta/`. Los nombres viejos siguen en el historial de git (`git log --follow`).

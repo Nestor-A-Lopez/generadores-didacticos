@@ -15,8 +15,8 @@
 // - De operaciones: las cuatro operaciones, la casilla «Coma y punto» de
 //   cada número, el resultado con su jerarquía y sus casillas, y el nombre
 //   de archivo A/S/M/D.
-// - «Resto: N» ya no es <text>: se dibuja con glifos (R, t y «:» se
-//   agregaron a compartido/glifos-tabla.js).
+// - El residuo de la división va dentro de la galera, como última resta
+//   (antes, «Resto: N» debajo de la tabla).
 //
 // buildSVG(cfg) es pura: recibe la configuración ya leída del DOM y devuelve
 // { svg, filename } o { error: { message, campo } }.
@@ -430,7 +430,9 @@ function filasMultiplicacion(leidos, cfg) {
 }
 
 // División en galera: devuelve las filas (cociente, dividendo y, si se
-// muestra el procedimiento, las restas parciales) y el residuo.
+// muestra el resultado, las restas parciales y el residuo). «Decimales en
+// el cociente» es un tope (milésimos como máximo): si el resto llega a 0
+// antes, la división se detiene ahí.
 function filasDivision(leidos, cfg) {
   const res = cfg.resultado;
   const [dividendoR] = leidos;
@@ -509,6 +511,9 @@ function filasDivision(leidos, cfg) {
     },
     filaDe(dividendoR, dividendoTerm.formato !== false),
   ];
+  // El residuo se escribe como en el cuaderno: última fila de la galera,
+  // en la columna de la última cifra del cociente. Si es 0 no se escribe.
+  if (residuo > 0) scratchRows.push({ value: residuo, rightPow: ultimaPow });
   if (res.mostrar) {
     scratchRows.forEach((r) => {
       const s = String(r.value);
@@ -527,7 +532,7 @@ function filasDivision(leidos, cfg) {
       });
     });
   }
-  return { filas, residuo: res.mostrar && residuo > 0 ? residuo : null, divisorStr };
+  return { filas, divisorStr };
 }
 
 // =====================================================================
@@ -597,20 +602,6 @@ function glyphRunClamped(str, fontData, cx, rowCenterY, fontSizePx, ref, fill, x
   return glyphRun(str, fontData, x, rowCenterY, fontSizePx, ref, fill);
 }
 
-// Texto con tramos en distintas fuentes (p. ej. «Resto:» en negritas y el
-// número en regular), centrado en cx como un solo renglón.
-function glyphRunMixto(partes, cx, rowCenterY, fontSizePx, ref, fill) {
-  const scale = fontSizePx / UPM;
-  const anchos = partes.map(([str, fd]) => stringWidth(str, fd, scale));
-  let x = cx - anchos.reduce((a, b) => a + b, 0) / 2;
-  let out = "";
-  partes.forEach(([str, fd], i) => {
-    out += glyphRun(str, fd, x + anchos[i] / 2, rowCenterY, fontSizePx, ref, fill);
-    x += anchos[i];
-  });
-  return out;
-}
-
 // Línea punteada y de baja opacidad que separa visualmente el número de
 // una fila del de la siguiente.
 function dashedSeparator(x1, x2, y, strokeW) {
@@ -667,7 +658,6 @@ function makeBorderedCell(gridLeft, gridRight, stroke) {
 // fila por cada elemento de `filas`. opts:
 //   leftPad        espacio a la izquierda de la cuadrícula (signo o divisor)
 //   separadorDesde primera fila que lleva línea punteada arriba (1 o 2)
-//   captionH       alto extra al final (renglón «Resto: N»)
 //   extra(geo)     devuelve más elementos sueltos (galera, divisor, resto)
 function dibujarTabla(filas, cfg, opts) {
   const { maxPow, minPow, showClase, digitColor } = cfg;
@@ -692,7 +682,6 @@ function dibujarTabla(filas, cfg, opts) {
   const s = SCALE;
   const leftPad = opts.leftPad || 0;
   const separadorDesde = opts.separadorDesde || 1;
-  const captionH = opts.captionH || 0;
   const numColumnas = maxPow - minPow + 1;
 
   // Todas las medidas de la cuadrícula (ancho de columna, altos de fila,
@@ -719,7 +708,7 @@ function dibujarTabla(filas, cfg, opts) {
 
   const gridW = colW * numColumnas;
   const totalW = leftPad + gridW;
-  const totalH = periodH + headerH + letterH + digitH * filas.length + captionH;
+  const totalH = periodH + headerH + letterH + digitH * filas.length;
   const borderedCell = makeBorderedCell(leftPad, totalW, stroke);
 
   // Dos acumuladores: "svgTable" (celdas del encabezado) se agrupa en un
@@ -857,7 +846,7 @@ function dibujarTabla(filas, cfg, opts) {
   });
 
   if (opts.extra) {
-    svgNumbers += opts.extra({ digitTop, digitH, gridW, leftPad, totalW, totalH, captionH, stroke, fDigit, s });
+    svgNumbers += opts.extra({ digitTop, digitH, gridW, leftPad, totalW, totalH, stroke, fDigit, s });
   }
 
   // Estructura final (pensada para «Convertir en forma» de PowerPoint):
@@ -896,11 +885,10 @@ function buildSVG(cfg) {
     } else if (cfg.op === "multiplicacion") {
       svg = dibujarTabla(filasMultiplicacion(leidos, cfg), cfg, { leftPad: signGap });
     } else if (cfg.op === "division") {
-      const { filas, residuo, divisorStr } = filasDivision(leidos, cfg);
+      const { filas, divisorStr } = filasDivision(leidos, cfg);
       svg = dibujarTabla(filas, cfg, {
         leftPad: Math.round(110 * SCALE),
         separadorDesde: 2, // cociente y dividendo van separados por la galera
-        captionH: residuo !== null ? Math.round(40 * SCALE) : 0,
         extra: (g) => {
           // Fila 1 = dividendo: a su izquierda, el divisor; encima y a la
           // izquierda, la galera (dos rectángulos sueltos que se tocan en
@@ -910,20 +898,6 @@ function buildSVG(cfg) {
           const xBarra = R(g.leftPad - g.stroke / 2);
           out += `<rect x="${xBarra}" y="${R(y0 - g.stroke / 2)}" width="${R(g.totalW - xBarra)}" height="${g.stroke}" fill="${LINE_COLOR}"/>`;
           out += `<rect x="${xBarra}" y="${y0}" width="${g.stroke}" height="${g.digitH}" fill="${LINE_COLOR}"/>`;
-          if (residuo !== null) {
-            // Un solo <g> para que «Resto: N» sea una figura en PowerPoint.
-            out +=
-              "<g>" +
-              glyphRunMixto(
-                [["Resto: ", GLYPH_DATA.bold], [String(residuo), GLYPH_DATA.regular]],
-                g.totalW / 2,
-                g.totalH - g.captionH / 2,
-                20 * g.s,
-                DIGIT_REF,
-                cfg.digitColor,
-              ) +
-              "</g>";
-          }
           return out;
         },
       });
@@ -1085,7 +1059,8 @@ function filasDeLista(lista, nombre, minimo, placeholder) {
   );
 }
 
-// «Decimales en el cociente»: llega hasta la parte decimal de la tabla. Sus
+// «Decimales en el cociente»: tope de la división (se detiene antes si el
+// resto es 0); llega hasta la parte decimal de la tabla. Sus
 // botones del segmentado se rehacen con las opciones que quedan.
 function renderDecimalesSelect() {
   const sel = $("decimales");
@@ -1103,7 +1078,7 @@ function renderDecimalesSelect() {
     .join("");
   sel.value = String(!isNaN(prev) && prev <= maxDec ? prev : Math.min(2, maxDec));
   $("decimalesHint").textContent =
-    maxDec === 0 ? "Elige una parte decimal para poder sacar decimales" : "Llega hasta la parte decimal de la tabla";
+    maxDec === 0 ? "Elige una parte decimal para poder sacar decimales" : "Orden mínimo; para antes cuando el resto es 0";
   armarSegmentado(document.querySelector('.seg[data-for="decimales"]'));
 }
 
@@ -1195,7 +1170,7 @@ function leerConfig() {
     minPow,
     showClase: $("mostrarClase").checked,
     showPeriodos: $("mostrarPeriodos").checked,
-    // Signos, divisor y «Resto» van siempre en negro; las cifras de la
+    // Signos y divisor van siempre en negro; las cifras de la
     // tabla, según «Color de los números».
     digitColor: "#000000",
     colorNumeros: $("colorNumeros").value,
