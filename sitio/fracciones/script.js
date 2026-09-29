@@ -1391,49 +1391,26 @@ function setDescribedBy(inputId, tipId, activo) {
   else input.removeAttribute("aria-describedby");
 }
 
-// ---- Grupos que se recorren con las flechas («Forma del entero» y
-// «Color de las partes»), como un grupo de opciones ----
-// ← ↑ a la opción anterior y → ↓ a la siguiente (dando la vuelta), Inicio
-// y Fin a la primera y a la última. Eligen la opción al llegar, igual que
-// un clic, y el foco se va con ella. Solo la elegida tiene tabIndex 0 (lo
-// ponen syncSegmented y syncSwatches), así Tab entra y sale del grupo en
-// un solo paso. Enter guarda el SVG, como en numerador y denominador (la
-// opción ya quedó elegida al llegar con las flechas).
-function elegirConFlechas(e, actual, todas) {
-  if (e.key === "Enter") {
-    e.preventDefault(); // sin el clic nativo del botón
-    download();
-    return;
-  }
-  const i = todas.indexOf(actual);
-  const destino = {
-    ArrowLeft: i - 1,
-    ArrowUp: i - 1,
-    ArrowRight: i + 1,
-    ArrowDown: i + 1,
-    Home: 0,
-    End: todas.length - 1,
-  }[e.key];
-  if (destino === undefined) return;
-  e.preventDefault(); // que ↑ ↓ no desplacen la página
-  const otra = todas[(destino + todas.length) % todas.length];
-  otra.click();
-  otra.focus();
+// ---- Enter en «Forma del entero» y «Color de las partes» ----
+// Las flechas de todos los segmentados y de las muestras vienen de
+// compartido/flechas.js (eligen la opción al llegar y Tab entra y sale del
+// grupo en un paso). En estos dos, además, Enter guarda el SVG, como en
+// numerador y denominador (la opción ya quedó elegida con las flechas).
+function guardarConEnter(e) {
+  if (e.key !== "Enter") return;
+  e.preventDefault(); // sin el clic nativo del botón
+  download();
 }
 
 // ---- Segmentados: fachada de los <select> ocultos (como numeros-dienes) ----
 // Cada .seg[data-for=id] maneja el <select id=id>. Si el select cambia por
-// otro lado, syncSegmented pone los botones al día. El de «Forma del
-// entero» (.segForma) se recorre con las flechas (elegirConFlechas).
+// otro lado, syncSegmented pone los botones al día.
 function syncSegmented(id) {
   const select = document.getElementById(id);
   const seg = document.querySelector(`.seg[data-for="${id}"]`);
   if (!seg) return;
-  const conFlechas = seg.classList.contains("segForma");
   seg.querySelectorAll("button").forEach((b) => {
-    const elegido = b.dataset.value === select.value;
-    b.setAttribute("aria-pressed", String(elegido));
-    if (conFlechas) b.tabIndex = elegido ? 0 : -1;
+    b.setAttribute("aria-pressed", String(b.dataset.value === select.value));
   });
   placeIndicator(seg);
 }
@@ -1467,28 +1444,24 @@ document.querySelectorAll(".seg[data-for]").forEach((seg) => {
       requestAnimationFrame(() => ind.classList.add("is-ready"));
     });
   }
-  const botones = [...seg.querySelectorAll("button")];
-  botones.forEach((b) => {
+  seg.querySelectorAll("button").forEach((b) => {
     b.addEventListener("click", () => {
       if (select.value === b.dataset.value) return;
       select.value = b.dataset.value;
       select.dispatchEvent(new Event("change", { bubbles: true }));
     });
-    if (seg.classList.contains("segForma")) {
-      b.addEventListener("keydown", (e) => elegirConFlechas(e, b, botones));
-    }
   });
+  Banco.flechasEnGrupo(seg, "button");
+  if (seg.classList.contains("segForma")) seg.addEventListener("keydown", guardarConEnter);
 });
 
 // ---- Color de las partes: muestras que manejan el <select id="color"> ----
 // Un solo anillo (.swatchRing) se desliza a la muestra elegida. «＋» toma
 // el color personalizado mientras está elegido. Con el teclado se recorren
-// con las flechas (elegirConFlechas).
+// con las flechas (compartido/flechas.js).
 function syncSwatches(colorSel) {
   document.querySelectorAll(".swatch").forEach((b) => {
-    const elegida = b.dataset.color === colorSel;
-    b.setAttribute("aria-pressed", String(elegida));
-    b.tabIndex = elegida ? 0 : -1;
+    b.setAttribute("aria-pressed", String(b.dataset.color === colorSel));
   });
   const custom = document.querySelector('.swatch[data-color="personalizado"]');
   custom.style.background =
@@ -1512,12 +1485,11 @@ document.querySelectorAll(".swatch").forEach((b) => {
     select.value = b.dataset.color;
     select.dispatchEvent(new Event("change", { bubbles: true }));
   });
-  b.addEventListener("keydown", (e) =>
-    elegirConFlechas(e, b, [...document.querySelectorAll(".swatch")]),
-  );
 });
 (function () {
   const swatches = document.querySelector(".swatches");
+  Banco.flechasEnGrupo(swatches, ".swatch");
+  swatches.addEventListener("keydown", guardarConEnter);
   // Las muestras pasan a otra fila según el ancho: el anillo las sigue.
   if (window.ResizeObserver) new ResizeObserver(placeRing).observe(swatches);
   requestAnimationFrame(() => {

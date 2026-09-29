@@ -675,6 +675,8 @@ function setSelectValue(id, value) {
 document.querySelectorAll(".opBtn").forEach((btn) => {
   btn.addEventListener("click", () => setSelectValue("operacion", btn.dataset.operacion));
 });
+// Flechas entre Suma y Resta (compartido/flechas.js).
+Banco.flechasEnGrupo(document.querySelector(".opGroup"), ".opBtn");
 document.querySelectorAll(".tab").forEach((tab) => {
   tab.addEventListener("click", () => setSelectValue("estrategia", tab.dataset.estrategia));
   // Flechas izquierda/derecha entre pestañas, como en un tablist.

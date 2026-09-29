@@ -1424,6 +1424,9 @@ document.querySelectorAll(".seg[data-for]").forEach((seg) => {
   });
   $(id).addEventListener("change", () => syncSegmented(id));
   if (id !== "decimales") armarSegmentado(seg); // el del cociente lo arma renderDecimalesSelect
+  // Flechas entre las opciones (compartido/flechas.js); el bloque «+» de
+  // los de cuadrícula queda fuera y se alcanza con Tab.
+  Banco.flechasEnGrupo(seg, "button[data-value]");
 });
 
 // ---- Secciones plegables («¿Cómo se ve la tabla?», «… el resultado?») ----
