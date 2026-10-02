@@ -247,7 +247,7 @@ function terminosDe(op, datos) {
     case "multiplicacion":
       return [
         { t: datos.multiplicando, etiqueta: "Multiplicando" },
-        { t: datos.multiplicador, etiqueta: "Multiplicador", soloEnteros: true },
+        { t: datos.multiplicador, etiqueta: "Multiplicador" },
       ];
     case "division":
       return [{ t: datos.dividendo, etiqueta: "Dividendo", soloEnteros: true }];
@@ -358,19 +358,25 @@ function filasMultiplicacion(leidos, cfg) {
   const res = cfg.resultado;
   const [mcando, mcador] = leidos;
   const { multiplicando: mcandoTerm, multiplicador: mcadorTerm } = cfg.datos;
-  const nivelMcador = NIVEL[mcadorTerm.jerarquia];
-  if (nivelMcador < 0) {
+  // Las cifras del multiplicador, sin punto ni ceros a la izquierda: cada
+  // una da un producto parcial. mcador.shift es el orden de la última
+  // (negativo si el multiplicador tiene decimales: 2.4 → -1).
+  const mcadorDigits =
+    mcadorTerm.numero.trim().replace(".", "").replace(/^0+(?=\d)/, "") || "0";
+  // Valor escalado por 10^e (e puede ser negativo; entonces la división es
+  // exacta porque el producto cabe en la parte decimal, ver abajo).
+  const por10 = (x, e) => (e >= 0 ? x * 10n ** BigInt(e) : x / 10n ** BigInt(-e));
+  // Cifras decimales del producto: las del multiplicando más las del
+  // multiplicador, como en el cuaderno (2.5 × 2.4 = 6.00). Cada producto
+  // parcial lleva las del multiplicando más las de su cifra (2.5 × 0.4 = 1.00).
+  const dpMcando = Math.max(0, -mcando.shift);
+  const dp = dpMcando + Math.max(0, -mcador.shift);
+  if (dp > -cfg.minPow) {
     throw new ErrorCampo(
-      "Multiplicador: no admite una jerarquía decimal (dec/cen/mil); usa Unidades o superior.",
-      1,
+      `El producto tiene ${dp} cifras decimales: elige más órdenes decimales en «¿Con parte decimal?».`,
+      null,
     );
   }
-  // Las cifras del multiplicador, sin ceros a la izquierda ni punto final:
-  // cada una da un producto parcial.
-  const mcadorDigits =
-    mcadorTerm.numero.trim().replace(/\.$/, "").replace(/^0+(?=\d)/, "") || "0";
-  const mcadorTrue = BigInt(mcadorDigits) * 10n ** BigInt(nivelMcador);
-  const dp = Math.max(0, -mcando.shift);
 
   const filas = [
     filaDe(mcando, mcandoTerm.formato !== false),
@@ -382,9 +388,9 @@ function filasMultiplicacion(leidos, cfg) {
   for (let k = 0; k < nDig; k++) {
     const digit = BigInt(mcadorDigits[nDig - 1 - k]);
     if (digit === 0n) continue;
-    const p = nivelMcador + k;
+    const p = mcador.shift + k;
     const parcialR = columnasResultado(
-      scaledToNumStr(mcando.value * digit * 10n ** BigInt(p), cfg.minPow, dp),
+      scaledToNumStr(por10(mcando.value * digit, p), cfg.minPow, dpMcando + Math.max(0, -p)),
       cfg,
       "Un producto parcial",
     );
@@ -398,7 +404,7 @@ function filasMultiplicacion(leidos, cfg) {
   }
 
   const totalR = columnasResultado(
-    scaledToNumStr(mcando.value * mcadorTrue, cfg.minPow, dp),
+    scaledToNumStr(por10(mcando.value * BigInt(mcadorDigits), mcador.shift), cfg.minPow, dp),
     cfg,
     "El producto",
   );
@@ -1098,9 +1104,7 @@ function renderForms() {
   llenar("multiplicandoRow", [filaNumeroDOM(datos.multiplicando, "Multiplicando", { placeholder: "Ej. 2.31" })]);
   llenar("multiplicadorRow", [
     filaNumeroDOM(datos.multiplicador, "Multiplicador", {
-      placeholder: "Ej. 24 (entero)",
-      soloEnteros: true,
-      ayuda: "Número entero; puede llevar jerarquía: 24 en Decenas es 240.",
+      placeholder: "Ej. 24 o 2.4",
     }),
   ]);
   llenar("dividendoRow", [

@@ -1,5 +1,5 @@
-// Verificación de la salida de los generadores: exporta 49 casos fijos
-// (de 6 a 20 por generador) y da, para cada uno, el nombre de archivo, el
+// Verificación de la salida de los generadores: exporta 50 casos fijos
+// (de 6 a 21 por generador) y da, para cada uno, el nombre de archivo, el
 // tamaño y un hash SHA-256 del SVG. Sirve para comprobar que un cambio
 // que no debía tocar las figuras (mover archivos, reorganizar compartido/,
 // refactorizar) deja el SVG idéntico byte a byte.
@@ -83,6 +83,8 @@ const CASOS = {
     "suma-3": [["set", "#operacion", "suma"], ["set", "#hastaOrden", "2"], ["set", "#sumandosList .numero-input@0", "125"], ["set", "#sumandosList .numero-input@1", "348"], ["click", "#addSumando"], ["set", "#sumandosList .numero-input@2", "27"]],
     "resta-miles": [["set", "#operacion", "resta"], ["set", "#minuendoRow .numero-input@0", "8750"], ["set", "#sustraendosList .numero-input@0", "2300"]],
     "mult-2.31x24": [["set", "#operacion", "multiplicacion"], ["set", "#hastaOrden", "2"], ["set", "#hastaOrdenDecimal", "-2"]],
+    // Multiplicador decimal: productos parciales 0.924 y 4.62, producto 5.544
+    "mult-2.31x2.4": [["set", "#operacion", "multiplicacion"], ["set", "#hastaOrden", "2"], ["set", "#hastaOrdenDecimal", "-3"], ["set", "#multiplicadorRow .numero-input@0", "2.4"]],
     "div-93-4": [["set", "#operacion", "division"], ["set", "#hastaOrden", "2"], ["set", "#hastaOrdenDecimal", "-2"], ["set", "#decimales", "0"]],
     "suma-sin-res": [["set", "#operacion", "suma"], ["set", "#hastaOrden", "2"], ["set", "#mostrarResultado", false]],
     "resta-dec-cero": [["set", "#operacion", "resta"], ["set", "#hastaOrden", "2"], ["set", "#hastaOrdenDecimal", "-2"], ["set", "#minuendoRow .numero-input@0", "05.4"], ["set", "#sustraendosList .numero-input@0", "2.35"]],
