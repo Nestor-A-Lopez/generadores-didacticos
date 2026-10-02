@@ -887,6 +887,27 @@ body {
   color: var(--feedback-error-fg);
   border-color: var(--feedback-error-line);
 }
+/* Aviso de la galera expositiva: el tono «retry» (ámbar) del `Callout` de
+   Vesta, como el aviso de fracciones. */
+.callout.warning {
+  display: flex;
+  background: var(--feedback-retry-bg);
+  color: var(--feedback-retry-fg);
+  border-color: var(--feedback-retry-line);
+}
+.callout[hidden] {
+  display: none;
+}
+/* Pasos para quitar el punto del divisor: si no caben en una fila, bajan a
+   la siguiente (la píldora se mide con offsetTop, así que sigue a la opción). */
+.seg.segWrap {
+  flex-wrap: wrap;
+  width: fit-content;
+  max-width: 100%;
+}
+.pasosDivision[hidden] {
+  display: none;
+}
 .stage {
   display: flex;
   align-items: center;
