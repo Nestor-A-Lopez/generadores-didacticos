@@ -1,5 +1,5 @@
-// Verificación de la salida de los generadores: exporta 50 casos fijos
-// (de 6 a 21 por generador) y da, para cada uno, el nombre de archivo, el
+// Verificación de la salida de los generadores: exporta 52 casos fijos
+// (de 6 a 23 por generador) y da, para cada uno, el nombre de archivo, el
 // tamaño y un hash SHA-256 del SVG. Sirve para comprobar que un cambio
 // que no debía tocar las figuras (mover archivos, reorganizar compartido/,
 // refactorizar) deja el SVG idéntico byte a byte.
@@ -86,6 +86,10 @@ const CASOS = {
     // Multiplicador decimal: productos parciales 0.924 y 4.62, producto 5.544
     "mult-2.31x2.4": [["set", "#operacion", "multiplicacion"], ["set", "#hastaOrden", "2"], ["set", "#hastaOrdenDecimal", "-3"], ["set", "#multiplicadorRow .numero-input@0", "2.4"]],
     "div-93-4": [["set", "#operacion", "division"], ["set", "#hastaOrden", "2"], ["set", "#hastaOrdenDecimal", "-2"], ["set", "#decimales", "0"]],
+    // Dividendo y divisor decimales: 9.3 ÷ 0.25 tiene tres pasos (9.3 ÷ 0.25, 93 ÷ 2.5, 930 ÷ 25).
+    // El primero es solo expositivo (sin cociente, con la altura del último); el último se resuelve.
+    "div-9.3-0.25-paso0": [["set", "#operacion", "division"], ["set", "#hastaOrden", "2"], ["set", "#hastaOrdenDecimal", "-2"], ["set", "#dividendoRow .numero-input@0", "9.3"], ["set", "#divisor", "0.25"]],
+    "div-9.3-0.25-final": [["set", "#operacion", "division"], ["set", "#hastaOrden", "2"], ["set", "#hastaOrdenDecimal", "-2"], ["set", "#dividendoRow .numero-input@0", "9.3"], ["set", "#divisor", "0.25"], ["set", "#pasoDivision", "2"]],
     "suma-sin-res": [["set", "#operacion", "suma"], ["set", "#hastaOrden", "2"], ["set", "#mostrarResultado", false]],
     "resta-dec-cero": [["set", "#operacion", "resta"], ["set", "#hastaOrden", "2"], ["set", "#hastaOrdenDecimal", "-2"], ["set", "#minuendoRow .numero-input@0", "05.4"], ["set", "#sustraendosList .numero-input@0", "2.35"]],
     "celdas-propias": [["set", "#celdaU", "#ffcc00"], ["set", "#celdaC", "#663399"], ["set", "#numerosList .numero-input@0", "9673"]],
