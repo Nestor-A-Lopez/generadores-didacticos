@@ -178,7 +178,7 @@ function computeColumns(numStr, jerarquia, maxPow, minPow, puntoForzado) {
     throw new Error(
       minPow <= -3
         ? "Demasiados decimales: no caben ni siquiera mostrando milésimos."
-        : 'Demasiados decimales para la jerarquía elegida (elige una jerarquía mayor, o más órdenes decimales en «Trabajar hasta el orden de…»).',
+        : 'Demasiados decimales para la jerarquía elegida (elige una jerarquía mayor, o más órdenes decimales en «¿Con parte decimal?»).',
     );
   }
   // El punto decimal se coloca siempre justo a la derecha de la columna de
@@ -250,7 +250,7 @@ function terminosDe(op, datos) {
         { t: datos.multiplicador, etiqueta: "Multiplicador" },
       ];
     case "division":
-      return [{ t: datos.dividendo, etiqueta: "Dividendo", soloEnteros: true }];
+      return [{ t: datos.dividendo, etiqueta: "Dividendo" }];
     default:
       return datos.numeros.map((t, i) => ({ t, etiqueta: `Número ${i + 1}` }));
   }
@@ -289,7 +289,7 @@ function columnasResultado(numStr, cfg, que) {
     return computeColumns(numStr, "U", cfg.maxPow, cfg.minPow, false);
   } catch (e) {
     throw new ErrorCampo(
-      `${que} no cabe en las columnas visibles: elige un orden mayor en «Trabajar hasta el orden de…».`,
+      `${que} no cabe en las columnas visibles: elige un orden mayor en «¿Hasta qué orden?».`,
       null,
     );
   }
@@ -435,68 +435,116 @@ function filasMultiplicacion(leidos, cfg) {
   return filas;
 }
 
+// Número escrito con sus cifras y el orden de la última (shift), con el
+// punto donde toca y sin ceros a la izquierda: ("93", 1) → "930",
+// ("930", -2) → "9.30". Los ceros finales de la parte decimal se quedan,
+// porque son cifras escritas.
+function numeroConShift(digitos, shift) {
+  if (shift >= 0) return (digitos + "0".repeat(shift)).replace(/^0+(?=\d)/, "");
+  let t = digitos;
+  while (t.length <= -shift) t = "0" + t;
+  return t.slice(0, shift).replace(/^0+(?=\d)/, "") + "." + t.slice(shift);
+}
+
+// Pasos para quitar el punto del divisor: con k decimales en el divisor,
+// k + 1 divisiones equivalentes, cada una con dividendo y divisor por 10
+// (93 ÷ 0.02 → 930 ÷ 0.2 → 9,300 ÷ 2). Solo la última se resuelve en la
+// galera; las demás son para explicar el procedimiento.
+function pasosDivision(cfg) {
+  const [dividendoR] = leerTerminos(cfg);
+  const div = leerDivisor(cfg.division.divisor);
+  // Cifras del dividendo sin punto ni ceros a la izquierda; dividendoR.shift
+  // es el orden de la última (con su jerarquía: 93 en UM → 3).
+  const digitos =
+    cfg.datos.dividendo.numero.trim().replace(".", "").replace(/^0+(?=\d)/, "") || "0";
+  const k = div.decimales;
+  const pasos = [];
+  for (let j = 0; j <= k; j++) {
+    pasos.push({
+      dividendo: numeroConShift(digitos, dividendoR.shift + j),
+      divisor: numeroConShift(div.textoRecorrido, j - k),
+      // Para el nombre del archivo: en unidades reales, sin ceros finales.
+      archivo: [
+        shiftedDigitsToStr(digitos, dividendoR.shift + j),
+        shiftedDigitsToStr(div.textoRecorrido, j - k),
+      ],
+    });
+  }
+  return { dividendoR, div, digitos, pasos };
+}
+
+// Fila vacía: el cociente de una galera solo expositiva.
+const FILA_VACIA = { cols: {}, hayDecimal: false, nivel: 0, shift: 0, numDigits: 0, showComma: false, showPunto: false };
+
 // División en galera: devuelve las filas (cociente, dividendo y, si se
 // muestra el resultado, las restas parciales y el residuo). «Decimales en
 // el cociente» es un tope (milésimos como máximo): si el resto llega a 0
-// antes, la división se detiene ahí.
-function filasDivision(leidos, cfg) {
+// antes, la división se detiene ahí. Las cifras decimales escritas en el
+// dividendo se usan todas.
+//
+// Con divisor decimal se «recorre el punto»: cfg.division.paso elige uno de
+// los pasos de pasosDivision. El último se resuelve; los demás solo
+// muestran dividendo y divisor, con la misma altura que el último
+// (filasMinimas).
+function filasDivision(cfg) {
   const res = cfg.resultado;
-  const [dividendoR] = leidos;
-  const dividendoTerm = cfg.datos.dividendo;
-  const nivelDividendo = NIVEL[dividendoTerm.jerarquia];
-  if (nivelDividendo < 0) {
-    throw new ErrorCampo(
-      "Dividendo: no admite una jerarquía decimal (dec/cen/mil); usa Unidades o superior.",
-      0,
-    );
-  }
-  const divisorStr = cfg.division.divisor.trim();
-  if (!/^[1-9]$/.test(divisorStr)) {
-    throw new ErrorCampo("El divisor debe ser un dígito del 1 al 9.", "divisor");
-  }
-  const divisor = Number(divisorStr);
+  const { dividendoR, div, digitos, pasos } = pasosDivision(cfg);
+  const k = div.decimales;
+  const paso = Math.min(Math.max(cfg.division.paso || 0, 0), k);
   const decimales = Math.min(cfg.division.decimales || 0, Math.max(0, -cfg.minPow));
+  const formatoDividendo = cfg.datos.dividendo.formato !== false;
 
-  const dividendoDigits =
-    dividendoTerm.numero.trim().replace(/\.$/, "").replace(/^0+(?=\d)/, "") || "0";
-  const dividendo = (
-    BigInt(dividendoDigits) * 10n ** BigInt(nivelDividendo)
-  ).toString();
-  const digits = dividendo.split("").map(Number);
-  const leadingPow = digits.length - 1;
+  // Dividendo de un paso: el primero, tal como se escribió (con sus ceros a
+  // la izquierda y su jerarquía); los demás, en sus columnas reales.
+  const filaDividendoDe = (j) => {
+    if (j === 0) return filaDe(dividendoR, formatoDividendo);
+    const t = pasos[j].dividendo;
+    return filaDe(columnasResultado(t, cfg, `El dividendo ${conComas(t)}`), formatoDividendo);
+  };
+  // El divisor va fuera de la tabla. «Coma y punto» solo quita las comas:
+  // sin su punto, 2.5 se leería 25.
+  const divisorTextoDe = (j) => (cfg.division.formato ? conComas(pasos[j].divisor) : pasos[j].divisor);
+
+  // La galera se resuelve siempre con el último paso (el divisor entero):
+  // así un error (por ejemplo, que el dividendo no quepa) sale en todos.
+  const shiftFinal = dividendoR.shift + k;
+  const cifras = (shiftFinal >= 0 ? digitos + "0".repeat(shiftFinal) : digitos).split("").map(BigInt);
+  const ultimaDelDividendo = Math.min(shiftFinal, 0);
+  const leadingPow = ultimaDelDividendo + cifras.length - 1;
+  const divisor = div.entero;
 
   const quotient = [];
   const scratchRows = [];
-  let current = 0;
+  let current = 0n;
   let started = false;
   let firstQuotientDone = false;
 
-  digits.forEach((d, i) => {
-    current = current * 10 + d;
+  cifras.forEach((d, i) => {
+    current = current * 10n + d;
     const pow = leadingPow - i;
     if (!started && current < divisor) return;
     started = true;
-    const qd = Math.floor(current / divisor);
-    quotient.push({ digit: qd, pow });
+    const qd = current / divisor;
+    quotient.push({ digit: Number(qd), pow });
     if (firstQuotientDone) scratchRows.push({ value: current, rightPow: pow });
     firstQuotientDone = true;
     current = current - qd * divisor;
   });
 
-  if (quotient.length === 0) {
-    quotient.push({ digit: 0, pow: 0 });
-  }
-
-  for (let k = 0; k < decimales; k++) {
-    if (current === 0) break;
-    current = current * 10;
-    const pow = -(k + 1);
-    const qd = Math.floor(current / divisor);
-    quotient.push({ digit: qd, pow });
+  // Después de la última cifra escrita se bajan ceros, hasta el tope.
+  for (let pow = ultimaDelDividendo - 1; pow >= -decimales; pow--) {
+    if (current === 0n) break;
+    current = current * 10n;
+    const qd = current / divisor;
+    quotient.push({ digit: Number(qd), pow });
     scratchRows.push({ value: current, rightPow: pow });
     current = current - qd * divisor;
   }
   const residuo = current;
+
+  // El cociente empieza por lo menos en las unidades: 0.5 ÷ 2 = 0.25.
+  if (quotient.length === 0) quotient.push({ digit: 0, pow: 0 });
+  for (let pow = quotient[0].pow + 1; pow <= 0; pow++) quotient.unshift({ digit: 0, pow });
 
   const quotientCols = {};
   quotient.forEach((q) => (quotientCols[q.pow] = q.digit));
@@ -515,11 +563,11 @@ function filasDivision(leidos, cfg) {
       showComma: res.comas,
       showPunto: res.punto,
     },
-    filaDe(dividendoR, dividendoTerm.formato !== false),
+    filaDividendoDe(k),
   ];
   // El residuo se escribe como en el cuaderno: última fila de la galera,
   // en la columna de la última cifra del cociente. Si es 0 no se escribe.
-  if (residuo > 0) scratchRows.push({ value: residuo, rightPow: ultimaPow });
+  if (residuo > 0n) scratchRows.push({ value: residuo, rightPow: ultimaPow });
   if (res.mostrar) {
     scratchRows.forEach((r) => {
       const s = String(r.value);
@@ -538,7 +586,50 @@ function filasDivision(leidos, cfg) {
       });
     });
   }
-  return { filas, divisorStr };
+
+  if (paso === k) return { filas, divisorTexto: divisorTextoDe(k), filasMinimas: filas.length };
+  // Paso con punto en el divisor: sin cociente ni procedimiento.
+  return {
+    filas: [FILA_VACIA, filaDividendoDe(paso)],
+    divisorTexto: divisorTextoDe(paso),
+    filasMinimas: filas.length,
+  };
+}
+
+// Divisor: hasta 4 cifras (sin contar ceros a la izquierda), con punto
+// decimal opcional. Devuelve el entero de la división equivalente
+// (2.5 → 25n), cuántos decimales tenía y cómo se escribe.
+function leerDivisor(str) {
+  const m = /^(\d*)(?:\.(\d*))?$/.exec(str.trim());
+  if (!m || !/\d/.test(str)) {
+    throw new ErrorCampo("Divisor: escribe un número (solo dígitos y, opcionalmente, un punto decimal).", "divisor");
+  }
+  const parteEntera = m[1].replace(/^0+/, "");
+  const parteDecimal = (m[2] || "").replace(/0+$/, "");
+  const cifras = (parteEntera + parteDecimal).replace(/^0+/, "");
+  if (cifras === "") throw new ErrorCampo("Divisor: no se puede dividir entre 0.", "divisor");
+  if (cifras.length > 4) throw new ErrorCampo("Divisor: escribe como máximo 4 cifras.", "divisor");
+  const texto = (parteEntera || "0") + (parteDecimal ? "." + parteDecimal : "");
+  return {
+    entero: BigInt(cifras),
+    decimales: parteDecimal.length,
+    texto,
+    textoRecorrido: cifras,
+  };
+}
+
+// Separadores de la parte entera de un número escrito, con la convención
+// de clase: coma de millares y apóstrofe entre periodos («1250.5» →
+// «1,250.5», «9300000» → «9'300,000»).
+function conComas(texto) {
+  const [ent, dec] = texto.split(".");
+  let conC = "";
+  for (let i = 0; i < ent.length; i++) {
+    const pow = ent.length - 1 - i; // orden de la cifra
+    conC += ent[i];
+    if (pow > 0 && pow % 3 === 0) conC += pow % 6 === 0 ? "'" : ",";
+  }
+  return dec === undefined ? conC : `${conC}.${dec}`;
 }
 
 // =====================================================================
@@ -606,6 +697,31 @@ function glyphRunClamped(str, fontData, cx, rowCenterY, fontSizePx, ref, fill, x
   if (x - w / 2 < xmin) x = xmin + w / 2;
   if (x + w / 2 > xmax) x = xmax - w / 2;
   return glyphRun(str, fontData, x, rowCenterY, fontSizePx, ref, fill);
+}
+
+// Número suelto, fuera de la tabla (el divisor): cifras en cmr10 y comas
+// y punto en cmb10, con los mismos tamaños y colores que en la tabla, uno
+// tras otro y centrados en cx. Cada tramo de cifras es un solo glyphRun,
+// así un divisor sin comas ni punto sale igual que antes.
+function tramosNumeroSuelto(str, s) {
+  return str.match(/\d+|[.,]/g).map((t) =>
+    t === "." ? [t, GLYPH_DATA.bold, 34 * s] : t === "," ? [t, GLYPH_DATA.bold, 46 * s] : [t, GLYPH_DATA.regular, 40 * s],
+  );
+}
+function anchoNumeroSuelto(str, s) {
+  return tramosNumeroSuelto(str, s).reduce((w, [t, fd, f]) => w + stringWidth(t, fd, f / UPM), 0);
+}
+function numeroSuelto(str, cx, rowCenterY, g, fill) {
+  const tramos = tramosNumeroSuelto(str, g.s);
+  if (tramos.length === 1) return glyphRun(str, GLYPH_DATA.regular, cx, rowCenterY, g.fDigit, DIGIT_REF, fill);
+  let x = cx - anchoNumeroSuelto(str, g.s) / 2;
+  let out = "";
+  tramos.forEach(([t, fd, f]) => {
+    const w = stringWidth(t, fd, f / UPM);
+    out += glyphRun(t, fd, x + w / 2, rowCenterY, f, DIGIT_REF, /\d/.test(t) ? fill : g.colorSeparador);
+    x += w;
+  });
+  return out;
 }
 
 // Línea punteada y de baja opacidad que separa visualmente el número de
@@ -714,7 +830,9 @@ function dibujarTabla(filas, cfg, opts) {
 
   const gridW = colW * numColumnas;
   const totalW = leftPad + gridW;
-  const totalH = periodH + headerH + letterH + digitH * filas.length;
+  // opts.filasMinimas: la galera expositiva mide lo mismo que la resuelta
+  // (el espacio de las filas que faltan queda transparente).
+  const totalH = periodH + headerH + letterH + digitH * Math.max(filas.length, opts.filasMinimas || 0);
   const borderedCell = makeBorderedCell(leftPad, totalW, stroke);
 
   // Dos acumuladores: "svgTable" (celdas del encabezado) se agrupa en un
@@ -852,7 +970,7 @@ function dibujarTabla(filas, cfg, opts) {
   });
 
   if (opts.extra) {
-    svgNumbers += opts.extra({ digitTop, digitH, gridW, leftPad, totalW, totalH, stroke, fDigit, s });
+    svgNumbers += opts.extra({ digitTop, digitH, gridW, leftPad, totalW, totalH, stroke, fDigit, fComma, fPoint, s, colorSeparador });
   }
 
   // Estructura final (pensada para «Convertir en forma» de PowerPoint):
@@ -891,16 +1009,19 @@ function buildSVG(cfg) {
     } else if (cfg.op === "multiplicacion") {
       svg = dibujarTabla(filasMultiplicacion(leidos, cfg), cfg, { leftPad: signGap });
     } else if (cfg.op === "division") {
-      const { filas, divisorStr } = filasDivision(leidos, cfg);
+      const { filas, divisorTexto, filasMinimas } = filasDivision(cfg);
       svg = dibujarTabla(filas, cfg, {
-        leftPad: Math.round(110 * SCALE),
+        filasMinimas,
+        // Con un divisor de una cifra, 110·s (el ancho de siempre); si es
+        // más ancho, el mismo margen a cada lado (45·s).
+        leftPad: Math.max(Math.round(110 * SCALE), Math.round(anchoNumeroSuelto(divisorTexto, SCALE) + 90 * SCALE)),
         separadorDesde: 2, // cociente y dividendo van separados por la galera
         extra: (g) => {
           // Fila 1 = dividendo: a su izquierda, el divisor; encima y a la
           // izquierda, la galera (dos rectángulos sueltos que se tocan en
           // la esquina).
           const y0 = g.digitTop + g.digitH;
-          let out = glyphRun(divisorStr, GLYPH_DATA.regular, g.leftPad / 2, y0 + g.digitH / 2, g.fDigit, DIGIT_REF, cfg.digitColor);
+          let out = numeroSuelto(divisorTexto, g.leftPad / 2, y0 + g.digitH / 2, g, cfg.digitColor);
           const xBarra = R(g.leftPad - g.stroke / 2);
           out += `<rect x="${xBarra}" y="${R(y0 - g.stroke / 2)}" width="${R(g.totalW - xBarra)}" height="${g.stroke}" fill="${LINE_COLOR}"/>`;
           out += `<rect x="${xBarra}" y="${y0}" width="${g.stroke}" height="${g.digitH}" fill="${LINE_COLOR}"/>`;
@@ -955,7 +1076,11 @@ function buildFilename(cfg) {
   else if (cfg.op === "suma") numeros = d.sumandos.map(val);
   else if (cfg.op === "resta") numeros = [d.minuendo, ...d.sustraendos].map(val);
   else if (cfg.op === "multiplicacion") numeros = [val(d.multiplicando), val(d.multiplicador)];
-  else numeros = [val(d.dividendo), cfg.division.divisor.trim()];
+  else {
+    // Los números del paso elegido (ver pasosDivision): 930-0.2.svg.
+    const { pasos, div } = pasosDivision(cfg);
+    numeros = pasos[Math.min(Math.max(cfg.division.paso || 0, 0), div.decimales)].archivo;
+  }
   return `${numeros.join("-")}.svg`;
 }
 
@@ -1109,9 +1234,8 @@ function renderForms() {
   ]);
   llenar("dividendoRow", [
     filaNumeroDOM(datos.dividendo, "Dividendo", {
-      placeholder: "Ej. 93 (entero)",
-      soloEnteros: true,
-      ayuda: "Número entero; puede llevar jerarquía: 93 en Unidades de millar es 93,000.",
+      placeholder: "Ej. 93 o 9.3",
+      ayuda: "Puede llevar punto decimal y jerarquía: 93 en Unidades de millar es 93,000.",
     }),
   ]);
   renderDecimalesSelect();
@@ -1191,16 +1315,45 @@ function leerConfig() {
     },
     division: {
       divisor: $("divisor").value,
-      // «Coma y punto» del divisor. Hoy el divisor es de una cifra y nunca
-      // lleva ni coma ni punto, así que buildSVG no lo usa todavía.
+      // «Coma y punto» del divisor: sus comas (el punto se queda siempre).
       formato: $("divisorFormato").checked,
+      // Paso elegido en el menú de los pasos (0 = como se escribió).
+      paso: parseInt($("pasoDivision").value, 10) || 0,
       decimales: parseInt($("decimales").value, 10) || 0,
     },
   };
 }
 
+// Menú de los pasos para quitar el punto del divisor: una opción por paso
+// («93 ÷ 0.02», «930 ÷ 0.2», «9,300 ÷ 2»), solo en la división y con
+// divisor decimal. Si el dividendo o el divisor no se pueden leer, no hay
+// menú (el error sale en el aviso).
+function renderPasosDivision() {
+  const sel = $("pasoDivision");
+  let pasos = [];
+  if ($("operacion").value === "division") {
+    try {
+      pasos = pasosDivision(leerConfig()).pasos;
+    } catch (e) {
+      if (!(e instanceof ErrorCampo)) throw e;
+    }
+  }
+  const hay = pasos.length > 1;
+  $("pasosDivision").hidden = !hay;
+  const etiquetas = pasos.map((p) => `${conComas(p.dividendo)} ÷ ${conComas(p.divisor)}`);
+  const antes = [...sel.options].map((o) => o.text).join("|");
+  if (hay && antes !== etiquetas.join("|")) {
+    const elegido = Math.min(parseInt(sel.value, 10) || 0, pasos.length - 1);
+    sel.innerHTML = etiquetas.map((t, i) => `<option value="${i}">${t}</option>`).join("");
+    sel.value = String(elegido);
+    armarSegmentado(document.querySelector('.seg[data-for="pasoDivision"]'));
+  }
+  if (!hay) sel.value = "0";
+}
+
 function render() {
   syncResultado();
+  renderPasosDivision();
   const cfg = leerConfig();
   const result = buildSVG(cfg);
   const panel = document.querySelector(`[data-op-panel="${cfg.op}"]`);
@@ -1219,6 +1372,9 @@ function render() {
   else $("divisor").removeAttribute("aria-invalid");
   // Con error no hay nada que guardar.
   $("downloadBtn").disabled = !!result.error;
+  // Galera con punto en el divisor: solo para explicar (se puede guardar).
+  $("avisoExpositivo").hidden =
+    !!result.error || $("pasosDivision").hidden || $("pasoDivision").value === String($("pasoDivision").options.length - 1);
   if (result.error) {
     $("errorMessage").textContent = result.error.message;
     $("errorCallout").style.display = "flex";
@@ -1245,13 +1401,21 @@ async function download() {
   "mostrarPuntoResultado",
   "resultJerarquia",
   "mostrarPuntoProductos",
-  "divisor",
   "divisorFormato",
   "decimales",
+  "pasoDivision",
 ].forEach((id) => {
   $(id).addEventListener("input", render);
   $(id).addEventListener("change", render);
 });
+// Al cambiar el divisor, el menú de los pasos vuelve a la división tal como
+// se escribió.
+["input", "change"].forEach((tipo) =>
+  $("divisor").addEventListener(tipo, () => {
+    $("pasoDivision").value = "0";
+    render();
+  }),
+);
 $("operacion").addEventListener("change", () => {
   updateOpPanels();
   render();

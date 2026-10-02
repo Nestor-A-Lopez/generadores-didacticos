@@ -274,8 +274,8 @@
                   </div>
                 </div>
                 <div class="divisorCampo">
-                  <input type="text" class="input" id="divisor" value="4" maxlength="1" inputmode="numeric" autocomplete="off" />
-                  <span class="numeroHint">De una sola cifra, como en la galera</span>
+                  <input type="text" class="input" id="divisor" value="4" maxlength="6" inputmode="decimal" autocomplete="off" />
+                  <span class="numeroHint">Hasta 4 cifras; puede llevar punto decimal</span>
                 </div>
               </div>
             </div>
@@ -335,6 +335,19 @@
         </aside>
 
         <main class="preview">
+          <!-- Pasos para quitar el punto del divisor (solo en la división con
+               divisor decimal): uno por cada multiplicación por 10. -->
+          <div class="pasosDivision" id="pasosDivision" hidden>
+            <div class="seg segWrap" role="group" aria-label="Pasos para quitar el punto del divisor" data-for="pasoDivision" data-animate></div>
+            <select id="pasoDivision" class="visuallyHidden" tabindex="-1" aria-hidden="true"><option value="0">0</option></select>
+          </div>
+          <div class="callout warning" id="avisoExpositivo" role="status" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+            <div>
+              <strong>Galera solo para explicar</strong>
+              <span>Esta división tiene punto decimal en el divisor y no se puede resolver con el algoritmo de la galera. Esta galera es solo para explicar el procedimiento. Para calcular la división, elige la opción sin punto decimal en el divisor.</span>
+            </div>
+          </div>
           <div class="callout error" id="errorCallout" role="alert" style="display: none">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
             <div>
