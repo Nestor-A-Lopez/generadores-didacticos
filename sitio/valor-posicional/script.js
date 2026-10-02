@@ -1105,7 +1105,6 @@ function renderForms() {
   llenar("multiplicadorRow", [
     filaNumeroDOM(datos.multiplicador, "Multiplicador", {
       placeholder: "Ej. 24 o 2.4",
-      ayuda: "Puede llevar punto decimal y jerarquía: 24 en Decenas es 240.",
     }),
   ]);
   llenar("dividendoRow", [
