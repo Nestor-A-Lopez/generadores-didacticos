@@ -25,7 +25,7 @@ sitio/                          ← lo único que se publica
 └── valor-posicional/          ← tabla de valor posicional y operaciones
 ```
 
-Los SVG generados **no** viven en el repositorio: se guardan en `_recursos/figuras/`, al lado de él (ver «Nombres de archivo de los SVG»).
+Los SVG generados **no** viven en el repositorio: se guardan en `recursos/figuras/`, al lado de él (ver «Nombres de archivo de los SVG»).
 
 ## Decisiones vigentes
 
@@ -112,18 +112,20 @@ Antes, cada generador era un solo `.html` con prefijo `_` (para que quedara arri
 
 ## Nombres de archivo de los SVG
 
-Los SVG se guardan **fuera del repositorio**, en `D:\Archivos\Kubix\preparacionClases\banco-didactico\_recursos\figuras\`, con una carpeta por generador (los mismos nombres que en `sitio/`):
+Los SVG se guardan **fuera del repositorio**, en `D:\Archivos\Kubix\recursos\figuras\`, con una carpeta por generador (los mismos nombres que en `sitio/`). El repositorio está al lado, en `D:\Archivos\Kubix\generadores-didacticos\`:
 
 ```
-_recursos/
+D:\Archivos\Kubix\
 ├── generadores-didacticos/   ← este repositorio
-└── figuras/
-    ├── fracciones/circulo/  fracciones/rectangulo/  fracciones/triangulo/
-    ├── numeros-dienes/  estrategias/  recta-numerica/
-    └── valor-posicional/numeros/  suma/  resta/  multiplicacion/  division/
+└── recursos/
+    ├── pendientes-generadores.md
+    └── figuras/
+        ├── fracciones/circulo/  fracciones/rectangulo/  fracciones/triangulo/
+        ├── numeros-dienes/  estrategias/  recta-numerica/
+        └── valor-posicional/numeros/  suma/  resta/  multiplicacion/  division/
 ```
 
-Se movieron ahí el 2026-09-26 (439 archivos); ese mismo día `numeros-material/` pasó a `numeros-dienes/`, como el generador. Las carpetas que todavía no tienen SVG (`fracciones/triangulo/`, `recta-numerica/`) no existen: se crean al guardar el primero. El 2026-09-27, al retirar los generadores viejos, el usuario mandó a la papelera `figuras/tabla-valor-posicional/` y `figuras/operaciones/` (379 SVG) y creó `figuras/valor-posicional/`, vacía, para los nuevos. Al guardar, el diálogo del navegador recuerda la última carpeta de la sesión, así que la primera vez hay que elegir la de `figuras/`. El nombre describe el contenido, sin prefijo de carpeta ni de tipo de figura.
+Hasta el 2026-10-05 el repositorio estaba **dentro** de esa carpeta, que se llamaba `_recursos/` y estaba en `D:\Archivos\Kubix\preparacionClases\banco-didactico\`; ese día el usuario sacó el repositorio a `D:\Archivos\Kubix\` y la carpeta pasó a ser `D:\Archivos\Kubix\recursos\`. Los SVG se movieron a `figuras/` el 2026-09-26 (439 archivos); ese mismo día `numeros-material/` pasó a `numeros-dienes/`, como el generador. Las carpetas que todavía no tienen SVG (`fracciones/triangulo/`, `recta-numerica/`) no existen: se crean al guardar el primero. El 2026-09-27, al retirar los generadores viejos, el usuario mandó a la papelera `figuras/tabla-valor-posicional/` y `figuras/operaciones/` (379 SVG) y creó `figuras/valor-posicional/`, vacía, para los nuevos. Al guardar, el diálogo del navegador recuerda la última carpeta de la sesión, así que la primera vez hay que elegir la de `figuras/`. El nombre describe el contenido, sin prefijo de carpeta ni de tipo de figura.
 
 | Generador | Formato | Ejemplos |
 | --- | --- | --- |
@@ -187,7 +189,7 @@ Objetivo: un solo sitio con una portada que enlace a todos los generadores. GitH
 - Portada: `sitio/index.html` + `sitio/style.css`, con una tarjeta por generador. Sale del diseño «Menú de generadores» de Vesta, pasado a HTML/CSS estáticos (sin React ni `_ds_bundle.js`), con los iconos de Lucide 0.544.0 incrustados como `<svg>` para que también funcione con doble clic y sin red. El pie lleva el enlace a la página «Licencia y avisos» (`sitio/licencia/index.html`, que usa la barra, el pie y los estilos de documento de `sitio/style.css`) y el del repositorio. Enlaza a `<carpeta>/index.html` (no a `<carpeta>/`) por lo mismo: con `file://` una carpeta no abre su `index.html`.
 - Cada generador queda en `sitio/<carpeta>/`, así su URL es `…/generadores-didacticos/<carpeta>/`; `compartido/` se publica junto a ellos.
 - Publicación: `.github/workflows/pages.yml` (en cada push a `main`, o a mano). Copia `sitio/` a `_site/`, borra de la copia los `CLAUDE.md` (y cualquier SVG suelto) y la publica con las acciones oficiales (`configure-pages`, `upload-pages-artifact`, `deploy-pages`), fijadas por commit con la versión en un comentario. Nada fuera de `sitio/` se publica. En GitHub hay que elegir «Settings → Pages → Source: GitHub Actions».
-- **Los SVG generados no están en el repositorio** (se guardan en `_recursos/figuras/`) ni en el sitio. `*.svg`/`*.SVG` siguen en `.gitignore` por si alguno se guarda aquí por error.
+- **Los SVG generados no están en el repositorio** (se guardan en `recursos/figuras/`) ni en el sitio. `*.svg`/`*.SVG` siguen en `.gitignore` por si alguno se guarda aquí por error.
 
 ## Pendientes
 
@@ -208,4 +210,4 @@ Hechos el 2026-09-27 y 28 (para no repetirlos): los nueve componentes de `forms`
 - Si una instrucción es ambigua (a qué forma/fila/operación aplica, un caso límite), preguntar antes de asumir.
 - **Verificar de verdad**: renderizar (en esta máquina no hay Playwright; sirve Edge sin interfaz, `msedge --headless=new --screenshot=salida.png file:///…`; para la interfaz con servidor, `python -m http.server` desde la raíz y abrir `http://localhost:8000/sitio/`), inspeccionar el SVG resultante, medir en píxeles, y simular la manipulación en PowerPoint (añadir `transform="translate(…)"` a un `<g>` y ver que se mueve lo que debe). Mirar la vista previa no alcanza.
 - **Verificar la exportación**: antes y después de un cambio que no debía tocar las figuras, abrir `herramientas/verificar-svg.html` con un servidor local (`python -m http.server 8000` desde la raíz → http://localhost:8000/herramientas/verificar-svg.html; con doble clic no funciona) y comparar las dos corridas. Si el cambio sí debía cambiar alguna figura, solo deben cambiar esos casos; entonces se actualiza `verificar-svg-referencia.txt`.
-- No mover, renombrar ni borrar SVG ya generados (en `_recursos/figuras/`) sin preguntar.
+- No mover, renombrar ni borrar SVG ya generados (en `recursos/figuras/`) sin preguntar.
