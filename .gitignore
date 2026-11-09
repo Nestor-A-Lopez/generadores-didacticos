@@ -4,7 +4,7 @@ temp/
 # Presentaciones de referencia subidas al sistema de diseño
 **/uploads/*.pptx
 
-# SVG generados: se guardan fuera del repositorio (en recursos/figuras/).
+# SVG generados: se guardan fuera del repositorio (en figuras/).
 # La regla sigue por si alguno se guarda aquí por error.
 *.svg
 *.SVG
